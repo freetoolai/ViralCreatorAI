@@ -1,0 +1,159 @@
+.formContainer {
+    maxWidth: 900px;
+    padding-bottom: 4rem;
+}
+
+.backBtn {
+    margin-bottom: 2rem;
+    display: inline-flex;
+    align-items: center;
+}
+
+.formCard {
+    padding: 2.5rem;
+}
+
+.formHeader {
+    margin-bottom: 2.5rem;
+}
+
+.formTitle {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.formSubtitle {
+    color: hsl(var(--muted-foreground));
+}
+
+.errorBanner {
+    background: hsl(var(--destructive) / 0.1);
+    color: hsl(var(--destructive));
+    padding: 1rem;
+    border-radius: var(--radius);
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.section {
+    margin-bottom: 3rem;
+}
+
+.sectionTitle {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.stepIcon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: black;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+}
+
+@media (prefers-color-scheme: dark) {
+    .stepIcon {
+        background: white;
+        color: black;
+    }
+}
+
+.grid2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.gridAuto {
+    display: grid;
+    gap: 1rem;
+}
+
+.label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.addBtn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.875rem;
+}
+
+.emptyState {
+    border: 1px dashed hsl(var(--border));
+    border-radius: var(--radius);
+    padding: 2rem;
+    text-align: center;
+    color: hsl(var(--muted-foreground));
+}
+
+.platformItem {
+    padding: 1.25rem;
+    background: hsl(var(--muted) / 0.3);
+}
+
+.platformGrid {
+    display: grid;
+    grid-template-columns: 120px 1fr 1fr 1fr 40px;
+    gap: 1rem;
+    align-items: end;
+}
+
+.platformLabel {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    text-transform: uppercase;
+}
+
+.removeBtn {
+    padding: 0.5rem;
+    color: hsl(var(--destructive));
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.textarea {
+    min-height: 120px;
+    padding: 1rem;
+    resize: vertical;
+}
+
+.formFooter {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding-top: 2rem;
+    border-top: 1px solid hsl(var(--border));
+}
+
+.footerBtn {
+    padding: 0.75rem 2rem;
+}
+
+.primaryFooterBtn {
+    padding: 0.75rem 2.5rem;
+}

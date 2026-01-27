@@ -1,0 +1,116 @@
+.container {
+    background: hsl(var(--card));
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.table th {
+    text-align: left;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    color: hsl(var(--muted-foreground));
+    border-bottom: 1px solid var(--border);
+    background: hsl(var(--muted) / 0.3);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.table td {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    color: hsl(var(--foreground));
+    vertical-align: middle;
+}
+
+.table tr:last-child td {
+    border-bottom: none;
+}
+
+.table tr:hover td {
+    background: hsl(var(--muted) / 0.2);
+}
+
+.campaignName {
+    font-weight: 600;
+    font-size: 1rem;
+    color: hsl(var(--foreground));
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.clientName {
+    font-size: 0.85rem;
+    color: hsl(var(--muted-foreground));
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.statusBadge {
+    padding: 0.3rem 0.8rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: capitalize;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.statusDraft {
+    background: hsl(var(--muted));
+    color: hsl(var(--muted-foreground));
+}
+
+.statusSent {
+    background: hsl(var(--secondary));
+    color: hsl(var(--foreground));
+    border: 1px solid var(--border);
+}
+
+.statusActive {
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+}
+
+.statusCompleted {
+    background: hsl(var(--muted));
+    color: hsl(var(--foreground));
+    border: 1px solid var(--border);
+}
+
+.platformIcons {
+    display: flex;
+    gap: 0.4rem;
+}
+
+.platformIcon {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    background: hsl(var(--muted));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: hsl(var(--muted-foreground));
+    font-size: 0.7rem;
+}
+
+.budget {
+    font-variant-numeric: tabular-nums;
+    font-weight: 500;
+}
+
+.actions {
+    display: flex;
+    justify-content: flex-end;
+}

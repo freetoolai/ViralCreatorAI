@@ -1,0 +1,225 @@
+.tableHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.headerTitle {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.25rem;
+}
+
+.headerSubtitle {
+    color: hsl(var(--muted-foreground));
+}
+
+.headerActions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.filterSection {
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.searchInputFull {
+    margin-bottom: 1rem;
+    max-width: 400px;
+}
+
+.tabularNums {
+    font-variant-numeric: tabular-nums;
+}
+
+.rowLink {
+    text-decoration: none;
+    color: inherit;
+}
+
+.mutedBadge {
+    background: hsl(var(--muted)) !important;
+    color: hsl(var(--muted-foreground)) !important;
+}
+
+.dangerOutline {
+    color: hsl(var(--destructive)) !important;
+    border-color: hsl(var(--destructive) / 0.2) !important;
+}
+
+.iconOnlyBtn {
+    padding: 0.25rem !important;
+    height: 28px !important;
+    width: 28px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.rotate90 {
+    transform: rotate(90deg);
+}
+
+.tableContainer {
+    background: hsl(var(--card));
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.table th {
+    text-align: left;
+    padding: 0.75rem 1.25rem;
+    font-weight: 600;
+    color: hsl(var(--muted-foreground));
+    border-bottom: 1px solid var(--border);
+    background: hsl(var(--muted) / 0.3);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.table td {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    color: hsl(var(--foreground));
+    vertical-align: middle;
+}
+
+.table tr:last-child td {
+    border-bottom: none;
+}
+
+.table tr:hover td {
+    background: hsl(var(--muted) / 0.2);
+}
+
+.rowSelect {
+    width: 40px;
+    text-align: center;
+}
+
+.checkbox {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    accent-color: hsl(var(--primary));
+    cursor: pointer;
+}
+
+.avatarCell {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(260 80% 60%) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.nameInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.name {
+    font-weight: 600;
+    color: hsl(var(--foreground));
+}
+
+.email {
+    font-size: 0.8rem;
+    color: hsl(var(--muted-foreground));
+}
+
+.badge {
+    display: inline-flex;
+    padding: 0.25rem 0.6rem;
+    border-radius: 99px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border: 1px solid transparent;
+}
+
+.badgeTier {
+    background: hsl(var(--secondary));
+    color: hsl(var(--secondary-foreground));
+}
+
+.platforms {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.platformIcon {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    background: hsl(var(--muted));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: hsl(var(--muted-foreground));
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+.actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.table tr:hover .actions {
+    opacity: 1;
+}
+
+.bulkActions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1.25rem;
+    background: hsl(var(--primary) / 0.1);
+    border-bottom: 1px solid var(--border);
+    color: hsl(var(--primary));
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.bulkBtn {
+    background: white;
+    border: 1px solid hsl(var(--primary) / 0.2);
+    color: hsl(var(--primary));
+    padding: 0.3rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    margin-left: 0.5rem;
+    font-weight: 600;
+}
+
+.bulkBtn:hover {
+    background: hsl(var(--primary) / 0.05);
+}

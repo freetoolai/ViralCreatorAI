@@ -1,0 +1,243 @@
+.container {
+    padding: 2rem 0;
+}
+
+.backLink {
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 2rem;
+    color: hsl(var(--muted-foreground));
+    transition: color 0.2s;
+    font-size: 0.9rem;
+}
+
+.backLink:hover {
+    color: hsl(var(--foreground));
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 3rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+}
+
+.subtitle {
+    color: hsl(var(--muted-foreground));
+    font-size: 1.1rem;
+}
+
+.budgetLabel {
+    font-size: 0.8rem;
+    color: hsl(var(--muted-foreground));
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    text-align: right;
+}
+
+.budgetValue {
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2rem;
+}
+
+.card {
+    background: hsl(var(--card));
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+/* Strict Apple Color System Overrides */
+
+.cardApproved {
+    border: 1px solid #34C759;
+    background: rgba(52, 199, 89, 0.03);
+    box-shadow: none;
+}
+
+.cardRejected {
+    border: 1px solid #FF3B30;
+    opacity: 0.8;
+    filter: grayscale(100%);
+    background: rgba(255, 59, 48, 0.03);
+}
+
+.banner {
+    height: 100px;
+    background: #F5F5F7;
+    position: relative;
+    border-bottom: 1px solid var(--border);
+}
+
+.avatarWrapper {
+    position: absolute;
+    bottom: -24px;
+    left: 20px;
+    padding: 4px;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: #000;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+@media (prefers-color-scheme: dark) {
+    .avatarWrapper {
+        background: #1C1C1E;
+    }
+
+    .avatar {
+        background: #FFF;
+        color: #000;
+    }
+}
+
+.content {
+    padding: 2.5rem 1.5rem 1.5rem;
+}
+
+.profileHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin-bottom: 0.1rem;
+}
+
+.tier {
+    font-size: 0.85rem;
+    color: hsl(var(--muted-foreground));
+    font-weight: 500;
+}
+
+.socials {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.socialBtn {
+    padding: 0.4rem !important;
+    height: auto !important;
+    width: auto !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    min-height: 28px;
+}
+
+.tag {
+    background: hsl(var(--secondary));
+    color: hsl(var(--secondary-foreground));
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.rateRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1.5rem;
+}
+
+.rateLabel {
+    font-size: 0.85rem;
+    color: hsl(var(--muted-foreground));
+    font-weight: 500;
+}
+
+.rateValue {
+    font-size: 1.1rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.actions>button,
+.actions>div {
+    flex: 1;
+}
+
+.approvedBanner {
+    background: #34C759;
+    color: white;
+    padding: 0.75rem;
+    border-radius: 12px;
+    text-align: center;
+    font-weight: 600;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.rejectedBanner {
+    background: #FF3B30;
+    color: white;
+    padding: 0.75rem;
+    border-radius: 12px;
+    text-align: center;
+    font-weight: 600;
+}
+
+.rejectBtn {
+    color: #FF3B30;
+    border-color: rgba(255, 59, 48, 0.3);
+}
+
+.rejectBtn:hover {
+    background: rgba(255, 59, 48, 0.1);
+    border-color: #FF3B30;
+}

@@ -1,42 +1,306 @@
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* 🍎 PREMIUM APPLE GRAYSCALE DESIGN SYSTEM */
+
+  /* Backgrounds - Soft, Neutral Tones */
+  --background: 0 0% 98%;
+  /* #FAFAFA - Off-white, calm background */
+  --card: 0 0% 100%;
+  /* #FFFFFF - Pure white cards */
+  --sidebar: 0 0% 99%;
+  /* #FCFCFC - Slightly warm white */
+
+  /* Text - Refined Hierarchy */
+  --foreground: 0 0% 13%;
+  /* #212121 - Charcoal, not pure black */
+  --card-foreground: 0 0% 13%;
+  --muted-foreground: 0 0% 45%;
+  /* #737373 - Medium gray for secondary text */
+  --disabled-foreground: 0 0% 70%;
+  /* #B3B3B3 - Light gray for disabled */
+
+  /* Borders & Dividers - Almost Invisible */
+  --border: 0 0% 92%;
+  /* #EBEBEB - Subtle dividers */
+  --input: 0 0% 94%;
+  /* #F0F0F0 - Input backgrounds */
+  --divider: 0 0% 93%;
+
+  /* Interactive Elements - Understated */
+  --primary: 0 0% 20%;
+  /* #333333 - Charcoal for primary actions */
+  --primary-foreground: 0 0% 100%;
+  /* White text on dark buttons */
+
+  --secondary: 0 0% 96%;
+  /* #F5F5F5 - Light gray for secondary */
+  --secondary-foreground: 0 0% 20%;
+  /* Dark text on light buttons */
+
+  --muted: 0 0% 97%;
+  /* #F7F7F7 - Muted backgrounds */
+
+  /* Accent - Minimal, Neutral Blue (only when needed) */
+  --accent: 211 100% 45%;
+  /* #0066CC - Muted blue, used sparingly */
+  --accent-foreground: 0 0% 100%;
+
+  /* Status Colors - Desaturated, Calm */
+  --success: 142 40% 45%;
+  /* #45A049 - Muted green */
+  --warning: 38 70% 50%;
+  /* #E67E22 - Muted orange */
+  --destructive: 0 65% 51%;
+  /* #D9534F - Muted red */
+  --destructive-foreground: 0 0% 100%;
+
+  /* Utility */
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 13%;
+  --ring: 0 0% 20%;
+
+  /* Premium UI Rules */
+  --radius: 12px;
+  /* Soft, not exaggerated */
+
+  /* Almost Invisible Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.08);
+
+  /* Glassmorphism - Very Subtle */
+  --glass-bg: rgba(255, 255, 255, 0.92);
+  --glass-border: rgba(0, 0, 0, 0.06);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: 0 0% 7%;
+    --foreground: 0 0% 98%;
+
+    --card: 0 0% 11%;
+    --card-foreground: 0 0% 98%;
+
+    --primary: 0 0% 80%;
+    --primary-foreground: 0 0% 13%;
+
+    --secondary: 0 0% 18%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 0 0% 18%;
+    --muted-foreground: 0 0% 55%;
+
+    --border: 0 0% 22%;
+    --input: 0 0% 22%;
+
+    --glass-bg: rgba(28, 28, 30, 0.75);
+    --glass-border: rgba(255, 255, 255, 0.1);
   }
-}
-
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
-
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 * {
   box-sizing: border-box;
-  padding: 0;
   margin: 0;
+  padding: 0;
 }
 
-a {
-  color: inherit;
+body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 15px;
+  line-height: 1.6;
+  letter-spacing: -0.01em;
+  min-height: 100vh;
+}
+
+/* Scrollbar - Minimal */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.3);
+}
+
+/* Selection */
+::selection {
+  background: hsl(var(--primary) / 0.15);
+  color: hsl(var(--foreground));
+}
+
+/* Focus Rings - Subtle */
+:focus-visible {
+  outline: 2px solid hsl(var(--ring) / 0.5);
+  outline-offset: 2px;
+}
+
+/* Container */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* Glass Panel - Premium, Subtle */
+.glass-panel {
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-panel:hover {
+  box-shadow: var(--shadow-md);
+  border-color: hsl(var(--border));
+}
+
+/* Buttons - Confident but Understated */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1.4;
+  border-radius: var(--radius);
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   text-decoration: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: hsl(var(--primary) / 0.9);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.btn-secondary {
+  background-color: hsl(var(--secondary));
+  color: hsl(var(--secondary-foreground));
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background-color: hsl(var(--secondary) / 0.8);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid hsl(var(--border));
+  color: hsl(var(--foreground));
+}
+
+.btn-outline:hover:not(:disabled) {
+  background: hsl(var(--muted));
+  border-color: hsl(var(--border));
+}
+
+/* Inputs - Clean, Minimal */
+.input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  color: hsl(var(--foreground));
+  background: hsl(var(--muted));
+  border: 1px solid hsl(var(--border));
+  border-radius: calc(var(--radius) - 2px);
+  transition: all 0.15s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: hsl(var(--ring) / 0.5);
+  box-shadow: 0 0 0 3px hsl(var(--ring) / 0.1);
+}
+
+.input::placeholder {
+  color: hsl(var(--muted-foreground) / 0.5);
+}
+
+/* Typography - Refined Hierarchy */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: hsl(var(--foreground));
+}
+
+h1 {
+  font-size: 2.25rem;
+}
+
+h2 {
+  font-size: 1.875rem;
+}
+
+h3 {
+  font-size: 1.5rem;
+}
+
+h4 {
+  font-size: 1.25rem;
+}
+
+h5 {
+  font-size: 1.125rem;
+}
+
+h6 {
+  font-size: 1rem;
+}
+
+p {
+  line-height: 1.6;
+  color: hsl(var(--foreground));
+}
+
+/* Links - Subtle */
+a {
+  color: hsl(var(--accent));
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+a:hover {
+  color: hsl(var(--accent) / 0.8);
 }

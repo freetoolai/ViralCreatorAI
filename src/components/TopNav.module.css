@@ -1,0 +1,102 @@
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    height: 64px;
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: hsl(var(--card));
+    border-bottom: 1px solid hsl(var(--border));
+    margin-bottom: 2rem;
+}
+
+.searchContainer {
+    position: relative;
+    width: 320px;
+}
+
+.searchIcon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: hsl(var(--muted-foreground));
+    pointer-events: none;
+}
+
+.searchInput {
+    width: 100%;
+    padding: 0.5rem 0.5rem 0.5rem 2.2rem;
+    font-size: 0.9rem;
+    background: hsl(var(--muted));
+    border: 1px solid transparent;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.searchInput:focus {
+    background: hsl(var(--card));
+    border-color: hsl(var(--ring) / 0.3);
+    box-shadow: 0 0 0 3px hsl(var(--ring) / 0.08);
+    outline: none;
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.userMenu {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.userMenu:hover {
+    background: hsl(var(--muted));
+}
+
+.avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: hsl(var(--primary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: hsl(var(--primary-foreground));
+}
+
+.userInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.userName {
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: 1.2;
+}
+
+.userRole {
+    font-size: 0.75rem;
+    color: hsl(var(--muted-foreground));
+}
+
+.iconBtn {
+    border: none !important;
+    padding: 0.5rem !important;
+}
+
+.iconBtn svg {
+    color: hsl(var(--muted-foreground));
+}
