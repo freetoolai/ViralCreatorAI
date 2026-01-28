@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ArrowLeft, Users, Calendar, Plus, X, Search } from 'lucide-react';
 import { Campaign, Influencer } from '@/lib/types';
 import styles from './detail.module.css';
+import clsx from 'clsx';
 
 export default function CampaignAdminDetail({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
@@ -71,12 +72,10 @@ export default function CampaignAdminDetail({ params }: { params: Promise<{ id: 
         inf.primaryNiche.toLowerCase().includes(modalSearch.toLowerCase())
     );
 
-    if (!campaign) return <div className="container">Loading...</div>;
-
     return (
         <div className={styles.container}>
-            <Link href="/admin/campaigns" className={styles.backLink} style={{ display: 'inline-flex', alignItems: 'center', marginBottom: '2rem', color: 'hsl(var(--muted-foreground))' }}>
-                <ArrowLeft size={16} style={{ marginRight: '0.5rem' }} /> Back to Campaigns
+            <Link href="/admin/campaigns" className={styles.backLinkWrap}>
+                <ArrowLeft size={16} className={styles.iconMarginRight} /> Back to Campaigns
             </Link>
 
             <header className={styles.header}>
@@ -87,7 +86,7 @@ export default function CampaignAdminDetail({ params }: { params: Promise<{ id: 
                         <div className={styles.metaItem}><Calendar size={16} /> Created: {new Date(campaign.createdAt).toLocaleDateString()}</div>
                     </div>
                 </div>
-                <div style={{ display: 'flex', gap: '1rem' }}>
+                <div className={styles.headerActions}>
                     <div className={styles.statCard}>
                         <div className={styles.statLabel}>Total Budget</div>
                         <div className={styles.statValue}>${campaign.totalBudget.toLocaleString()}</div>
@@ -102,15 +101,15 @@ export default function CampaignAdminDetail({ params }: { params: Promise<{ id: 
             <div className={styles.sectionHeader}>
                 <h2 className={styles.sectionTitle}>Campaign Roster ({campaignInfluencers.length})</h2>
                 <button className="btn btn-primary" onClick={() => setIsModalOpen(true)}>
-                    <Plus size={16} style={{ marginRight: '0.5rem' }} /> Add Creators
+                    <Plus size={16} className={styles.iconMarginRight} /> Add Creators
                 </button>
             </div>
 
             {campaignInfluencers.length > 0 ? (
                 <div className={styles.influencerGrid}>
                     {campaignInfluencers.map((item, idx) => (
-                        <div key={idx} className={`glass-panel ${styles.card}`}>
-                            <span className={`${styles.statusTag} ${item.status === 'Approved' ? styles.statusApproved : item.status === 'Rejected' ? styles.statusRejected : ''}`}>
+                        <div key={idx} className={clsx("glass-panel", styles.card)}>
+                            <span className={clsx(styles.statusTag, item.status === 'Approved' ? styles.statusApproved : item.status === 'Rejected' ? styles.statusRejected : '')}>
                                 {item.status}
                             </span>
 
@@ -122,15 +121,15 @@ export default function CampaignAdminDetail({ params }: { params: Promise<{ id: 
                                 </div>
                             </div>
 
-                            <div style={{ fontSize: '0.9rem', marginBottom: '0.5rem' }}>
+                            <div className={styles.deliverablesText}>
                                 <strong>Deliverables:</strong> {item.deliverables}
                             </div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.85rem' }}>
+                            <div className={styles.cardFooter}>
                                 <div>
-                                    <strong style={{ color: 'hsl(var(--muted-foreground))' }}>Budget:</strong> ${item.proposedBudget}
+                                    <strong className={styles.mutedLabel}>Budget:</strong> ${item.proposedBudget}
                                 </div>
                                 {item.updatedAt && (
-                                    <div style={{ color: 'hsl(var(--muted-foreground))' }}>
+                                    <div className={styles.mutedLabel}>
                                         Updated: {new Date(item.updatedAt).toLocaleDateString()}
                                     </div>
                                 )}
@@ -141,19 +140,19 @@ export default function CampaignAdminDetail({ params }: { params: Promise<{ id: 
             ) : (
                 <div className={styles.emptyState}>
                     <p>No influencers added to this campaign yet.</p>
-                    <button className="btn btn-primary" style={{ marginTop: '1rem' }} onClick={() => setIsModalOpen(true)}>Add Creators</button>
+                    <button className={clsx("btn btn-primary", styles.mt1)} onClick={() => setIsModalOpen(true)}>Add Creators</button>
                 </div>
             )}
 
             {/* Add Influencer Modal */}
             {isModalOpen && (
                 <div className={styles.modalOverlay}>
-                    <div className={`glass-panel ${styles.modalContent}`}>
+                    <div className={clsx("glass-panel", styles.modalContent)}>
                         <div className={styles.modalHeader}>
                             <h3 className={styles.modalTitle}>Add Creators to Campaign</h3>
                             <button
                                 onClick={() => setIsModalOpen(false)}
-                                style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
+                                className={styles.closeButton}
                                 aria-label="Close modal"
                                 title="Close"
                             >
@@ -162,13 +161,12 @@ export default function CampaignAdminDetail({ params }: { params: Promise<{ id: 
                         </div>
 
                         <div className={styles.modalBody}>
-                            <div style={{ marginBottom: '1rem', position: 'relative' }}>
-                                <Search size={16} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'hsl(var(--muted-foreground))' }} />
+                            <div className={styles.searchWrapper}>
+                                <Search size={16} className={styles.modalSearchIcon} />
                                 <input
                                     type="text"
-                                    className="input"
+                                    className={clsx("input", styles.modalSearchInput)}
                                     placeholder="Search available influencers..."
-                                    style={{ paddingLeft: '2.2rem' }}
                                     aria-label="Search influencers"
                                     value={modalSearch}
                                     onChange={(e) => setModalSearch(e.target.value)}
@@ -177,13 +175,13 @@ export default function CampaignAdminDetail({ params }: { params: Promise<{ id: 
 
                             {filteredModalInfluencers.map(inf => (
                                 <div key={inf.id} className={styles.influencerRow} onClick={() => toggleSelect(inf.id)}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                                        <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'hsl(var(--muted))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
+                                    <div className={styles.influencerInfoFix}>
+                                        <div className={styles.avatarSmall}>
                                             {inf.name[0]}
                                         </div>
                                         <div>
-                                            <div style={{ fontWeight: '600', fontSize: '0.95rem' }}>{inf.name}</div>
-                                            <div style={{ fontSize: '0.8rem', color: 'hsl(var(--muted-foreground))' }}>{inf.primaryNiche} • {inf.tier}</div>
+                                            <div className={styles.influencerName}>{inf.name}</div>
+                                            <div className={styles.influencerMeta}>{inf.primaryNiche} • {inf.tier}</div>
                                         </div>
                                     </div>
                                     <input
@@ -197,7 +195,7 @@ export default function CampaignAdminDetail({ params }: { params: Promise<{ id: 
                             ))}
 
                             {availableInfluencers.length === 0 && (
-                                <div style={{ textAlign: 'center', padding: '2rem', color: 'hsl(var(--muted-foreground))' }}>
+                                <div className={styles.emptyModalText}>
                                     All influencers are already in this campaign.
                                 </div>
                             )}

@@ -157,3 +157,25 @@
     background: hsl(var(--destructive) / 0.1) !important;
     border-color: hsl(var(--destructive) / 0.2) !important;
 }
+
+.gridContainer {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.iconMarginRight {
+    margin-right: 0.5rem;
+}
+
+.emptyTitle {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.emptySubtitle {
+    color: hsl(var(--muted-foreground));
+}
+
+.mt15 {
+    margin-top: 1.5rem;
+}

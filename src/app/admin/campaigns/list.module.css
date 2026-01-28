@@ -114,3 +114,18 @@
     display: flex;
     justify-content: flex-end;
 }
+
+.actionBtnSmall {
+    padding: 0.3rem !important;
+    height: 28px !important;
+    width: 28px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.emptyStateRow td {
+    padding: 4rem !important;
+    text-align: center !important;
+    color: hsl(var(--muted-foreground)) !important;
+}

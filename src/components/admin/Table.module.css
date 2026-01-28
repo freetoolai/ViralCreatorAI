@@ -16,6 +16,78 @@
     color: hsl(var(--muted-foreground));
 }
 
+.tiktokIcon {
+    font-size: 10px;
+    font-weight: bold;
+}
+
+.headerContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.headerTitleLarge {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.25rem;
+}
+
+.headerDescription {
+    color: hsl(var(--muted-foreground));
+}
+
+.headerActionsFlex {
+    display: flex;
+    gap: 1rem;
+}
+
+.iconMarginRight {
+    margin-right: 0.5rem;
+}
+
+.searchBarContainer {
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.searchInputRelative {
+    position: relative;
+    flex: 1;
+}
+
+.searchIconAbsolute {
+    position: absolute;
+    left: 0.875rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: hsl(var(--muted-foreground));
+}
+
+.searchInputPadding {
+    padding-left: 2.5rem;
+    width: 100%;
+}
+
+.filterWrapper {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.filterIconColor {
+    color: hsl(var(--muted-foreground));
+}
+
+.filterSelectWidth {
+    width: 140px;
+}
+
 .headerActions {
     display: flex;
     gap: 0.75rem;

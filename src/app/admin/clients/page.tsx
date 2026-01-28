@@ -113,7 +113,7 @@ export default function ClientsPage() {
                 </button>
             </div>
 
-            <div style={{ display: 'grid', gap: '1.5rem' }}>
+            <div className={styles.gridContainer}>
                 {clients.map((client) => (
                     <div key={client.id} className={clsx("glass-panel", styles.card)}>
                         <div className={styles.cardHeader}>
@@ -147,7 +147,7 @@ export default function ClientsPage() {
                                     aria-label={`View campaigns for ${client.companyName}`}
                                     title="View Campaigns"
                                 >
-                                    <Eye size={14} style={{ marginRight: '0.5rem' }} /> Campaigns
+                                    <Eye size={14} className={styles.iconMarginRight} /> Campaigns
                                 </button>
                                 <button
                                     className="btn btn-outline"
@@ -173,9 +173,9 @@ export default function ClientsPage() {
                 {clients.length === 0 && (
                     <div className={clsx("glass-panel", styles.emptyState)}>
                         <Building2 size={48} className={styles.emptyIcon} />
-                        <h3 className={styles.modalTitle} style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>No clients found</h3>
-                        <p style={{ color: 'hsl(var(--muted-foreground))' }}>Manage your client accounts and portal access here.</p>
-                        <button className="btn btn-primary" style={{ marginTop: '1.5rem' }} onClick={openAddModal}>
+                        <h3 className={clsx(styles.modalTitle, styles.emptyTitle)}>No clients found</h3>
+                        <p className={styles.emptySubtitle}>Manage your client accounts and portal access here.</p>
+                        <button className={clsx("btn btn-primary", styles.mt15)} onClick={openAddModal}>
                             <Plus size={16} /> Add Your First Client
                         </button>
                     </div>

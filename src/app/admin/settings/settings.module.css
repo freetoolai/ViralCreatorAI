@@ -55,6 +55,11 @@
     gap: 1.25rem;
 }
 
+.formGrid>div {
+    display: flex;
+    flex-direction: column;
+}
+
 .label {
     display: block;
     font-size: 0.875rem;
@@ -113,4 +118,24 @@
     margin-top: 2rem;
     padding-top: 1.5rem;
     border-top: 1px solid var(--border);
+}
+
+.iconGeneral {
+    background: #007AFF15;
+    color: #007AFF;
+}
+
+.iconNotify {
+    background: #34C75915;
+    color: #34C759;
+}
+
+.iconSecurity {
+    background: #FF9F0A15;
+    color: #FF9F0A;
+}
+
+.iconData {
+    background: #FF3B3015;
+    color: #FF3B30;
 }

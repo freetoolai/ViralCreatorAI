@@ -80,47 +80,46 @@ export default function InfluencersPage() {
             case 'Instagram': return <Instagram size={14} />;
             case 'Twitter': return <Twitter size={14} />;
             case 'YouTube': return <Youtube size={14} />;
-            case 'TikTok': return <div style={{ fontSize: '10px', fontWeight: 'bold' }}>TT</div>;
+            case 'TikTok': return <div className={styles.tiktokIcon}>TT</div>;
             default: return null;
         }
     };
 
     return (
         <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+            <div className={styles.headerContainer}>
                 <div>
-                    <h1 style={{ fontSize: '2rem', fontWeight: '800', letterSpacing: '-0.02em', marginBottom: '0.25rem' }}>Influencers</h1>
-                    <p style={{ color: 'hsl(var(--muted-foreground))' }}>Manage and discover influencers for your campaigns.</p>
+                    <h1 className={styles.headerTitleLarge}>Influencers</h1>
+                    <p className={styles.headerDescription}>Manage and discover influencers for your campaigns.</p>
                 </div>
-                <div style={{ display: 'flex', gap: '1rem' }}>
+                <div className={styles.headerActionsFlex}>
                     <Link href="/admin/influencers/import" className="btn btn-outline">
-                        <FileDown size={16} style={{ marginRight: '0.5rem' }} /> Import CSV
+                        <FileDown size={16} className={styles.iconMarginRight} /> Import CSV
                     </Link>
                     <button className="btn btn-primary">
-                        <Plus size={16} style={{ marginRight: '0.5rem' }} /> Add Influencer
+                        <Plus size={16} className={styles.iconMarginRight} /> Add Influencer
                     </button>
                 </div>
             </div>
 
-            <div className="glass-panel" style={{ padding: '1.25rem', marginBottom: '1.5rem', display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                <div style={{ position: 'relative', flex: 1 }}>
-                    <Search style={{ position: 'absolute', left: '0.875rem', top: '50%', transform: 'translateY(-50%)', color: 'hsl(var(--muted-foreground))' }} size={16} />
+            <div className={clsx("glass-panel", styles.searchBarContainer)}>
+                <div className={styles.searchInputRelative}>
+                    <Search className={styles.searchIconAbsolute} size={16} />
                     <input
                         type="text"
                         placeholder="Search influencers by name or handle..."
-                        className="input"
-                        style={{ paddingLeft: '2.5rem', width: '100%' }}
+                        className={clsx("input", styles.searchInputPadding)}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
+                        title="Search Influencers"
                     />
                 </div>
-                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                    <Filter size={16} style={{ color: 'hsl(var(--muted-foreground))' }} />
+                <div className={styles.filterWrapper}>
+                    <Filter size={16} className={styles.filterIconColor} />
                     <select
-                        className="input"
+                        className={clsx("input", styles.filterSelectWidth)}
                         value={selectedPlatform}
                         onChange={(e) => setSelectedPlatform(e.target.value as any)}
-                        style={{ width: '140px' }}
                         title="Filter by Platform"
                     >
                         <option value="All">All Platforms</option>
@@ -149,6 +148,7 @@ export default function InfluencersPage() {
                                     type="checkbox"
                                     checked={selectedInfluencerIds.length === filteredInfluencers.length && filteredInfluencers.length > 0}
                                     onChange={toggleSelectAll}
+                                    title="Toggle Select All"
                                 />
                             </th>
                             <th className={styles.headerCell}>INFLUENCER</th>
@@ -169,6 +169,7 @@ export default function InfluencersPage() {
                                             type="checkbox"
                                             checked={selectedInfluencerIds.includes(inf.id)}
                                             onChange={() => toggleSelectInfluencer(inf.id)}
+                                            title={`Select ${inf.name}`}
                                         />
                                     </td>
                                     <td className={styles.cell}>

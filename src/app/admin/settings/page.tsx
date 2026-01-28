@@ -16,8 +16,8 @@ export default function SettingsPage() {
                 {/* General Settings */}
                 <div className={clsx("glass-panel", styles.section)}>
                     <div className={styles.sectionHeader}>
-                        <div className={styles.iconWrapper} style={{ background: '#007AFF15' }}>
-                            <SettingsIcon size={20} style={{ color: '#007AFF' }} />
+                        <div className={clsx(styles.iconWrapper, styles.iconGeneral)}>
+                            <SettingsIcon size={20} />
                         </div>
                         <div>
                             <h3 className={styles.sectionTitle}>General</h3>
@@ -35,6 +35,7 @@ export default function SettingsPage() {
                                 className="input"
                                 defaultValue="Your Agency Name"
                                 placeholder="Enter company name"
+                                aria-label="Company Name"
                             />
                         </div>
                         <div>
@@ -46,6 +47,7 @@ export default function SettingsPage() {
                                 className="input"
                                 defaultValue="contact@agency.com"
                                 placeholder="Enter contact email"
+                                aria-label="Contact Email"
                             />
                         </div>
                     </div>
@@ -54,8 +56,8 @@ export default function SettingsPage() {
                 {/* Notifications */}
                 <div className={clsx("glass-panel", styles.section)}>
                     <div className={styles.sectionHeader}>
-                        <div className={styles.iconWrapper} style={{ background: '#34C75915' }}>
-                            <Bell size={20} style={{ color: '#34C759' }} />
+                        <div className={clsx(styles.iconWrapper, styles.iconNotify)}>
+                            <Bell size={20} />
                         </div>
                         <div>
                             <h3 className={styles.sectionTitle}>Notifications</h3>
@@ -76,8 +78,8 @@ export default function SettingsPage() {
                 {/* Security */}
                 <div className={clsx("glass-panel", styles.section)}>
                     <div className={styles.sectionHeader}>
-                        <div className={styles.iconWrapper} style={{ background: '#FF9F0A15' }}>
-                            <Lock size={20} style={{ color: '#FF9F0A' }} />
+                        <div className={clsx(styles.iconWrapper, styles.iconSecurity)}>
+                            <Lock size={20} />
                         </div>
                         <div>
                             <h3 className={styles.sectionTitle}>Security</h3>
@@ -93,8 +95,8 @@ export default function SettingsPage() {
                 {/* Data Management */}
                 <div className={clsx("glass-panel", styles.section)}>
                     <div className={styles.sectionHeader}>
-                        <div className={styles.iconWrapper} style={{ background: '#FF3B3015' }}>
-                            <Database size={20} style={{ color: '#FF3B30' }} />
+                        <div className={clsx(styles.iconWrapper, styles.iconData)}>
+                            <Database size={20} />
                         </div>
                         <div>
                             <h3 className={styles.sectionTitle}>Data Management</h3>

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Sparkles, Lock, ArrowRight } from 'lucide-react';
 import styles from './access.module.css';
+import clsx from 'clsx';
 
 // Client code to client ID mapping
 const CLIENT_CODES: Record<string, string> = {
@@ -97,12 +98,11 @@ export default function AccessPage() {
 
                     <button
                         type="submit"
-                        className="btn btn-primary"
+                        className={clsx("btn btn-primary", styles.submitBtn)}
                         disabled={loading || !code.trim()}
-                        style={{ width: '100%', padding: '0.875rem', fontSize: '1rem', marginTop: '0.5rem' }}
                     >
                         {loading ? 'Verifying...' : 'Continue'}
-                        {!loading && <ArrowRight size={18} style={{ marginLeft: '0.5rem' }} />}
+                        {!loading && <ArrowRight size={18} />}
                     </button>
                 </form>
 

@@ -6,6 +6,7 @@ import { Plus, Briefcase, MoreHorizontal } from 'lucide-react';
 import { Campaign, Client } from '@/lib/types';
 import tableStyles from '@/components/admin/Table.module.css';
 import styles from './list.module.css';
+import clsx from 'clsx';
 
 import { useSearchParams } from 'next/navigation';
 
@@ -84,7 +85,7 @@ function CampaignsContent() {
                                     </span>
                                 </td>
                                 <td>
-                                    <span className={`${styles.statusBadge} ${getStatusClass(camp.status)}`}>
+                                    <span className={clsx(styles.statusBadge, getStatusClass(camp.status))}>
                                         {camp.status}
                                     </span>
                                 </td>
@@ -106,7 +107,11 @@ function CampaignsContent() {
                                 </td>
                                 <td>
                                     <div className={styles.actions}>
-                                        <Link href={`/admin/campaigns/${camp.id}`} className="btn btn-outline" style={{ padding: '0.3rem', height: '28px', width: '28px' }}>
+                                        <Link
+                                            href={`/admin/campaigns/${camp.id}`}
+                                            className={clsx("btn btn-outline", styles.actionBtnSmall)}
+                                            title="View Details"
+                                        >
                                             <MoreHorizontal size={14} />
                                         </Link>
                                     </div>
@@ -114,8 +119,8 @@ function CampaignsContent() {
                             </tr>
                         ))}
                         {campaigns.length === 0 && (
-                            <tr>
-                                <td colSpan={7} style={{ padding: '4rem', textAlign: 'center', color: 'hsl(var(--muted-foreground))' }}>
+                            <tr className={styles.emptyStateRow}>
+                                <td colSpan={7}>
                                     No campaigns found. Create your first one.
                                 </td>
                             </tr>

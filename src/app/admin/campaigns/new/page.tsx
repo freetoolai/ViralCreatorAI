@@ -66,7 +66,7 @@ export default function NewCampaignPage() {
                 <p className={styles.subtitle}>Define the goals and budget for your next activation.</p>
             </header>
 
-            <form onSubmit={handleSubmit} className={`glass-panel ${styles.formCard}`}>
+            <form onSubmit={handleSubmit} className={clsx("glass-panel", styles.formCard)}>
                 <div className={styles.sectionTitle}>Campaign Details</div>
 
                 <div className={styles.row}>
@@ -110,15 +110,15 @@ export default function NewCampaignPage() {
                     </div>
                 </div>
 
-                <div className={styles.sectionTitle} style={{ marginTop: '2rem' }}>Platforms & Targeting</div>
+                <div className={clsx(styles.sectionTitle, styles.mt2)}>Platforms & Targeting</div>
 
-                <div className={styles.col} style={{ marginBottom: '1.5rem' }}>
+                <div className={clsx(styles.col, styles.mb15)}>
                     <label className={styles.label}>Target Platforms</label>
                     <div className={styles.checkboxGroup}>
                         {availablePlatforms.map(p => (
                             <div
                                 key={p}
-                                className={`${styles.checkboxLabel} ${platforms.includes(p) ? styles.checkboxActive : ''}`}
+                                className={clsx(styles.checkboxLabel, platforms.includes(p) && styles.checkboxActive)}
                                 onClick={() => handlePlatformToggle(p)}
                             >
                                 {p}

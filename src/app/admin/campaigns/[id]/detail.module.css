@@ -215,3 +215,110 @@
     height: 20px;
     accent-color: hsl(var(--primary));
 }
+
+.backLinkWrap {
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 2rem;
+    color: hsl(var(--muted-foreground));
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.backLinkWrap:hover {
+    color: hsl(var(--foreground));
+}
+
+.iconMarginRight {
+    margin-right: 0.5rem;
+}
+
+.headerActions {
+    display: flex;
+    gap: 1rem;
+}
+
+.deliverablesText {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.cardFooter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+}
+
+.mutedLabel {
+    color: hsl(var(--muted-foreground));
+}
+
+.mt1 {
+    margin-top: 1rem;
+}
+
+.searchWrapper {
+    margin-bottom: 1rem;
+    position: relative;
+}
+
+.modalSearchIcon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: hsl(var(--muted-foreground));
+}
+
+.modalSearchInput {
+    padding-left: 2.2rem;
+}
+
+.influencerInfoFix {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.avatarSmall {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: hsl(var(--muted));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.influencerName {
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.influencerMeta {
+    font-size: 0.8rem;
+    color: hsl(var(--muted-foreground));
+}
+
+.closeButton {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: hsl(var(--muted-foreground));
+    transition: color 0.2s;
+}
+
+.closeButton:hover {
+    color: hsl(var(--foreground));
+}
+
+.emptyModalText {
+    text-align: center;
+    padding: 2rem;
+    color: hsl(var(--muted-foreground));
+}

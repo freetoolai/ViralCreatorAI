@@ -89,3 +89,25 @@
     justify-content: flex-end;
     gap: 1rem;
 }
+
+.mt2 {
+    margin-top: 2rem;
+}
+
+.mb15 {
+    margin-bottom: 1.5rem;
+}
+
+.backLink {
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.backIcon {
+    margin-right: 0.5rem;
+}
+
+.saveIcon {
+    margin-right: 0.5rem;
+}
