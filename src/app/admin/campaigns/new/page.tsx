@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import clsx from 'clsx';
 import { ArrowLeft, Save } from 'lucide-react';
 import { dataStore } from '@/lib/store';
 import { Client, PlatformName } from '@/lib/types';
@@ -56,8 +57,8 @@ export default function NewCampaignPage() {
 
     return (
         <div className={styles.container}>
-            <Link href="/admin/campaigns" className="btn btn-outline" style={{ border: 'none', paddingLeft: 0, color: 'hsl(var(--muted-foreground))', marginBottom: '1rem' }}>
-                <ArrowLeft size={16} style={{ marginRight: '0.5rem' }} /> Back to Campaigns
+            <Link href="/admin/campaigns" className={clsx("btn btn-outline", styles.backLink)}>
+                <ArrowLeft size={16} className={styles.backIcon} /> Back to Campaigns
             </Link>
 
             <header className={styles.header}>
@@ -87,6 +88,7 @@ export default function NewCampaignPage() {
                             className="input"
                             value={clientId}
                             onChange={e => setClientId(e.target.value)}
+                            title="Select a Client"
                         >
                             <option value="">Select a Client...</option>
                             {clients.map(c => <option key={c.id} value={c.id}>{c.companyName}</option>)}
@@ -141,7 +143,7 @@ export default function NewCampaignPage() {
                     <button type="submit" className="btn btn-primary" disabled={loading}>
                         {loading ? 'Creating...' : (
                             <>
-                                <Save size={16} style={{ marginRight: '0.5rem' }} /> Create Draft
+                                <Save size={16} className={styles.saveIcon} /> Create Draft
                             </>
                         )}
                     </button>

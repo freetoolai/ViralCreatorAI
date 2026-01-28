@@ -1,0 +1,116 @@
+.header {
+    margin-bottom: 2rem;
+}
+
+.title {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.25rem;
+}
+
+.subtitle {
+    color: var(--muted-foreground);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+.section {
+    padding: 1.5rem;
+}
+
+.sectionHeader {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.iconWrapper {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sectionTitle {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--foreground);
+}
+
+.sectionSubtitle {
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+}
+
+.formGrid {
+    display: grid;
+    gap: 1.25rem;
+}
+
+.label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--foreground);
+    margin-bottom: 0.5rem;
+}
+
+.checkboxLabel {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+}
+
+.checkbox {
+    width: 1.125rem;
+    height: 1.125rem;
+    border-radius: 0.25rem;
+    border: 1px solid var(--border);
+    cursor: pointer;
+}
+
+.checkboxText {
+    font-size: 0.875rem;
+    color: var(--foreground);
+}
+
+.fullWidth {
+    width: 100%;
+}
+
+.flexRow {
+    display: flex;
+    gap: 1rem;
+}
+
+.flex1 {
+    flex: 1;
+}
+
+.destructBtn {
+    color: #FF3B30;
+    border-color: rgba(255, 59, 48, 0.2);
+}
+
+.destructBtn:hover {
+    background: rgba(255, 59, 48, 0.05);
+}
+
+.footerActions {
+    grid-column: span 2;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+}

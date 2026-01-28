@@ -35,6 +35,70 @@
     font-variant-numeric: tabular-nums;
 }
 
+.emptyStateCell {
+    padding: 4rem;
+    text-align: center;
+}
+
+.emptyStateContent {
+    color: hsl(var(--muted-foreground));
+}
+
+.emptyStateTitle {
+    font-size: 1.125rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.emptyStateSubtitle {
+    font-size: 0.9375rem;
+}
+
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.smallModal {
+    width: 400px;
+    padding: 2rem;
+}
+
+.modalTitle {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+
+.modalField {
+    margin-bottom: 1.5rem;
+}
+
+.modalLabel {
+    display: block;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.modalActions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+}
+
+.fullWidth {
+    width: 100%;
+}
+
 .rowLink {
     text-decoration: none;
     color: inherit;

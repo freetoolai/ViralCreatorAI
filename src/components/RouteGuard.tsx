@@ -30,6 +30,12 @@ export function RouteGuard({ children }: { children: React.ReactNode }) {
             return;
         }
 
+        // Redirect from login page to access page ONLY if no access code is granted
+        if (isLoginRoute && !hasAccess) {
+            router.push('/access');
+            return;
+        }
+
         // Redirect away from access page if already has access
         if (hasAccess && isAccessRoute) {
             if (accessType === 'admin') {
@@ -51,12 +57,6 @@ export function RouteGuard({ children }: { children: React.ReactNode }) {
             router.push('/admin');
             return;
         }
-
-        // Redirect from old login page
-        if (isLoginRoute) {
-            router.push('/access');
-            return;
-        }
     }, [pathname, router]);
 
     // Show nothing while redirecting
@@ -67,7 +67,6 @@ export function RouteGuard({ children }: { children: React.ReactNode }) {
     const hasAccess = localStorage.getItem('viral_access_granted') === 'true';
     const accessType = localStorage.getItem('viral_access_type');
     const isAdminRoute = pathname?.startsWith('/admin');
-    const isPortalRoute = pathname?.startsWith('/portal');
     const isHomePage = pathname === '/';
     const isAccessRoute = pathname === '/access';
 

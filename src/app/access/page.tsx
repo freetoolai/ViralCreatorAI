@@ -12,6 +12,8 @@ const CLIENT_CODES: Record<string, string> = {
     'BEAUTY-CO-2026': '3',
 };
 
+const ADMIN_CODE = 'ADMIN';
+
 export default function AccessPage() {
     const router = useRouter();
     const [code, setCode] = useState('');
@@ -23,11 +25,12 @@ export default function AccessPage() {
         setError('');
         setLoading(true);
 
-        const adminCode = process.env.NEXT_PUBLIC_ADMIN_CODE;
         const trimmedCode = code.trim().toUpperCase();
+        console.log('Verifying code:', trimmedCode);
+        console.log('Expected Admin:', ADMIN_CODE);
 
         // Check if it's the admin code
-        if (trimmedCode === adminCode) {
+        if (trimmedCode === ADMIN_CODE) {
             localStorage.setItem('viral_access_type', 'admin');
             localStorage.setItem('viral_access_granted', 'true');
             router.push('/admin');
@@ -105,7 +108,7 @@ export default function AccessPage() {
 
                 <div className={styles.footer}>
                     <p className={styles.footerText}>
-                        Don't have an access code? Contact your administrator.
+                        Don&apos;t have an access code? Contact your administrator.
                     </p>
                 </div>
             </div>
