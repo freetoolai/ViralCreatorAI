@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode } from 'react';
 
 interface User {
     id: string;
@@ -33,15 +33,13 @@ const DEMO_USERS = {
 };
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-    const [user, setUser] = useState<User | null>(null);
-
-    useEffect(() => {
-        // Check for existing session
-        const savedUser = localStorage.getItem('viral_auth_user');
-        if (savedUser) {
-            setUser(JSON.parse(savedUser));
+    const [user, setUser] = useState<User | null>(() => {
+        if (typeof window !== 'undefined') {
+            const savedUser = localStorage.getItem('viral_auth_user');
+            return savedUser ? JSON.parse(savedUser) : null;
         }
-    }, []);
+        return null;
+    });
 
     const login = async (email: string, password: string): Promise<boolean> => {
         // Demo authentication

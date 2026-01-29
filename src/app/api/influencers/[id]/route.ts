@@ -12,7 +12,7 @@ export async function GET(
             return NextResponse.json({ error: 'Influencer not found' }, { status: 404 });
         }
         return NextResponse.json(influencer);
-    } catch (_error) {
+    } catch {
         return NextResponse.json({ error: 'Failed to fetch influencer' }, { status: 500 });
     }
 }

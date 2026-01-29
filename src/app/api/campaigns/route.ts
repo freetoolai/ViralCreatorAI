@@ -8,7 +8,7 @@ export async function GET(request: Request) {
     try {
         const campaigns = dataStore.getCampaigns(clientId || undefined);
         return NextResponse.json(campaigns);
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: 'Failed to fetch campaigns' }, { status: 500 });
     }
 }
@@ -18,7 +18,7 @@ export async function POST(request: Request) {
         const body = await request.json();
         dataStore.addCampaign(body);
         return NextResponse.json({ message: 'Campaign created successfully' }, { status: 201 });
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: 'Failed to create campaign' }, { status: 500 });
     }
 }

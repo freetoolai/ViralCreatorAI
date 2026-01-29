@@ -25,6 +25,10 @@ export interface Influencer {
   tier: Tier;
   internalNotes?: string;
   platforms: SocialProfile[];
+  // CRM Enhancements
+  typicalPayout?: number;
+  typicalCharge?: number;
+  mediaKitUrl?: string;
 }
 
 // --- Team & Users ---
@@ -49,13 +53,32 @@ export interface Client {
 
 // --- Campaigns ---
 export type CampaignStatus = 'Draft' | 'Sent' | 'Approved' | 'Rejected' | 'Active' | 'Completed';
-export type InfluencerApprovalStatus = 'Pending' | 'Approved' | 'Rejected';
+
+export type InfluencerApprovalStatus =
+  | 'Shortlisted'
+  | 'Client Review'
+  | 'Approved'
+  | 'Rejected'
+  | 'Contract Sent'
+  | 'Contract Signed'
+  | 'Product Sent'
+  | 'Product Received'
+  | 'Draft Under Review'
+  | 'Live'
+  | 'Paid';
 
 export interface CampaignInfluencerRef {
   influencerId: string;
   status: InfluencerApprovalStatus;
-  proposedBudget: number;
-  deliverables: string; // Brief description
+  // Financials
+  influencerFee: number; // What we pay them
+  clientFee: number;     // What we charge the client
+  // Tracking
+  deliverables: string;  // e.g. "1x IG Reel"
+  productAccess: boolean;
+  draftLink?: string;
+  plannedDate?: string;
+  postLink?: string;
   rejectionReason?: string;
   updatedAt?: string;
 }
@@ -65,9 +88,20 @@ export interface Campaign {
   clientId: string;
   title: string;
   status: CampaignStatus;
-  totalBudget: number;
+  totalBudget: number; // Campaign-wide cap or target
   platformFocus: PlatformName[];
   requiredNiches: string[];
   influencers: CampaignInfluencerRef[];
+  createdAt: string;
+  description?: string;
+}
+
+// --- Groups for Client Sharing ---
+export interface CampaignGroup {
+  id: string;
+  title: string;
+  description?: string;
+  campaignIds: string[];
+  clientId: string; // The client this group is shared with
   createdAt: string;
 }

@@ -1,39 +1,65 @@
 .container {
-    max-width: 800px;
-    margin: 0 auto;
+    max-width: 900px;
+    padding-bottom: var(--space-4xl);
+}
+
+.backLink {
+    margin-bottom: var(--space-2xl);
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.8125rem !important;
+    color: var(--text-muted) !important;
+    border-color: var(--surface-border) !important;
+}
+
+.backLink:hover {
+    color: var(--text-primary) !important;
+    border-color: var(--text-muted) !important;
+}
+
+.backIcon {
+    margin-right: 0.5rem;
 }
 
 .header {
-    margin-bottom: 2rem;
-    text-align: center;
+    margin-bottom: var(--space-4xl);
+    max-width: 600px;
 }
 
 .title {
-    font-size: 2rem;
-    font-weight: 700;
+    font-size: var(--font-h1);
+    font-weight: 600;
     margin-bottom: 0.5rem;
+    color: var(--text-primary);
+    letter-spacing: -0.03em;
 }
 
 .subtitle {
-    color: hsl(var(--muted-foreground));
+    color: var(--text-secondary);
+    font-size: 1.125rem;
 }
 
 .formCard {
-    padding: 2.5rem;
+    padding: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
 }
 
 .sectionTitle {
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin-bottom: 1.5rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid var(--border);
+    font-size: var(--font-h2);
+    font-weight: 500;
+    margin-bottom: var(--space-xl);
+    padding-bottom: var(--space-sm);
+    border-bottom: 1px solid var(--surface-border);
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
 }
 
 .row {
     display: flex;
-    gap: 1.5rem;
-    margin-bottom: 1.5rem;
+    gap: 2rem;
+    margin-bottom: var(--space-xl);
 }
 
 .col {
@@ -42,72 +68,68 @@
 
 .label {
     display: block;
-    font-size: 0.9rem;
-    font-weight: 500;
+    font-size: 0.75rem;
+    font-weight: 600;
     margin-bottom: 0.5rem;
-    color: hsl(var(--foreground));
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .helper {
-    font-size: 0.8rem;
-    color: hsl(var(--muted-foreground));
-    margin-top: 0.25rem;
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    margin-top: 0.5rem;
 }
 
 .checkboxGroup {
     display: flex;
     flex-wrap: wrap;
-    gap: 1rem;
+    gap: 0.75rem;
 }
 
 .checkboxLabel {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    font-size: 0.9rem;
+    font-size: 0.875rem;
     cursor: pointer;
-    padding: 0.5rem 0.8rem;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    transition: all 0.2s;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--surface-border);
+    border-radius: 999px;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    color: var(--text-secondary);
 }
 
 .checkboxLabel:hover {
-    background: hsl(var(--muted));
+    background: var(--bg-base);
+    border-color: var(--text-muted);
 }
 
 .checkboxActive {
-    background: hsl(var(--primary) / 0.1);
-    border-color: hsl(var(--primary));
-    color: hsl(var(--primary));
+    background: var(--surface-white);
+    border-color: var(--accent-green);
+    color: var(--text-primary);
     font-weight: 500;
 }
 
 .actions {
-    margin-top: 3rem;
+    margin-top: var(--space-3xl);
     display: flex;
     justify-content: flex-end;
     gap: 1rem;
-}
-
-.mt2 {
-    margin-top: 2rem;
-}
-
-.mb15 {
-    margin-bottom: 1.5rem;
-}
-
-.backLink {
-    display: inline-flex;
-    align-items: center;
-    margin-bottom: 2rem;
-}
-
-.backIcon {
-    margin-right: 0.5rem;
+    padding-top: var(--space-xl);
+    border-top: 1px solid var(--surface-border);
 }
 
 .saveIcon {
     margin-right: 0.5rem;
+}
+
+.mt2 {
+    margin-top: var(--space-3xl);
+}
+
+.mb15 {
+    margin-bottom: var(--space-xl);
 }

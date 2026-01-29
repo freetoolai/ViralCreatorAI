@@ -7,7 +7,7 @@ export function ClientTopNav({ clientName }: { clientName?: string }) {
     return (
         <header className={styles.header}>
             <div className={styles.brand}>
-                <div style={{ background: 'hsl(var(--primary))', borderRadius: '8px', padding: '4px', color: 'white', display: 'flex' }}>
+                <div className={styles.logoContainer}>
                     <Sparkles size={16} fill="currentColor" />
                 </div>
                 <span>Viral<span className={styles.brandAccent}>CreatorAI</span></span>
@@ -15,7 +15,7 @@ export function ClientTopNav({ clientName }: { clientName?: string }) {
 
             <div className={styles.actions}>
                 <div className={styles.profile}>
-                    <div style={{ textAlign: 'right' }}>
+                    <div className={styles.profileInfo}>
                         <div className={styles.clientName}>{clientName || 'Guest Client'}</div>
                         <div className={styles.role}>Viewer Access</div>
                     </div>

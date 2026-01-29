@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { signIn } from 'next-auth/react';
 import { Sparkles, ArrowRight, AlertCircle } from 'lucide-react';
+import clsx from 'clsx';
 import styles from './login.module.css';
 
 export default function LoginPage() {
@@ -82,12 +83,11 @@ export default function LoginPage() {
 
                     <button
                         type="submit"
-                        className="btn btn-primary"
+                        className={clsx("btn btn-primary", styles.submitBtn)}
                         disabled={loading}
-                        style={{ width: '100%', padding: '0.875rem', fontSize: '1rem', marginTop: '0.5rem' }}
                     >
                         {loading ? 'Signing in...' : 'Sign In'}
-                        {!loading && <ArrowRight size={18} style={{ marginLeft: '0.5rem' }} />}
+                        {!loading && <ArrowRight size={18} className={styles.btnIcon} />}
                     </button>
                 </form>
 

@@ -16,6 +16,10 @@
     color: hsl(var(--foreground));
 }
 
+.iconMargin {
+    margin-right: 0.5rem;
+}
+
 .title {
     font-size: 2rem;
     font-weight: 700;
@@ -120,12 +124,13 @@
 
 .table th {
     text-align: left;
-    background: hsl(var(--muted));
+    background: #FFFFFF;
     padding: 0.75rem;
     position: sticky;
     top: 0;
     z-index: 10;
     font-weight: 600;
+    border-bottom: 1px solid var(--border);
 }
 
 .table td {
@@ -136,4 +141,60 @@
 .fullWidthBtn {
     width: 100%;
     margin-top: 1rem;
+}
+
+.importControls {
+    padding: 2rem;
+    margin-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.uploadBox {
+    border: 2px dashed var(--surface-border);
+    border-radius: 12px;
+    padding: 3rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--bg-base);
+}
+
+.uploadBox:hover {
+    border-color: var(--accent-green);
+    background: rgba(47, 94, 78, 0.02);
+}
+
+.uploadIcon {
+    margin-bottom: 1rem;
+    color: var(--text-muted);
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid var(--surface-border);
+}
+
+.divider:not(:empty)::before {
+    margin-right: .5em;
+}
+
+.divider:not(:empty)::after {
+    margin-left: .5em;
+}
+
+.hiddenInput {
+    display: none;
 }

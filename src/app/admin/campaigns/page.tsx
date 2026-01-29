@@ -24,14 +24,13 @@ function CampaignsContent() {
                     fetch(clientId ? `/api/campaigns?clientId=${clientId}` : '/api/campaigns'),
                     fetch('/api/clients')
                 ]);
-                const [campsData, clientsData] = await Promise.all([
-                    campsRes.json(),
-                    clientsRes.json()
-                ]);
+                const campsData = (await campsRes.json()) as Campaign[];
+                const clientsData = (await clientsRes.json()) as Client[];
+
                 setCampaigns(campsData);
                 setClients(clientsData);
-            } catch (error) {
-                console.error('Failed to fetch data:', error);
+            } catch {
+                // Error fetching campaigns/clients - handle silently
             }
         };
         fetchData();
@@ -51,15 +50,57 @@ function CampaignsContent() {
     };
 
     return (
-        <div>
-            <div className={tableStyles.tableHeader}>
+        <div className="container">
+            <div className={styles.header}>
                 <div>
-                    <h1 className={tableStyles.headerTitle}>Campaigns</h1>
-                    <p className={tableStyles.headerSubtitle}>Manage all active and past campaigns.</p>
+                    <h1 className={styles.title}>Campaigns</h1>
+                    <p className={styles.subtitle}>Manage and track your active campaigns.</p>
                 </div>
                 <Link href="/admin/campaigns/new" className="btn btn-primary">
                     <Plus size={16} /> New Campaign
                 </Link>
+            </div>
+
+            <div className={styles.mobileGrid}>
+                {campaigns.map((camp) => (
+                    <div key={camp.id} className={styles.mobileCard}>
+                        <div className={styles.mobileCardHeader}>
+                            <div>
+                                <div className={styles.mobileCardTitle}>{camp.title}</div>
+                                <span className={styles.clientName}>
+                                    <Briefcase size={12} /> {getClientName(camp.clientId)}
+                                </span>
+                            </div>
+                            <span className={clsx(styles.statusBadge, getStatusClass(camp.status))}>
+                                {camp.status}
+                            </span>
+                        </div>
+                        <div className={styles.mobileCardRow}>
+                            <span className={styles.mobileLabel}>Budget</span>
+                            <span className={styles.budget}>${camp.totalBudget?.toLocaleString() || 0}</span>
+                        </div>
+                        <div className={styles.mobileCardRow}>
+                            <span className={styles.mobileLabel}>Platform</span>
+                            <div className={styles.platformIcons}>
+                                {camp.platformFocus?.map(p => (
+                                    <div key={p} className={styles.platformIcon} title={p}>{p[0]}</div>
+                                )) || <span>-</span>}
+                            </div>
+                        </div>
+                        <div className={styles.mobileCardRow}>
+                            <span className={styles.mobileLabel}>Influencers</span>
+                            <span>{camp.influencers?.length || 0}</span>
+                        </div>
+                        <div className={styles.mobileCardFooter}>
+                            <Link
+                                href={`/admin/campaigns/${camp.id}`}
+                                className={clsx("btn btn-primary btn-sm", styles.mobileCardAction)}
+                            >
+                                View Details
+                            </Link>
+                        </div>
+                    </div>
+                ))}
             </div>
 
             <div className={styles.container}>

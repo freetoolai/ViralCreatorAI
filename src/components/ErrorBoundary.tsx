@@ -46,7 +46,7 @@ export class ErrorBoundary extends Component<Props, State> {
                         </div>
                         <h2 className={styles.title}>Something went wrong</h2>
                         <p className={styles.message}>
-                            We encountered an unexpected error. Don't worry, your data is safe.
+                            We encountered an unexpected error. Don&apos;t worry, your data is safe.
                         </p>
                         <div className={styles.actions}>
                             <button onClick={this.handleReset} className="btn btn-primary">

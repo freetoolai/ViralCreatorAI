@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import clsx from 'clsx';
@@ -11,7 +11,7 @@ import styles from './new.module.css';
 
 export default function NewCampaignPage() {
     const router = useRouter();
-    const [clients, setClients] = useState<Client[]>([]);
+    const [clients] = useState<Client[]>(() => dataStore.getClients());
     const [loading, setLoading] = useState(false);
 
     // Form State
@@ -20,10 +20,6 @@ export default function NewCampaignPage() {
     const [budget, setBudget] = useState('');
     const [platforms, setPlatforms] = useState<PlatformName[]>([]);
     const [niches, setNiches] = useState<string[]>([]); // simplified for demo logic
-
-    useEffect(() => {
-        setClients(dataStore.getClients());
-    }, []);
 
     const handlePlatformToggle = (p: PlatformName) => {
         setPlatforms(prev => prev.includes(p) ? prev.filter(x => x !== p) : [...prev, p]);
@@ -62,7 +58,7 @@ export default function NewCampaignPage() {
             </Link>
 
             <header className={styles.header}>
-                <h1 className={styles.title}>Create New Campaign</h1>
+                <h1 className={styles.title}>Create new campaign</h1>
                 <p className={styles.subtitle}>Define the goals and budget for your next activation.</p>
             </header>
 
@@ -78,7 +74,7 @@ export default function NewCampaignPage() {
                             className="input"
                             placeholder="e.g. Summer Fashion Launch"
                             value={title}
-                            onChange={e => setTitle(e.target.value)}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTitle(e.target.value)}
                         />
                     </div>
                     <div className={styles.col}>
@@ -87,11 +83,11 @@ export default function NewCampaignPage() {
                             required
                             className="input"
                             value={clientId}
-                            onChange={e => setClientId(e.target.value)}
+                            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setClientId(e.target.value)}
                             title="Select a Client"
                         >
                             <option value="">Select a Client...</option>
-                            {clients.map(c => <option key={c.id} value={c.id}>{c.companyName}</option>)}
+                            {clients.map((c: Client) => <option key={c.id} value={c.id}>{c.companyName}</option>)}
                         </select>
                     </div>
                 </div>
@@ -105,7 +101,7 @@ export default function NewCampaignPage() {
                             className="input"
                             placeholder="50000"
                             value={budget}
-                            onChange={e => setBudget(e.target.value)}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setBudget(e.target.value)}
                         />
                     </div>
                 </div>
@@ -115,7 +111,7 @@ export default function NewCampaignPage() {
                 <div className={clsx(styles.col, styles.mb15)}>
                     <label className={styles.label}>Target Platforms</label>
                     <div className={styles.checkboxGroup}>
-                        {availablePlatforms.map(p => (
+                        {availablePlatforms.map((p: PlatformName) => (
                             <div
                                 key={p}
                                 className={clsx(styles.checkboxLabel, platforms.includes(p) && styles.checkboxActive)}
@@ -133,7 +129,7 @@ export default function NewCampaignPage() {
                         type="text"
                         className="input"
                         placeholder="Tech, Gaming, Lifestyle..."
-                        onChange={e => setNiches(e.target.value.split(',').map(s => s.trim()))}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNiches(e.target.value.split(',').map((s: string) => s.trim()))}
                     />
                     <div className={styles.helper}>We will filter for influencers matching these tags.</div>
                 </div>

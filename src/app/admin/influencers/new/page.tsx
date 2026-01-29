@@ -4,19 +4,11 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import clsx from 'clsx';
-import { ArrowLeft, Save, AlertCircle, Plus, Trash2, Globe, Instagram, Youtube, Twitter, Twitch, MessageCircle } from 'lucide-react';
+import { ArrowLeft, Save, AlertCircle, Plus, Trash2 } from 'lucide-react';
 import { dataStore } from '@/lib/store';
 import { Influencer, SocialProfile, PlatformName, Tier } from '@/lib/types';
 import styles from './new-influencer.module.css';
 
-const PLATFORM_ICONS: Record<PlatformName, any> = {
-    YouTube: Youtube,
-    Instagram: Instagram,
-    TikTok: MessageCircle, // Using MessageCircle as placeholder for TikTok if not in lucide
-    Twitter: Twitter,
-    Twitch: Twitch,
-    Other: Globe
-};
 
 export default function NewInfluencerPage() {
     const router = useRouter();
@@ -55,9 +47,9 @@ export default function NewInfluencerPage() {
         setPlatforms(platforms.filter((_, i) => i !== index));
     };
 
-    const updatePlatform = (index: number, field: keyof SocialProfile, value: any) => {
+    const updatePlatform = <K extends keyof SocialProfile>(index: number, field: K, value: SocialProfile[K]) => {
         const updated = [...platforms];
-        (updated[index] as any)[field] = value;
+        updated[index] = { ...updated[index], [field]: value };
         setPlatforms(updated);
     };
 
@@ -88,7 +80,7 @@ export default function NewInfluencerPage() {
         try {
             dataStore.addInfluencer(newInfluencer);
             router.push('/admin/influencers');
-        } catch (_err) {
+        } catch {
             setError('Failed to save influencer.');
         } finally {
             setIsLoading(false);
@@ -98,13 +90,13 @@ export default function NewInfluencerPage() {
     return (
         <div className={clsx("container", styles.formContainer)}>
             <Link href="/admin/influencers" className={clsx("btn btn-outline", styles.backBtn)}>
-                <ArrowLeft size={16} style={{ marginRight: '0.5rem' }} /> Back to Influencers
+                <ArrowLeft size={16} className={styles.iconMargin} /> Back to Influencers
             </Link>
 
             <div className={clsx("glass-panel", styles.formCard)}>
                 <header className={styles.formHeader}>
-                    <h1 className={styles.formTitle}>Add New Influencer</h1>
-                    <p className={styles.formSubtitle}>Create a comprehensive profile for your talent roster.</p>
+                    <h1 className={styles.formTitle}>Add new talent</h1>
+                    <p className={styles.formSubtitle}>Create a comprehensive profile for your influencer network.</p>
                 </header>
 
                 {error && (
@@ -214,7 +206,7 @@ export default function NewInfluencerPage() {
                                 className={clsx("btn btn-outline", styles.addBtn)}
                                 onClick={handleAddPlatform}
                             >
-                                <Plus size={14} style={{ marginRight: '0.4rem' }} /> Add Platform
+                                <Plus size={14} className={styles.iconMargin} /> Add Platform
                             </button>
                         </div>
 
@@ -233,7 +225,7 @@ export default function NewInfluencerPage() {
                                                     id={`platform-${idx}`}
                                                     className="input"
                                                     value={p.platform}
-                                                    onChange={e => updatePlatform(idx, 'platform', e.target.value)}
+                                                    onChange={e => updatePlatform(idx, 'platform', e.target.value as PlatformName)}
                                                     aria-label="Platform"
                                                 >
                                                     {platformOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
@@ -310,7 +302,7 @@ export default function NewInfluencerPage() {
                     <div className={styles.formFooter}>
                         <Link href="/admin/influencers" className={clsx("btn btn-secondary", styles.footerBtn)}>Cancel</Link>
                         <button type="submit" className={clsx("btn btn-primary", styles.primaryFooterBtn)} disabled={isLoading}>
-                            <Save size={18} style={{ marginRight: '0.5rem' }} />
+                            <Save size={18} className={styles.iconMargin} />
                             {isLoading ? 'Saving Talent...' : 'Create Influencer'}
                         </button>
                     </div>

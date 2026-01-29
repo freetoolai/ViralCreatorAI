@@ -12,7 +12,7 @@ export async function GET(
             return NextResponse.json({ error: 'Campaign not found' }, { status: 404 });
         }
         return NextResponse.json(campaign);
-    } catch (_error) {
+    } catch {
         return NextResponse.json({ error: 'Failed to fetch campaign' }, { status: 500 });
     }
 }

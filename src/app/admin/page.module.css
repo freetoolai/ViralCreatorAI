@@ -1,0 +1,48 @@
+/* Mobile Admin Dashboard Responsive Styles */
+@media (max-width: 1024px) {
+    .statsGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .statsGrid {
+        grid-template-columns: 1fr;
+        gap: var(--space-md);
+    }
+
+    .statCard {
+        padding: var(--space-md);
+    }
+
+    .quickActions {
+        grid-template-columns: 1fr;
+        gap: var(--space-sm);
+    }
+
+    .actionCard {
+        padding: var(--space-md);
+    }
+
+    .chartContainer {
+        padding: var(--space-md);
+    }
+}
+
+@media (max-width: 480px) {
+    .pageHeader {
+        padding: var(--space-md);
+    }
+
+    .title {
+        font-size: var(--font-h2);
+    }
+
+    .statValue {
+        font-size: var(--font-h1);
+    }
+
+    .statLabel {
+        font-size: 0.75rem;
+    }
+}

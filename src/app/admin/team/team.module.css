@@ -100,6 +100,16 @@
     font-weight: 600;
 }
 
+.roleAdmin {
+    background: #007AFF15;
+    color: #007AFF;
+}
+
+.roleManager {
+    background: #34C75915;
+    color: #34C759;
+}
+
 .badge {
     display: inline-flex;
     padding: 0.25rem 0.625rem;

@@ -1,81 +1,109 @@
 'use client';
 
-import { use, useState, useEffect } from 'react';
+import { use, useState, useEffect, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Users, Calendar, Plus, X, Search } from 'lucide-react';
-import { Campaign, Influencer } from '@/lib/types';
+import { Campaign, Influencer, CampaignInfluencerRef, InfluencerApprovalStatus } from '@/lib/types';
+import { dataStore } from '@/lib/store';
+import { useToast } from '@/components/ToastContext';
+import { ConfirmModal } from '@/components/ConfirmModal';
 import styles from './detail.module.css';
 import clsx from 'clsx';
 
+const STATUS_OPTIONS: InfluencerApprovalStatus[] = [
+    'Shortlisted', 'Client Review', 'Approved', 'Rejected',
+    'Contract Sent', 'Contract Signed', 'Product Sent', 'Product Received',
+    'Draft Under Review', 'Live', 'Paid'
+];
+
 export default function CampaignAdminDetail({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
+    const { showToast } = useToast();
     const [campaign, setCampaign] = useState<Campaign | null>(null);
     const [allInfluencers, setAllInfluencers] = useState<Influencer[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedForAdd, setSelectedForAdd] = useState<Set<string>>(new Set());
+    const [modalSearch, setModalSearch] = useState('');
 
-    // Hydrate
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const [campRes, infRes] = await Promise.all([
-                    fetch(`/api/campaigns/${id}`),
-                    fetch('/api/influencers')
-                ]);
+    // Deletion Modal State
+    const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
+    const [influencerToDelete, setInfluencerToDelete] = useState<string | null>(null);
 
-                if (campRes.ok) {
-                    const campData = await campRes.json();
-                    setCampaign(campData);
-                }
-
-                const infData = await infRes.json();
-                setAllInfluencers(infData);
-            } catch (error) {
-                console.error('Failed to fetch campaign details:', error);
-            }
-        };
-        fetchData();
+    const loadData = useCallback(() => {
+        const camp = dataStore.getCampaign(id);
+        const infs = dataStore.getInfluencers();
+        if (camp) setCampaign({ ...camp });
+        if (infs) setAllInfluencers(infs);
     }, [id]);
 
-    const handleAddInfluencers = async () => {
-        if (!campaign) return;
+    useEffect(() => {
+        loadData();
+    }, [loadData]);
 
-        // Note: For now we'll simulate adding, in Phase 15 we'd have a POST to /api/campaigns/[id]/influencers
-        alert('Influencer addition will be fully integrated with the DB in the next step.');
+    const financials = useMemo(() => {
+        if (!campaign) return { totalPayout: 0, totalRevenue: 0, totalProfit: 0 };
+        return dataStore.getCampaignFinancials(id);
+    }, [campaign, id]);
+
+    const handleAddInfluencers = () => {
+        selectedForAdd.forEach(infId => {
+            dataStore.addInfluencerToCampaign(id, infId);
+        });
+        const count = selectedForAdd.size;
         setIsModalOpen(false);
         setSelectedForAdd(new Set());
+        loadData();
+        showToast(`Successfully added ${count} talent to campaign`);
     };
 
-    const toggleSelect = (id: string) => {
+    const handleUpdateInfluencer = (infId: string, field: keyof CampaignInfluencerRef, value: string | number | boolean) => {
+        dataStore.updateInfluencerInCampaign(id, infId, { [field]: value });
+        loadData();
+        // Silent update for small fields, maybe toast for status?
+        if (field === 'status') {
+            showToast(`Status updated to ${value}`);
+        }
+    };
+
+    const triggerDelete = (infId: string) => {
+        setInfluencerToDelete(infId);
+        setIsConfirmDeleteOpen(true);
+    };
+
+    const confirmDelete = () => {
+        if (influencerToDelete) {
+            dataStore.removeInfluencerFromCampaign(id, influencerToDelete);
+            setIsConfirmDeleteOpen(false);
+            setInfluencerToDelete(null);
+            loadData();
+            showToast("Talent removed from campaign");
+        }
+    };
+
+    const toggleSelect = (selectedId: string) => {
         const newSet = new Set(selectedForAdd);
-        if (newSet.has(id)) newSet.delete(id);
-        else newSet.add(id);
+        if (newSet.has(selectedId)) newSet.delete(selectedId);
+        else newSet.add(selectedId);
         setSelectedForAdd(newSet);
     };
 
-    const [modalSearch, setModalSearch] = useState('');
-
     if (!campaign) return <div className="container">Loading...</div>;
 
-    // Resolve Influencer Details (Safely after null check)
-    const campaignInfluencers = campaign.influencers?.map(ref => {
-        const details = allInfluencers.find(i => i.id === ref.influencerId);
-        return { ...ref, details };
-    }) || [];
-
-    const availableInfluencers = allInfluencers.filter(inf =>
-        !campaign.influencers?.some(existing => existing.influencerId === inf.id)
+    const availableInfluencers = allInfluencers.filter((inf: Influencer) =>
+        !campaign.influencers?.some((existing: CampaignInfluencerRef) => existing.influencerId === inf.id)
     );
 
-    const filteredModalInfluencers = availableInfluencers.filter(inf =>
+    const filteredModalInfluencers = availableInfluencers.filter((inf: Influencer) =>
         inf.name.toLowerCase().includes(modalSearch.toLowerCase()) ||
         inf.primaryNiche.toLowerCase().includes(modalSearch.toLowerCase())
     );
 
+    const getInfluencerDetails = (id: string) => allInfluencers.find(i => i.id === id);
+
     return (
         <div className={styles.container}>
             <Link href="/admin/campaigns" className={styles.backLinkWrap}>
-                <ArrowLeft size={16} className={styles.iconMarginRight} /> Back to Campaigns
+                <ArrowLeft size={16} /> Back to Campaigns
             </Link>
 
             <header className={styles.header}>
@@ -88,76 +116,273 @@ export default function CampaignAdminDetail({ params }: { params: Promise<{ id: 
                 </div>
                 <div className={styles.headerActions}>
                     <div className={styles.statCard}>
-                        <div className={styles.statLabel}>Total Budget</div>
-                        <div className={styles.statValue}>${campaign.totalBudget.toLocaleString()}</div>
+                        <div className={styles.statLabel}>Total Receivable</div>
+                        <div className={styles.statValue}>${financials.totalRevenue.toLocaleString()}</div>
                     </div>
                     <div className={styles.statCard}>
-                        <div className={styles.statLabel}>Spent (Est)</div>
-                        <div className={styles.statValue}>$0</div>
+                        <div className={styles.statLabel}>Total Payout</div>
+                        <div className={styles.statValue}>${financials.totalPayout.toLocaleString()}</div>
+                    </div>
+                    <div className={styles.statCard}>
+                        <div className={styles.statLabel}>Total Profit</div>
+                        <div className={clsx(styles.statValue, financials.totalProfit >= 0 ? styles.positiveProfit : styles.negativeProfit)}>
+                            ${financials.totalProfit.toLocaleString()}
+                        </div>
                     </div>
                 </div>
             </header>
 
             <div className={styles.sectionHeader}>
-                <h2 className={styles.sectionTitle}>Campaign Roster ({campaignInfluencers.length})</h2>
-                <button className="btn btn-primary" onClick={() => setIsModalOpen(true)}>
-                    <Plus size={16} className={styles.iconMarginRight} /> Add Creators
+                <h2 className={styles.sectionTitle}>Campaign Roster ({campaign.influencers?.length || 0})</h2>
+                <button className="btn btn-primary" onClick={() => setIsModalOpen(true)} aria-label="Add Creators to Campaign">
+                    <Plus size={16} /> Add Creators
                 </button>
             </div>
 
-            {campaignInfluencers.length > 0 ? (
-                <div className={styles.influencerGrid}>
-                    {campaignInfluencers.map((item, idx) => (
-                        <div key={idx} className={clsx("glass-panel", styles.card)}>
-                            <span className={clsx(styles.statusTag, item.status === 'Approved' ? styles.statusApproved : item.status === 'Rejected' ? styles.statusRejected : '')}>
-                                {item.status}
-                            </span>
-
-                            <div className={styles.cardHeader}>
-                                <div className={styles.avatar}>{item.details?.name[0]}</div>
-                                <div>
-                                    <div className={styles.cardName}>{item.details?.name || 'Unknown'}</div>
-                                    <div className={styles.cardTier}>{item.details?.tier} • {item.details?.primaryNiche}</div>
-                                </div>
-                            </div>
-
-                            <div className={styles.deliverablesText}>
-                                <strong>Deliverables:</strong> {item.deliverables}
-                            </div>
-                            <div className={styles.cardFooter}>
-                                <div>
-                                    <strong className={styles.mutedLabel}>Budget:</strong> ${item.proposedBudget}
-                                </div>
-                                {item.updatedAt && (
-                                    <div className={styles.mutedLabel}>
-                                        Updated: {new Date(item.updatedAt).toLocaleDateString()}
+            {/* Mobile View */}
+            <div className={styles.mobileCardsView}>
+                {campaign.influencers?.map((ref) => {
+                    const inf = getInfluencerDetails(ref.influencerId);
+                    const profit = (Number(ref.clientFee) || 0) - (Number(ref.influencerFee) || 0);
+                    return (
+                        <div key={ref.influencerId} className={styles.mobileDataCard}>
+                            <div className={styles.mobileDataCardHeader}>
+                                <div className={styles.influencerCell}>
+                                    <div className={styles.avatar}>{inf?.name[0]}</div>
+                                    <div>
+                                        <span className={styles.cellName}>{inf?.name}</span>
+                                        <span className={styles.cellHandle}>{inf?.platforms[0]?.handle}</span>
                                     </div>
-                                )}
+                                </div>
+                                <select
+                                    className={clsx(styles.statusSelect, styles[`status${ref.status.replace(/\s/g, '')}`] || styles.statusShortlisted)}
+                                    value={ref.status}
+                                    onChange={(e) => handleUpdateInfluencer(ref.influencerId, 'status', e.target.value)}
+                                    title="Campaign Status"
+                                >
+                                    {STATUS_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                                </select>
                             </div>
-                        </div>
-                    ))}
-                </div>
-            ) : (
-                <div className={styles.emptyState}>
-                    <p>No influencers added to this campaign yet.</p>
-                    <button className={clsx("btn btn-primary", styles.mt1)} onClick={() => setIsModalOpen(true)}>Add Creators</button>
-                </div>
-            )}
 
-            {/* Add Influencer Modal */}
-            {isModalOpen && (
-                <div className={styles.modalOverlay}>
-                    <div className={clsx("glass-panel", styles.modalContent)}>
-                        <div className={styles.modalHeader}>
-                            <h3 className={styles.modalTitle}>Add Creators to Campaign</h3>
+                            <div className={styles.mobileDataGrid}>
+                                <div className={styles.mobileDataItem}>
+                                    <span className={styles.mobileItemLabel}>Date</span>
+                                    <input
+                                        type="date"
+                                        value={ref.plannedDate || ''}
+                                        onChange={(e) => handleUpdateInfluencer(ref.influencerId, 'plannedDate', e.target.value)}
+                                        className={styles.mobileInput}
+                                        title="Planned Date"
+                                    />
+                                </div>
+                                <div className={styles.mobileDataItem}>
+                                    <span className={styles.mobileItemLabel}>Product</span>
+                                    <button
+                                        className={clsx(styles.toggleBtn, ref.productAccess && styles.toggleBtnActive)}
+                                        onClick={() => handleUpdateInfluencer(ref.influencerId, 'productAccess', !ref.productAccess)}
+                                        title="Toggle Product Access"
+                                        aria-label="Toggle Product Access"
+                                    >
+                                        <div className={styles.toggleHandle} />
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className={styles.mobileDataLinks}>
+                                <input
+                                    type="text"
+                                    placeholder="Draft Link..."
+                                    value={ref.draftLink || ''}
+                                    onChange={(e) => handleUpdateInfluencer(ref.influencerId, 'draftLink', e.target.value)}
+                                    className={styles.editableInput}
+                                    title="Draft Link"
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="Live Link..."
+                                    value={ref.postLink || ''}
+                                    onChange={(e) => handleUpdateInfluencer(ref.influencerId, 'postLink', e.target.value)}
+                                    className={styles.editableInput}
+                                    title="Live Link"
+                                />
+                            </div>
+
+                            <div className={styles.mobileDataFinancials}>
+                                <div>
+                                    <span className={styles.mobileItemLabel}>Payout</span>
+                                    <input
+                                        type="number"
+                                        value={ref.influencerFee ?? 0}
+                                        onChange={(e) => handleUpdateInfluencer(ref.influencerId, 'influencerFee', Number(e.target.value))}
+                                        className={styles.editableInput}
+                                        title="Influencer Fee"
+                                    />
+                                </div>
+                                <div>
+                                    <span className={styles.mobileItemLabel}>Charge</span>
+                                    <input
+                                        type="number"
+                                        value={ref.clientFee ?? 0}
+                                        onChange={(e) => handleUpdateInfluencer(ref.influencerId, 'clientFee', Number(e.target.value))}
+                                        className={styles.editableInput}
+                                        title="Client Fee"
+                                    />
+                                </div>
+                                <div className={styles.alignRight}>
+                                    <span className={styles.mobileItemLabel}>Profit</span>
+                                    <div className={clsx(styles.profitCell, profit >= 0 ? styles.positiveProfit : styles.negativeProfit)}>
+                                        ${profit.toLocaleString()}
+                                    </div>
+                                </div>
+                            </div>
+
                             <button
-                                onClick={() => setIsModalOpen(false)}
-                                className={styles.closeButton}
-                                aria-label="Close modal"
-                                title="Close"
+                                className={styles.floatingRemoveBtn}
+                                onClick={() => triggerDelete(ref.influencerId)}
+                                title="Remove talent"
+                                aria-label="Remove talent from campaign"
                             >
-                                <X size={20} />
+                                <X size={14} />
                             </button>
+                        </div>
+                    );
+                })}
+            </div>
+
+            {/* Table View */}
+            <div className={clsx(styles.tableWrapper, styles.desktopTableView)}>
+                <table className={styles.table}>
+                    <thead>
+                        <tr>
+                            <th className={styles.colInfluencer}>Influencer</th>
+                            <th>Status</th>
+                            <th>Product</th>
+                            <th>Draft</th>
+                            <th>Date</th>
+                            <th>Post</th>
+                            <th className={styles.alignRight}>Payout</th>
+                            <th className={styles.alignRight}>Charge</th>
+                            <th className={styles.alignRight}>Profit</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {campaign.influencers?.map((ref) => {
+                            const inf = getInfluencerDetails(ref.influencerId);
+                            const profit = (Number(ref.clientFee) || 0) - (Number(ref.influencerFee) || 0);
+
+                            return (
+                                <tr key={ref.influencerId}>
+                                    <td>
+                                        <div className={styles.influencerCell}>
+                                            <div className={styles.avatar}>{inf?.name[0]}</div>
+                                            <div>
+                                                <span className={styles.cellName}>{inf?.name}</span>
+                                                <span className={styles.cellHandle}>{inf?.platforms[0]?.handle}</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <select
+                                            className={clsx(styles.statusSelect, styles[`status${ref.status.replace(/\s/g, '')}`] || styles.statusShortlisted)}
+                                            value={ref.status}
+                                            onChange={(e) => handleUpdateInfluencer(ref.influencerId, 'status', e.target.value)}
+                                            title="Campaign Status"
+                                        >
+                                            {STATUS_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <button
+                                            className={clsx(styles.toggleBtn, ref.productAccess && styles.toggleBtnActive)}
+                                            onClick={() => handleUpdateInfluencer(ref.influencerId, 'productAccess', !ref.productAccess)}
+                                            title="Toggle Product Access"
+                                            aria-label="Toggle Product Access"
+                                        >
+                                            <div className={styles.toggleHandle} />
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <input
+                                            type="text"
+                                            className={styles.editableInput}
+                                            placeholder="Link..."
+                                            value={ref.draftLink || ''}
+                                            onChange={(e) => handleUpdateInfluencer(ref.influencerId, 'draftLink', e.target.value)}
+                                            title="Draft Link"
+                                        />
+                                    </td>
+                                    <td>
+                                        <input
+                                            type="date"
+                                            className={clsx(styles.editableInput, styles.dateInput)}
+                                            value={ref.plannedDate || ''}
+                                            onChange={(e) => handleUpdateInfluencer(ref.influencerId, 'plannedDate', e.target.value)}
+                                            title="Planned Date"
+                                        />
+                                    </td>
+                                    <td>
+                                        <input
+                                            type="text"
+                                            className={styles.editableInput}
+                                            placeholder="Link..."
+                                            value={ref.postLink || ''}
+                                            onChange={(e) => handleUpdateInfluencer(ref.influencerId, 'postLink', e.target.value)}
+                                            title="Post Link"
+                                        />
+                                    </td>
+                                    <td className={styles.alignRight}>
+                                        <input
+                                            type="number"
+                                            className={clsx(styles.editableInput, styles.moneyInput)}
+                                            value={ref.influencerFee ?? 0}
+                                            onChange={(e) => handleUpdateInfluencer(ref.influencerId, 'influencerFee', Number(e.target.value))}
+                                            title="Influencer Fee"
+                                        />
+                                    </td>
+                                    <td className={styles.alignRight}>
+                                        <input
+                                            type="number"
+                                            className={clsx(styles.editableInput, styles.moneyInput)}
+                                            value={ref.clientFee ?? 0}
+                                            onChange={(e) => handleUpdateInfluencer(ref.influencerId, 'clientFee', Number(e.target.value))}
+                                            title="Client Charge"
+                                        />
+                                    </td>
+                                    <td className={clsx(styles.profitCell, profit >= 0 ? styles.positiveProfit : styles.negativeProfit)}>
+                                        ${profit.toLocaleString()}
+                                    </td>
+                                    <td>
+                                        <button
+                                            className={styles.closeButton}
+                                            onClick={() => triggerDelete(ref.influencerId)}
+                                            title="Remove from campaign"
+                                            aria-label="Remove from campaign"
+                                        >
+                                            <X size={16} />
+                                        </button>
+                                    </td>
+                                </tr>
+                            );
+                        })}
+                        {(!campaign.influencers || campaign.influencers.length === 0) && (
+                            <tr>
+                                <td colSpan={10} className={styles.emptyState}>
+                                    No creators added to this campaign yet.
+                                </td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
+            </div>
+
+            {/* Modals */}
+            {isModalOpen && (
+                <div role="dialog" aria-modal="true" className={styles.modalOverlay} onClick={() => setIsModalOpen(false)}>
+                    <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
+                        <div className={styles.modalHeader}>
+                            <h3 className={styles.modalTitle}>Add Creators</h3>
+                            <button onClick={() => setIsModalOpen(false)} className={styles.closeButton} aria-label="Close modal"><X size={20} /></button>
                         </div>
 
                         <div className={styles.modalBody}>
@@ -165,44 +390,38 @@ export default function CampaignAdminDetail({ params }: { params: Promise<{ id: 
                                 <Search size={16} className={styles.modalSearchIcon} />
                                 <input
                                     type="text"
-                                    className={clsx("input", styles.modalSearchInput)}
-                                    placeholder="Search available influencers..."
-                                    aria-label="Search influencers"
+                                    className={styles.modalSearchInput}
+                                    placeholder="Search talent..."
                                     value={modalSearch}
                                     onChange={(e) => setModalSearch(e.target.value)}
+                                    title="Search talent"
                                 />
                             </div>
 
-                            {filteredModalInfluencers.map(inf => (
-                                <div key={inf.id} className={styles.influencerRow} onClick={() => toggleSelect(inf.id)}>
-                                    <div className={styles.influencerInfoFix}>
-                                        <div className={styles.avatarSmall}>
-                                            {inf.name[0]}
+                            <div className={styles.resultsList}>
+                                {filteredModalInfluencers.map((inf: Influencer) => (
+                                    <div key={inf.id} className={styles.influencerRow} onClick={() => toggleSelect(inf.id)}>
+                                        <div className={styles.influencerInfoFix}>
+                                            <div className={styles.avatarSmall}>{inf.name[0]}</div>
+                                            <div>
+                                                <div className={styles.influencerName}>{inf.name}</div>
+                                                <div className={styles.influencerMeta}>{inf.primaryNiche} • {inf.tier}</div>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <div className={styles.influencerName}>{inf.name}</div>
-                                            <div className={styles.influencerMeta}>{inf.primaryNiche} • {inf.tier}</div>
-                                        </div>
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedForAdd.has(inf.id)}
+                                            readOnly
+                                            className={styles.checkbox}
+                                            aria-label={`Select ${inf.name}`}
+                                        />
                                     </div>
-                                    <input
-                                        type="checkbox"
-                                        className={styles.checkbox}
-                                        checked={selectedForAdd.has(inf.id)}
-                                        readOnly
-                                        aria-label={`Select ${inf.name}`}
-                                    />
-                                </div>
-                            ))}
-
-                            {availableInfluencers.length === 0 && (
-                                <div className={styles.emptyModalText}>
-                                    All influencers are already in this campaign.
-                                </div>
-                            )}
+                                ))}
+                            </div>
                         </div>
 
                         <div className={styles.modalFooter}>
-                            <button className="btn btn-secondary" onClick={() => setIsModalOpen(false)}>Cancel</button>
+                            <button className="btn btn-outline" onClick={() => setIsModalOpen(false)}>Cancel</button>
                             <button className="btn btn-primary" onClick={handleAddInfluencers} disabled={selectedForAdd.size === 0}>
                                 Add {selectedForAdd.size} Creators
                             </button>
@@ -210,6 +429,14 @@ export default function CampaignAdminDetail({ params }: { params: Promise<{ id: 
                     </div>
                 </div>
             )}
+
+            <ConfirmModal
+                isOpen={isConfirmDeleteOpen}
+                title="Remove from Campaign?"
+                message="Are you sure you want to remove this talent from the campaign? This cannot be undone."
+                onConfirm={confirmDelete}
+                onCancel={() => setIsConfirmDeleteOpen(false)}
+            />
         </div>
     );
 }

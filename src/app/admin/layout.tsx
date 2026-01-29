@@ -1,5 +1,7 @@
 import { Sidebar } from '@/components/Sidebar';
 import { TopNav } from '@/components/TopNav';
+import { BottomNav } from '@/components/BottomNav';
+import { CommandPalette } from '@/components/admin/CommandPalette';
 import styles from './layout.module.css';
 
 export default function AdminLayout({
@@ -15,7 +17,9 @@ export default function AdminLayout({
                 <div className={styles.content}>
                     {children}
                 </div>
+                <BottomNav />
             </main>
+            <CommandPalette />
         </div>
     );
 }

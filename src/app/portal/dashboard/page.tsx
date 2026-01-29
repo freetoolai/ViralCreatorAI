@@ -7,22 +7,23 @@ import { Briefcase, ArrowRight, Calendar } from 'lucide-react';
 import { dataStore } from '@/lib/store';
 import { Campaign, Client } from '@/lib/types';
 import styles from './dashboard.module.css';
+import clsx from 'clsx';
 
 export default function ClientDashboard() {
     const router = useRouter();
     const [client, setClient] = useState<Client | null>(null);
     const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+    const [hasMounted, setHasMounted] = useState(false);
 
     useEffect(() => {
+        setHasMounted(true);
         const clientId = localStorage.getItem('portal_client_id');
         if (!clientId) {
             router.push('/portal');
             return;
         }
 
-        const clients = dataStore.getClients();
-        const foundClient = clients.find(c => c.id === clientId);
-
+        const foundClient = dataStore.getClients().find(c => c.id === clientId);
         if (foundClient) {
             setClient(foundClient);
             setCampaigns(dataStore.getCampaigns(clientId));
@@ -31,7 +32,7 @@ export default function ClientDashboard() {
         }
     }, [router]);
 
-    if (!client) return null;
+    if (!hasMounted || !client) return null;
 
     return (
         <div className={styles.container}>
@@ -44,12 +45,12 @@ export default function ClientDashboard() {
 
             <div className={styles.grid}>
                 {campaigns.map(camp => (
-                    <div key={camp.id} className={`glass-panel ${styles.card}`}>
+                    <div key={camp.id} className={styles.card}>
                         <div className={styles.cardHeader}>
                             <div className={styles.iconWrapper}>
                                 <Briefcase size={24} />
                             </div>
-                            <div className={`${styles.statusBadge} ${camp.status === 'Active' ? styles.statusActive : styles.statusProposed}`}>
+                            <div className={clsx(styles.statusBadge, camp.status === 'Active' ? styles.statusActive : styles.statusProposed)}>
                                 {camp.status}
                             </div>
                         </div>
@@ -64,8 +65,8 @@ export default function ClientDashboard() {
                                 <div className={styles.creatorsLabel}>PROPOSED INFLUENCERS</div>
                                 <div className={styles.creatorsCount}>{camp.influencers?.length || 0} Creators</div>
                             </div>
-                            <Link href={`/portal/campaigns/${camp.id}`} className="btn btn-primary" style={{ padding: '0.5rem 1rem' }}>
-                                Open Portal <ArrowRight size={16} style={{ marginLeft: '0.5rem' }} />
+                            <Link href={`/portal/campaigns/${camp.id}`} className={clsx("btn btn-primary", styles.portalLink)}>
+                                Open Portal <ArrowRight size={16} className={styles.portalArrow} />
                             </Link>
                         </div>
                     </div>

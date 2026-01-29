@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 
 export const siteMetadata = {
-    title: 'ViralCreatorAI - AI-Powered Influencer Management Platform',
-    description: 'Manage influencer campaigns with AI precision. Find creators, automate approvals, and track ROI in one intelligent platform.',
+    title: 'ViralCreatorAI - Campaigns That Run Themselves',
+    description: 'Manage creators, approve campaigns, and track performance in one calm, intelligent platform built for modern agencies.',
     keywords: 'influencer marketing, creator management, campaign tracking, AI influencer tool, viral marketing, creator partnerships',
     author: 'ViralCreatorAI',
     siteUrl: 'https://viralcreatorai.com',

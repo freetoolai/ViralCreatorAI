@@ -37,7 +37,7 @@ export default function PortalLogin() {
 
     return (
         <div className={styles.container}>
-            <div className={`glass-panel ${styles.loginCard}`}>
+            <div className={styles.loginCard}>
                 <div className={styles.iconWrapper}>
                     <Lock size={28} />
                 </div>
@@ -71,7 +71,7 @@ export default function PortalLogin() {
                     >
                         {loading ? 'Verifying...' : (
                             <>
-                                Enter Portal <ArrowRight size={18} style={{ marginLeft: '0.5rem' }} />
+                                Enter Portal <ArrowRight size={18} className={styles.btnArrow} />
                             </>
                         )}
                     </button>

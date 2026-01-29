@@ -4,7 +4,8 @@ import { defaultMetadata } from "@/lib/metadata";
 import { NextAuthProvider } from "@/components/NextAuthProvider";
 import { RouteGuard } from "@/components/RouteGuard";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import "./globals.css";
+import { ToastProvider } from "@/components/ToastContext";
+import "./globals.css"; // Force rebuild and style sync
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,6 +19,13 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = defaultMetadata;
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -27,11 +35,13 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <NextAuthProvider>
-          <ErrorBoundary>
-            <RouteGuard>
-              {children}
-            </RouteGuard>
-          </ErrorBoundary>
+          <ToastProvider>
+            <ErrorBoundary>
+              <RouteGuard>
+                {children}
+              </RouteGuard>
+            </ErrorBoundary>
+          </ToastProvider>
         </NextAuthProvider>
       </body>
     </html>

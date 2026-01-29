@@ -1,134 +1,140 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { useState, useEffect, useMemo } from 'react';
 import clsx from 'clsx';
-import {
-    Search,
-    Filter,
-    Plus,
-    MoreHorizontal,
-    Instagram,
-    Twitter,
-    Youtube,
-    FileDown,
-    MapPin,
-    ArrowUpDown
-} from 'lucide-react';
-import { dataStore } from '@/lib/store';
+import Link from 'next/link';
+import { Search, Plus, Instagram, MessageCircle, Twitter, Youtube } from 'lucide-react';
 import { Influencer, PlatformName, Campaign } from '@/lib/types';
-import styles from '@/components/admin/Table.module.css';
+import { dataStore } from '@/lib/store';
+import { useToast } from '@/components/ToastContext';
+import styles from './influencers.module.css';
 
 export default function InfluencersPage() {
+    const { showToast } = useToast();
     const [influencers, setInfluencers] = useState<Influencer[]>([]);
-    const [campaigns, setCampaigns] = useState<Campaign[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedPlatform, setSelectedPlatform] = useState<PlatformName | 'All'>('All');
-    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [selectedInfluencerIds, setSelectedInfluencerIds] = useState<string[]>([]);
-    const [selectedCampaignId, setSelectedCampaignId] = useState('');
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [campaigns, setCampaigns] = useState<Campaign[]>([]);
 
     useEffect(() => {
         setInfluencers(dataStore.getInfluencers());
         setCampaigns(dataStore.getCampaigns());
     }, []);
 
-    const filteredInfluencers = influencers.filter(inf => {
-        const primarySocial = inf.platforms?.[0];
-        const matchesSearch = inf.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            primarySocial?.handle.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesPlatform = selectedPlatform === 'All' || inf.platforms?.some(p => p.platform === selectedPlatform);
-        return matchesSearch && matchesPlatform;
-    });
+    const stats = useMemo(() => {
+        const totalCreators = influencers.length;
+        const totalReach = influencers.reduce((acc, inf) => acc + (inf.platforms[0]?.followers || 0), 0);
+        const avgProfit = totalCreators > 0 ? influencers.reduce((acc, inf) => acc + ((inf.typicalCharge || 0) - (inf.typicalPayout || 0)), 0) / totalCreators : 0;
 
-    const handleDelete = (id: string) => {
-        if (confirm('Are you sure you want to delete this influencer?')) {
-            dataStore.deleteInfluencer(id);
-            setInfluencers(dataStore.getInfluencers());
-        }
-    };
+        return { count: totalCreators, reach: totalReach, avgProfit };
+    }, [influencers]);
 
-    const toggleSelectAll = () => {
-        if (selectedInfluencerIds.length === filteredInfluencers.length) {
-            setSelectedInfluencerIds([]);
-        } else {
-            setSelectedInfluencerIds(filteredInfluencers.map(i => i.id));
-        }
-    };
 
-    const toggleSelectInfluencer = (id: string) => {
+    const toggleInfluencerSelection = (id: string) => {
         setSelectedInfluencerIds(prev =>
             prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
         );
     };
 
-    const handleAddToCampaign = () => {
-        if (!selectedCampaignId || selectedInfluencerIds.length === 0) return;
-
-        selectedInfluencerIds.forEach(infId => {
-            dataStore.addInfluencerToCampaign(selectedCampaignId, infId);
-        });
-
-        alert(`Added ${selectedInfluencerIds.length} influencers to campaign`);
-        setIsAddModalOpen(false);
-        setSelectedInfluencerIds([]);
-        setSelectedCampaignId('');
-    };
-
     const getPlatformIcon = (platform: PlatformName) => {
         switch (platform) {
             case 'Instagram': return <Instagram size={14} />;
+            case 'TikTok': return <MessageCircle size={14} />;
             case 'Twitter': return <Twitter size={14} />;
             case 'YouTube': return <Youtube size={14} />;
-            case 'TikTok': return <div className={styles.tiktokIcon}>TT</div>;
             default: return null;
         }
     };
 
+    const filteredInfluencers = useMemo(() => {
+        return influencers.filter((inf: Influencer) => {
+            const primaryProfile = inf.platforms[0];
+            const handle = primaryProfile?.handle || '';
+            const platform = primaryProfile?.platform || 'Other';
+
+            const matchesSearch = inf.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                handle.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                inf.primaryNiche.toLowerCase().includes(searchQuery.toLowerCase());
+            const matchesPlatform = selectedPlatform === 'All' || platform === selectedPlatform;
+            return matchesSearch && matchesPlatform;
+        });
+    }, [influencers, searchQuery, selectedPlatform]);
+
+    const handleAddToCampaign = (campaignId: string) => {
+        const camp = dataStore.getCampaign(campaignId);
+        if (!camp) return;
+
+        selectedInfluencerIds.forEach(id => {
+            dataStore.addInfluencerToCampaign(campaignId, id);
+        });
+
+        setIsAddModalOpen(false);
+        setSelectedInfluencerIds([]);
+        showToast(`Successfully added ${selectedInfluencerIds.length} creators to ${camp.title}`);
+    };
+
     return (
-        <div>
-            <div className={styles.headerContainer}>
+        <div className={styles.container}>
+            <div className={styles.header}>
                 <div>
-                    <h1 className={styles.headerTitleLarge}>Influencers</h1>
-                    <p className={styles.headerDescription}>Manage and discover influencers for your campaigns.</p>
+                    <h1 className={styles.title}>Creator Network</h1>
+                    <p className={styles.subtitle}>Curate and manage your exclusive roster of talent.</p>
                 </div>
-                <div className={styles.headerActionsFlex}>
-                    <Link href="/admin/influencers/import" className="btn btn-outline">
-                        <FileDown size={16} className={styles.iconMarginRight} /> Import CSV
+                <div className={styles.headerRight}>
+                    <Link href="/admin/influencers/new" className="btn btn-primary">
+                        <Plus size={16} /> Add Creator
                     </Link>
-                    <button className="btn btn-primary">
-                        <Plus size={16} className={styles.iconMarginRight} /> Add Influencer
-                    </button>
                 </div>
             </div>
 
-            <div className={clsx("glass-panel", styles.searchBarContainer)}>
-                <div className={styles.searchInputRelative}>
-                    <Search className={styles.searchIconAbsolute} size={16} />
-                    <input
-                        type="text"
-                        placeholder="Search influencers by name or handle..."
-                        className={clsx("input", styles.searchInputPadding)}
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        title="Search Influencers"
-                    />
+            <div className={styles.statsWrapper}>
+                <div className={styles.editorialStats}>
+                    <div className={styles.statItem}>
+                        <span className={styles.statLabel}>Total Network</span>
+                        <span className={styles.statNumber}>{stats.count}</span>
+                    </div>
+                    <div className={styles.statItem}>
+                        <span className={styles.statLabel}>Aggregate Reach</span>
+                        <span className={styles.statNumber}>{(stats.reach / 1000000).toFixed(1)}M</span>
+                    </div>
+                    <div className={styles.statItem}>
+                        <span className={styles.statLabel}>Avg Yield</span>
+                        <span className={styles.statNumber}>${Math.round(stats.avgProfit).toLocaleString()}</span>
+                    </div>
                 </div>
-                <div className={styles.filterWrapper}>
-                    <Filter size={16} className={styles.filterIconColor} />
-                    <select
-                        className={clsx("input", styles.filterSelectWidth)}
-                        value={selectedPlatform}
-                        onChange={(e) => setSelectedPlatform(e.target.value as any)}
-                        title="Filter by Platform"
-                    >
-                        <option value="All">All Platforms</option>
-                        <option value="Instagram">Instagram</option>
-                        <option value="TikTok">TikTok</option>
-                        <option value="Twitter">Twitter</option>
-                        <option value="YouTube">YouTube</option>
-                    </select>
+            </div>
+
+            <div className={styles.controlsRow}>
+                <div className={styles.filterGroup}>
+                    <div className={styles.searchWrapper}>
+                        <Search size={16} className={styles.searchIcon} />
+                        <input
+                            type="text"
+                            placeholder="Search creators..."
+                            className={clsx("input", styles.searchInput)}
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            title="Search creators by name or niche"
+                        />
+                    </div>
+                    <div className={styles.filterWrapper}>
+                        <select
+                            className={clsx("input", styles.filterSelect)}
+                            value={selectedPlatform}
+                            onChange={(e) => setSelectedPlatform(e.target.value as PlatformName | 'All')}
+                            title="Filter by platform"
+                        >
+                            <option value="All">All Platforms</option>
+                            <option value="Instagram">Instagram</option>
+                            <option value="TikTok">TikTok</option>
+                            <option value="YouTube">YouTube</option>
+                            <option value="Twitter">Twitter</option>
+                        </select>
+                    </div>
                 </div>
+
                 {selectedInfluencerIds.length > 0 && (
                     <button
                         className="btn btn-primary"
@@ -139,130 +145,182 @@ export default function InfluencersPage() {
                 )}
             </div>
 
-            <div className={styles.tableWrapper}>
-                <table className={styles.table}>
-                    <thead>
-                        <tr className={styles.headerRow}>
-                            <th className={clsx(styles.headerCell, styles.checkboxCell)}>
+            <div className={styles.mobileGrid}>
+                {filteredInfluencers.map((inf: Influencer) => {
+                    const primaryProfile = inf.platforms[0];
+                    const profit = (inf.typicalCharge || 0) - (inf.typicalPayout || 0);
+
+                    return (
+                        <div
+                            key={inf.id}
+                            className={styles.mobileCard}
+                            onClick={() => toggleInfluencerSelection(inf.id)}
+                        >
+                            <div className={styles.mobileCardHeader}>
+                                <div className={styles.influencerCell}>
+                                    <div className={styles.avatar}>{inf.name[0]}</div>
+                                    <div className={styles.nameInfo}>
+                                        <span className={styles.name}>{inf.name}</span>
+                                        <span className={styles.handle}>{primaryProfile?.handle || '@handle'}</span>
+                                    </div>
+                                </div>
                                 <input
                                     type="checkbox"
+                                    className={styles.checkbox}
+                                    checked={selectedInfluencerIds.includes(inf.id)}
+                                    onChange={() => toggleInfluencerSelection(inf.id)}
+                                    aria-label={`Select ${inf.name}`}
+                                />
+                            </div>
+                            <div className={styles.mobileCardRow}>
+                                <span className={styles.mobileLabel}>Platform</span>
+                                <div className={styles.platformBadge}>
+                                    {getPlatformIcon(primaryProfile?.platform || 'Other')}
+                                    {primaryProfile?.platform || 'Other'}
+                                </div>
+                            </div>
+                            <div className={styles.mobileCardRow}>
+                                <span className={styles.mobileLabel}>Reach</span>
+                                <span className={styles.metricValue}>{(primaryProfile?.followers || 0).toLocaleString()}</span>
+                            </div>
+                            <div className={styles.mobileCardRow}>
+                                <span className={styles.mobileLabel}>Profit</span>
+                                <span className={profit > 0 ? styles.profitPositive : profit < 0 ? styles.profitNegative : ''}>
+                                    ${profit.toLocaleString()}
+                                </span>
+                            </div>
+                            <div className={styles.mobileCardRow}>
+                                <span className={styles.mobileLabel}>Tier</span>
+                                <span className={clsx(styles.tierBadge, styles[`tier${inf.tier.replace('-', '')}`])}>
+                                    {inf.tier}
+                                </span>
+                            </div>
+                        </div>
+                    )
+                })}
+            </div>
+
+            <div className={styles.tableContainer}>
+                <table className={styles.table}>
+                    <thead>
+                        <tr>
+                            <th className={styles.checkboxCell}>
+                                <input
+                                    type="checkbox"
+                                    className={styles.checkbox}
                                     checked={selectedInfluencerIds.length === filteredInfluencers.length && filteredInfluencers.length > 0}
-                                    onChange={toggleSelectAll}
-                                    title="Toggle Select All"
+                                    onChange={() => {
+                                        if (selectedInfluencerIds.length === filteredInfluencers.length) {
+                                            setSelectedInfluencerIds([]);
+                                        } else {
+                                            setSelectedInfluencerIds(filteredInfluencers.map(i => i.id));
+                                        }
+                                    }}
+                                    aria-label="Select all creators"
                                 />
                             </th>
-                            <th className={styles.headerCell}>INFLUENCER</th>
-                            <th className={styles.headerCell}>PLATFORM</th>
-                            <th className={styles.headerCell}>FOLLOWERS <ArrowUpDown size={12} className={styles.sortIcon} /></th>
-                            <th className={styles.headerCell}>ENG. RATE <ArrowUpDown size={12} className={styles.sortIcon} /></th>
-                            <th className={styles.headerCell}>LOCATION</th>
-                            <th className={clsx(styles.headerCell, styles.alignRight)}>ACTIONS</th>
+                            <th>Creator</th>
+                            <th>Platform</th>
+                            <th>Reach</th>
+                            <th>Profitability</th>
+                            <th>Niche</th>
+                            <th>Tier</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {filteredInfluencers.map((inf) => {
-                            const primarySocial = inf.platforms?.[0];
+                        {filteredInfluencers.map((inf: Influencer) => {
+                            const primaryProfile = inf.platforms[0];
+                            const profit = (inf.typicalCharge || 0) - (inf.typicalPayout || 0);
+
                             return (
-                                <tr key={inf.id} className={styles.row}>
-                                    <td className={clsx(styles.cell, styles.checkboxCell)}>
+                                <tr
+                                    key={inf.id}
+                                    className={clsx(selectedInfluencerIds.includes(inf.id) && styles.selectedRow)}
+                                    onClick={() => toggleInfluencerSelection(inf.id)}
+                                >
+                                    <td className={styles.checkboxCell}>
                                         <input
                                             type="checkbox"
+                                            className={styles.checkbox}
                                             checked={selectedInfluencerIds.includes(inf.id)}
-                                            onChange={() => toggleSelectInfluencer(inf.id)}
-                                            title={`Select ${inf.name}`}
+                                            onChange={() => toggleInfluencerSelection(inf.id)}
+                                            onClick={e => e.stopPropagation()}
+                                            aria-label={`Select ${inf.name}`}
                                         />
                                     </td>
-                                    <td className={styles.cell}>
-                                        <Link href={`/admin/influencers/${inf.id}`} className={styles.profileCell}>
-                                            <div className={styles.avatar}>
-                                                {inf.name[0]}
+                                    <td>
+                                        <div className={styles.influencerCell}>
+                                            <div className={styles.avatar}>{inf.name[0]}</div>
+                                            <div className={styles.nameInfo}>
+                                                <span className={styles.name}>{inf.name}</span>
+                                                <span className={styles.handle}>{primaryProfile?.handle || '@handle'}</span>
                                             </div>
-                                            <div>
-                                                <div className={styles.primaryText}>{inf.name}</div>
-                                                <div className={styles.secondaryText}>@{primarySocial?.handle || 'no-handle'}</div>
-                                            </div>
-                                        </Link>
+                                        </div>
                                     </td>
-                                    <td className={styles.cell}>
+                                    <td>
                                         <div className={styles.platformBadge}>
-                                            {primarySocial ? getPlatformIcon(primarySocial.platform) : null}
-                                            <span>{primarySocial?.platform || 'N/A'}</span>
+                                            {getPlatformIcon(primaryProfile?.platform || 'Other')}
+                                            {primaryProfile?.platform || 'Other'}
                                         </div>
                                     </td>
-                                    <td className={clsx(styles.cell, styles.tabularNums)}>
-                                        {primarySocial ? `${(primarySocial.followers / 1000).toFixed(1)}k` : '0k'}
+                                    <td>
+                                        <span className={styles.metricValue}>
+                                            {(primaryProfile?.followers || 0).toLocaleString()}
+                                        </span>
                                     </td>
-                                    <td className={clsx(styles.cell, styles.tabularNums)}>
-                                        {primarySocial?.engagementRate || 0}%
+                                    <td>
+                                        <span className={profit > 0 ? styles.profitPositive : profit < 0 ? styles.profitNegative : ''}>
+                                            ${profit.toLocaleString()}
+                                        </span>
                                     </td>
-                                    <td className={styles.cell}>
-                                        <div className={styles.locationCell}>
-                                            <MapPin size={12} /> {inf.shippingAddress || 'Remote'}
-                                        </div>
+                                    <td>
+                                        <span className={styles.nicheTag}>{inf.primaryNiche}</span>
                                     </td>
-                                    <td className={clsx(styles.cell, styles.alignRight)}>
-                                        <div className={styles.actionsCell}>
-                                            <button
-                                                className={clsx("btn btn-outline", styles.iconOnlyBtn, styles.dangerOutline)}
-                                                onClick={() => handleDelete(inf.id)}
-                                                title="Delete Influencer"
-                                                aria-label={`Delete ${inf.name}`}
-                                            >
-                                                <MoreHorizontal size={14} />
-                                            </button>
-                                        </div>
+                                    <td>
+                                        <span className={clsx(styles.tierBadge, styles[`tier${inf.tier.replace('-', '')}`])}>
+                                            {inf.tier}
+                                        </span>
                                     </td>
                                 </tr>
                             );
                         })}
-
-                        {filteredInfluencers.length === 0 && (
-                            <tr>
-                                <td colSpan={7} className={styles.emptyStateCell}>
-                                    <div className={styles.emptyStateContent}>
-                                        <p className={styles.emptyStateTitle}>
-                                            No influencers found
-                                        </p>
-                                        <p className={styles.emptyStateSubtitle}>
-                                            Try adjusting your filters or import influencers to get started
-                                        </p>
-                                    </div>
-                                </td>
-                            </tr>
-                        )}
                     </tbody>
                 </table>
             </div>
 
-            {/* Add to Campaign Modal */}
+            {/* Bulk Add Modal */}
             {isAddModalOpen && (
-                <div className={styles.modalOverlay}>
-                    <div className={clsx("glass-panel", styles.smallModal)}>
+                <div role="dialog" aria-modal="true" className={styles.modalOverlay} onClick={() => setIsAddModalOpen(false)}>
+                    <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
                         <h3 className={styles.modalTitle}>Add to Campaign</h3>
+                        <p className={styles.modalSubtitle}>
+                            Select a campaign to add {selectedInfluencerIds.length} creators to.
+                        </p>
 
-                        <div className={styles.modalField}>
-                            <label className={styles.modalLabel}>Select Campaign</label>
-                            <select
-                                value={selectedCampaignId}
-                                onChange={(e) => setSelectedCampaignId(e.target.value)}
-                                className={clsx("input", styles.fullWidth)}
-                                title="Select Campaign"
-                            >
-                                <option value="">Choose a campaign...</option>
-                                {campaigns.map(c => (
-                                    <option key={c.id} value={c.id}>{c.title}</option>
-                                ))}
-                            </select>
+                        <div className={styles.campaignList}>
+                            {campaigns.map(camp => (
+                                <div
+                                    key={camp.id}
+                                    className={styles.campaignItem}
+                                    onClick={() => handleAddToCampaign(camp.id)}
+                                >
+                                    <div>
+                                        <div className={styles.campaignTitle}>{camp.title}</div>
+                                        <div className={styles.campaignMeta}>Status: {camp.status}</div>
+                                    </div>
+                                    <Plus size={16} />
+                                </div>
+                            ))}
+                            {campaigns.length === 0 && (
+                                <div className={styles.emptyState}>
+                                    No active campaigns found. Create one first.
+                                </div>
+                            )}
                         </div>
 
                         <div className={styles.modalActions}>
-                            <button className="btn btn-outline" onClick={() => setIsAddModalOpen(false)}>Cancel</button>
-                            <button
-                                className="btn btn-primary"
-                                onClick={handleAddToCampaign}
-                                disabled={!selectedCampaignId}
-                            >
-                                Add Influencers
+                            <button className="btn btn-outline" onClick={() => setIsAddModalOpen(false)}>
+                                Cancel
                             </button>
                         </div>
                     </div>

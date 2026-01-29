@@ -1,4 +1,4 @@
-import { Influencer, Client, Campaign, User } from './types';
+import { Influencer, Client, Campaign, User, CampaignInfluencerRef, CampaignGroup } from './types';
 
 // Mock Users (Team)
 const MOCK_USERS: User[] = [
@@ -33,6 +33,8 @@ const MOCK_INFLUENCERS: Influencer[] = [
             },
         ],
         internalNotes: 'Great for B2B software reviews. High conversion.',
+        typicalPayout: 5000,
+        typicalCharge: 7500
     },
     {
         id: '2',
@@ -52,6 +54,8 @@ const MOCK_INFLUENCERS: Influencer[] = [
                 deliverableType: 'Reel + Story'
             },
         ],
+        typicalPayout: 1500,
+        typicalCharge: 2200
     },
     {
         id: '3',
@@ -62,7 +66,9 @@ const MOCK_INFLUENCERS: Influencer[] = [
         tier: 'Micro',
         platforms: [
             { platform: 'Twitter', handle: '@devdaily', link: 'https://x.com', followers: 25000, price: 300 }
-        ]
+        ],
+        typicalPayout: 300,
+        typicalCharge: 500
     }
 ];
 
@@ -96,13 +102,28 @@ const MOCK_CAMPAIGNS: Campaign[] = [
             {
                 influencerId: '1',
                 status: 'Approved',
-                proposedBudget: 5500,
+                influencerFee: 5000,
+                clientFee: 7500,
                 deliverables: 'YouTube Integration',
+                productAccess: true,
+                plannedDate: '2026-02-15',
                 updatedAt: new Date().toISOString()
             }
         ],
         createdAt: new Date().toISOString(),
+        description: 'Launching our new SaaS product to the tech community.'
     },
+];
+
+const MOCK_GROUPS: CampaignGroup[] = [
+    {
+        id: 'grp1',
+        title: 'Q1 Active Groups',
+        description: 'Core campaigns for the first quarter.',
+        campaignIds: ['camp1'],
+        clientId: 'c1',
+        createdAt: new Date().toISOString()
+    }
 ];
 
 class Store {
@@ -110,6 +131,7 @@ class Store {
     private clients: Client[] = MOCK_CLIENTS;
     private campaigns: Campaign[] = MOCK_CAMPAIGNS;
     private users: User[] = MOCK_USERS;
+    private groups: CampaignGroup[] = MOCK_GROUPS;
 
     constructor() {
         if (typeof window !== 'undefined') {
@@ -118,14 +140,8 @@ class Store {
                 const parsed = JSON.parse(saved);
                 this.influencers = parsed.influencers || MOCK_INFLUENCERS;
                 this.clients = parsed.clients || MOCK_CLIENTS;
-                this.campaigns = (parsed.campaigns || MOCK_CAMPAIGNS).map((c: any) => ({
-                    ...c,
-                    influencers: c.influencers?.map((inf: any) => ({
-                        ...inf,
-                        updatedAt: inf.updatedAt || (inf.status !== 'Pending' ? c.createdAt : undefined)
-                    }))
-                }));
-                this.save();
+                this.campaigns = parsed.campaigns || MOCK_CAMPAIGNS;
+                this.groups = parsed.groups || MOCK_GROUPS;
             }
         }
     }
@@ -134,6 +150,10 @@ class Store {
     getInfluencers() { return this.influencers; }
     getClients() { return this.clients; }
     getUsers() { return this.users; }
+    getGroups(clientId?: string) {
+        if (clientId) return this.groups.filter(g => g.clientId === clientId);
+        return this.groups;
+    }
 
     getCampaigns(clientId?: string) {
         if (clientId) return this.campaigns.filter(c => c.clientId === clientId);
@@ -157,7 +177,7 @@ class Store {
     }
 
     addInfluencers(infs: Influencer[]) {
-        this.influencers = [...infs, ...this.influencers]; // Newest first
+        this.influencers = [...infs, ...this.influencers];
         this.save();
     }
 
@@ -170,17 +190,11 @@ class Store {
 
     deleteInfluencer(id: string) {
         this.influencers = this.influencers.filter(inf => inf.id !== id);
-        // Also remove from all campaigns
         this.campaigns.forEach(camp => {
             if (camp.influencers) {
                 camp.influencers = camp.influencers.filter(ref => ref.influencerId !== id);
             }
         });
-        this.save();
-    }
-
-    deleteInfluencers(ids: string[]) {
-        this.influencers = this.influencers.filter(inf => !ids.includes(inf.id));
         this.save();
     }
 
@@ -200,9 +214,6 @@ class Store {
 
     deleteClient(id: string) {
         this.clients = this.clients.filter(c => c.id !== id);
-        // Also clean up campaigns for this client? 
-        // For now, keep them or the store might break if they refer to non-existent client.
-        // Usually better to keep historical data or cascade delete.
         this.save();
     }
 
@@ -225,14 +236,6 @@ class Store {
         this.save();
     }
 
-    updateCampaignStatus(id: string, status: Campaign['status']) {
-        const camp = this.campaigns.find(c => c.id === id);
-        if (camp) {
-            camp.status = status;
-            this.save();
-        }
-    }
-
     // --- CAMPAIGN ROSTER ACTIONS ---
 
     addInfluencerToCampaign(campaignId: string, influencerId: string) {
@@ -240,18 +243,29 @@ class Store {
         const inf = this.influencers.find(i => i.id === influencerId);
 
         if (camp && inf) {
-            // Check for duplicates
             if (camp.influencers?.some(ref => ref.influencerId === influencerId)) return;
 
-            const newRef = {
+            const newRef: CampaignInfluencerRef = {
                 influencerId: inf.id,
-                status: 'Pending' as const,
-                proposedBudget: 0,
+                status: 'Shortlisted',
+                influencerFee: inf.typicalPayout || 0,
+                clientFee: inf.typicalCharge || 0,
                 deliverables: 'To be defined',
+                productAccess: false,
                 updatedAt: new Date().toISOString()
             };
 
             camp.influencers = [...(camp.influencers || []), newRef];
+            this.save();
+        }
+    }
+
+    updateInfluencerInCampaign(campaignId: string, influencerId: string, updates: Partial<CampaignInfluencerRef>) {
+        const camp = this.campaigns.find(c => c.id === campaignId);
+        if (camp) {
+            camp.influencers = camp.influencers.map(ref =>
+                ref.influencerId === influencerId ? { ...ref, ...updates, updatedAt: new Date().toISOString() } : ref
+            );
             this.save();
         }
     }
@@ -264,17 +278,38 @@ class Store {
         }
     }
 
-    updateInfluencerApproval(campaignId: string, influencerId: string, status: 'Approved' | 'Rejected', reason?: string) {
-        const camp = this.campaigns.find(c => c.id === campaignId);
-        if (camp) {
-            const ref = camp.influencers?.find(i => i.influencerId === influencerId);
-            if (ref) {
-                ref.status = status;
-                ref.updatedAt = new Date().toISOString();
-                if (reason) ref.rejectionReason = reason;
-                this.save();
-            }
-        }
+    // --- GROUP ACTIONS ---
+
+    addGroup(group: CampaignGroup) {
+        this.groups = [group, ...this.groups];
+        this.save();
+    }
+
+    updateGroup(id: string, updates: Partial<CampaignGroup>) {
+        this.groups = this.groups.map(g => g.id === id ? { ...g, ...updates } : g);
+        this.save();
+    }
+
+    deleteGroup(id: string) {
+        this.groups = this.groups.filter(g => g.id !== id);
+        this.save();
+    }
+
+    // --- FINANCIAL SUMMARY ---
+
+    getCampaignFinancials(campaignId: string) {
+        const camp = this.getCampaign(campaignId);
+        if (!camp || !camp.influencers) return { totalPayout: 0, totalRevenue: 0, totalProfit: 0 };
+
+        return camp.influencers.reduce((acc, curr) => {
+            const infFee = Number(curr.influencerFee) || 0;
+            const cliFee = Number(curr.clientFee) || 0;
+            return {
+                totalPayout: acc.totalPayout + infFee,
+                totalRevenue: acc.totalRevenue + cliFee,
+                totalProfit: acc.totalProfit + (cliFee - infFee)
+            };
+        }, { totalPayout: 0, totalRevenue: 0, totalProfit: 0 });
     }
 
     private save() {
@@ -282,7 +317,8 @@ class Store {
             const state = {
                 influencers: this.influencers,
                 clients: this.clients,
-                campaigns: this.campaigns
+                campaigns: this.campaigns,
+                groups: this.groups
             };
             localStorage.setItem('apple_crm_state', JSON.stringify(state));
         }

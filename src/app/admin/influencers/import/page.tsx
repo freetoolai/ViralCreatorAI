@@ -1,42 +1,85 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Upload, CheckCircle, AlertCircle, ArrowLeft } from 'lucide-react';
+import { Upload, CheckCircle, AlertCircle, ArrowLeft, FileText, X } from 'lucide-react';
 import Link from 'next/link';
 import Papa from 'papaparse';
 import { dataStore } from '@/lib/store';
-import { Influencer } from '@/lib/types';
+import { Influencer, PlatformName, Tier } from '@/lib/types';
+import { useToast } from '@/components/ToastContext';
 import styles from './import.module.css';
+import clsx from 'clsx';
+
+interface CSVRow {
+    Name?: string;
+    Email?: string;
+    Phone?: string;
+    Address?: string;
+    Notes?: string;
+    Niche?: string;
+    Tier?: string;
+    Platform?: string;
+    Handle?: string;
+    Link?: string;
+    Followers?: string;
+    Price?: string;
+}
 
 export default function ImportPage() {
     const router = useRouter();
+    const { showToast } = useToast();
     const [csvContent, setCsvContent] = useState('');
-    const [preview, setPreview] = useState<any[]>([]);
-    const [error, setError] = useState('');
-    const [success, setSuccess] = useState('');
+    const [preview, setPreview] = useState<CSVRow[]>([]);
+    const [isParsing, setIsParsing] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const handleParse = () => {
-        setError('');
-        setSuccess('');
+    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
 
+        setIsParsing(true);
+        Papa.parse(file, {
+            header: true,
+            skipEmptyLines: true,
+            complete: (results) => {
+                setIsParsing(false);
+                if (results.errors.length > 0) {
+                    showToast(`Error parsing file: ${results.errors[0].message}`, "error");
+                    return;
+                }
+                setPreview(results.data as CSVRow[]);
+                showToast(`File loaded: ${results.data.length} rows found`);
+            },
+            error: (err: Error) => {
+                setIsParsing(false);
+                showToast(`Failed to read file: ${err.message}`, "error");
+            }
+        });
+    };
+
+    const handleParseText = () => {
         if (!csvContent.trim()) {
-            setError('Please paste some CSV content first.');
+            showToast('Please paste some CSV content first.', "error");
             return;
         }
 
+        setIsParsing(true);
         Papa.parse(csvContent, {
             header: true,
             skipEmptyLines: true,
             complete: (results) => {
+                setIsParsing(false);
                 if (results.errors.length > 0) {
-                    setError(`Parse Error: ${results.errors[0].message}`);
+                    showToast(`Parse Error: ${results.errors[0].message}`, "error");
                     return;
                 }
-                setPreview(results.data);
+                setPreview(results.data as CSVRow[]);
+                showToast(`${results.data.length} rows parsed from text`);
             },
             error: (err: Error) => {
-                setError(`Error: ${err.message}`);
+                setIsParsing(false);
+                showToast(`Error: ${err.message}`, "error");
             }
         });
     };
@@ -49,8 +92,7 @@ export default function ImportPage() {
         let duplicates = 0;
         let skipped = 0;
 
-        preview.forEach((row: any, index) => {
-            // Basic Validation
+        preview.forEach((row: CSVRow, index: number) => {
             if (!row.Name || !row.Email) {
                 skipped++;
                 return;
@@ -58,96 +100,109 @@ export default function ImportPage() {
 
             const normalizedEmail = row.Email.toLowerCase().trim();
 
-            // Duplicate Check
             if (existingEmails.has(normalizedEmail)) {
                 duplicates++;
                 return;
             }
 
-            // Map to Object
             newInfluencers.push({
                 id: `imported-${Date.now()}-${index}`,
                 name: row.Name,
-                email: row.Email, // Keep original casing for display
+                email: row.Email,
                 phone: row.Phone,
                 shippingAddress: row.Address,
                 internalNotes: row.Notes,
                 primaryNiche: row.Niche || 'General',
                 secondaryNiches: [],
-                tier: (row.Tier as any) || 'Micro',
+                tier: (row.Tier as Tier) || 'Micro',
                 platforms: [
                     {
-                        platform: (row.Platform as any) || 'Instagram',
+                        platform: (row.Platform as PlatformName) || 'Instagram',
                         handle: row.Handle || '',
                         link: row.Link || '',
-                        followers: parseInt(row.Followers) || 0,
-                        price: parseInt(row.Price) || 0
+                        followers: parseInt(row.Followers || '0') || 0,
+                        price: parseInt(row.Price || '0') || 0
                     }
                 ]
             });
 
-            // Add to set to prevent duplicates within the same CSV
             existingEmails.add(normalizedEmail);
         });
 
         if (newInfluencers.length > 0) {
             dataStore.addInfluencers(newInfluencers);
-            setSuccess(`Successfully imported ${newInfluencers.length} influencers. (Skipped: ${duplicates} duplicates, ${skipped} invalid)`);
-            setTimeout(() => {
-                router.push('/admin/influencers');
-            }, 2500);
+            showToast(`Import Success: ${newInfluencers.length} added`);
+            router.push('/admin/influencers');
         } else {
-            setError(`No valid new influencers found. (Duplicates: ${duplicates}, Invalid: ${skipped})`);
+            showToast(`No new influencers added. ${duplicates} duplicates found.`, "error");
         }
     };
 
     return (
         <div className={styles.container}>
             <Link href="/admin/influencers" className={styles.backLink}>
-                <ArrowLeft size={16} style={{ marginRight: '0.5rem' }} /> Back to List
+                <ArrowLeft size={16} className={styles.iconMargin} /> Back to List
             </Link>
 
-            <h1 className={styles.title}>Import Influencers</h1>
+            <h1 className={styles.title}>Bulk Import Talent</h1>
             <p className={styles.description}>
-                Paste your CSV data below to bulk import creators.
+                Upload a CSV file or paste your data directly.
                 <br />
-                <small className={styles.codeBlock}>Format: Name, Email, Tier, Niche, Handle, Link, Followers, Price</small>
+                <small className={styles.codeBlock}>Required: Name, Email</small>
             </p>
 
-            <div className={`glass-panel ${styles.inputPanel}`}>
+            <div className={clsx("glass-panel", styles.importControls)}>
+                <div className={styles.uploadBox} onClick={() => fileInputRef.current?.click()}>
+                    <Upload size={32} className={styles.uploadIcon} />
+                    <p>Click to upload CSV or Drag & Drop</p>
+                    <input
+                        type="file"
+                        ref={fileInputRef}
+                        onChange={handleFileUpload}
+                        accept=".csv"
+                        className={styles.hiddenInput}
+                        aria-label="Upload CSV file"
+                        title="Upload CSV"
+                    />
+                </div>
+
+                <div className={styles.divider}>
+                    <span>OR PASTE TEXT</span>
+                </div>
+
                 <textarea
-                    className={`input ${styles.textarea}`}
-                    placeholder="Name,Email,Tier,Niche,Platform,Handle,Followers,Price,Phone,Address,Notes&#10;John Doe,john@gmail.com,Macro,Tech,YouTube,TechJohn,500000,5000,555-0123,123 Main St,Great for unboxings"
+                    className={clsx("input", styles.textarea)}
+                    placeholder="Name,Email,Tier,Niche,Platform,Handle,Followers,Price&#10;John Doe,john@gmail.com,Macro,Tech,YouTube,TechJohn,500000,5000"
                     value={csvContent}
                     onChange={(e) => setCsvContent(e.target.value)}
                 />
 
                 <div className={styles.buttonGroup}>
-                    <button className="btn btn-secondary" onClick={() => setPreview([])} disabled={preview.length === 0}>Clear</button>
-                    <button className="btn btn-primary" onClick={handleParse}>
-                        <Upload size={18} style={{ marginRight: '0.5rem' }} />
-                        Preview Data
+                    <button
+                        className="btn btn-secondary"
+                        onClick={() => { setPreview([]); setCsvContent(''); }}
+                        disabled={preview.length === 0 && !csvContent}
+                    >
+                        <X size={16} className={styles.iconMargin} /> Clear
+                    </button>
+                    <button className="btn btn-primary" onClick={handleParseText} disabled={isParsing}>
+                        {isParsing ? 'Parsing...' : 'Preview Data'}
                     </button>
                 </div>
             </div>
 
-            {error && (
-                <div className={`${styles.alert} ${styles.alertError}`}>
-                    <AlertCircle size={20} className={styles.alertIcon} />
-                    {error}
-                </div>
-            )}
-
-            {success && (
-                <div className={`${styles.alert} ${styles.alertSuccess}`}>
-                    <CheckCircle size={20} className={styles.alertIcon} />
-                    {success}
-                </div>
-            )}
-
-            {preview.length > 0 && !success && (
+            {preview.length > 0 && (
                 <div className={styles.previewSection}>
-                    <h3 className={styles.previewTitle}>Preview ({preview.length} rows)</h3>
+                    <div className={styles.previewHeader}>
+                        <h3 className={styles.previewTitle}>
+                            <FileText size={18} className={styles.iconMargin} />
+                            Previewing {preview.length} rows
+                        </h3>
+                        <button className="btn btn-primary btn-sm" onClick={handleImport}>
+                            Confirm Import ({preview.length} rows)
+                        </button>
+                    </div>
+
                     <div className={styles.tableWrapper}>
                         <table className={styles.table}>
                             <thead>
@@ -158,19 +213,23 @@ export default function ImportPage() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {preview.map((row, i) => (
+                                {preview.slice(0, 10).map((row, i) => (
                                     <tr key={i}>
-                                        {Object.values(row).map((val: any, j) => (
-                                            <td key={j}>{val}</td>
+                                        {Object.values(row).map((val, j) => (
+                                            <td key={j}>{typeof val === 'string' ? val : JSON.stringify(val)}</td>
                                         ))}
                                     </tr>
                                 ))}
+                                {preview.length > 10 && (
+                                    <tr>
+                                        <td colSpan={Object.keys(preview[0]).length} className={styles.moreRows}>
+                                            ... and {preview.length - 10} more rows
+                                        </td>
+                                    </tr>
+                                )}
                             </tbody>
                         </table>
                     </div>
-                    <button className={`btn btn-primary ${styles.fullWidthBtn}`} onClick={handleImport}>
-                        Confirm Import
-                    </button>
                 </div>
             )}
         </div>

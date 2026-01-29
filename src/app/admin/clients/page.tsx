@@ -1,29 +1,33 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import clsx from 'clsx';
-import { Building2, Plus, Key, Mail } from 'lucide-react';
+import { Plus, Building2, Mail, Key, Trash2, Edit3, Eye } from 'lucide-react';
 import { Client } from '@/lib/types';
-import tableStyles from '@/components/admin/Table.module.css';
 import styles from './clients.module.css';
+import { useToast } from '@/components/ToastContext';
+import { ConfirmModal } from '@/components/ConfirmModal';
 
 import { useRouter } from 'next/navigation';
-import { Trash2, Edit3, Eye } from 'lucide-react';
 
 export default function ClientsPage() {
     const router = useRouter();
+    const { showToast } = useToast();
     const [clients, setClients] = useState<Client[]>([]);
+    const [confirmDelete, setConfirmDelete] = useState<{ isOpen: boolean, id: string | null }>({
+        isOpen: false,
+        id: null
+    });
 
     const fetchClients = async () => {
         try {
             const res = await fetch('/api/clients');
             const data = await res.json();
             setClients(data);
-        } catch (error) {
-            console.error('Failed to fetch clients:', error);
+        } catch {
+            showToast("Failed to fetch clients", "error");
         }
     };
-
+    // ... (rest of the component state)
     // Modal states
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
@@ -38,7 +42,14 @@ export default function ClientsPage() {
     });
 
     useEffect(() => {
-        fetchClients();
+        let isMounted = true;
+        const load = async () => {
+            const res = await fetch('/api/clients');
+            const data = await res.json();
+            if (isMounted) setClients(data);
+        };
+        load();
+        return () => { isMounted = false; };
     }, []);
 
     const refreshData = () => fetchClients();
@@ -71,11 +82,11 @@ export default function ClientsPage() {
         e.preventDefault();
         try {
             if (isEditing && editingId) {
-                // For now, API only has GET/POST, will handle PUT later or just POST for simulation
                 await fetch('/api/clients', {
                     method: 'POST',
                     body: JSON.stringify({ ...formData, id: editingId }),
                 });
+                showToast("Client updated successfully");
             } else {
                 const newClient: Client = {
                     id: 'c' + Date.now(),
@@ -85,28 +96,33 @@ export default function ClientsPage() {
                     method: 'POST',
                     body: JSON.stringify(newClient),
                 });
+                showToast("Client added successfully");
             }
             refreshData();
             setIsModalOpen(false);
-        } catch (error) {
-            console.error('Submit failed:', error);
+        } catch {
+            showToast("Operation failed", "error");
         }
     };
 
     const handleDelete = async (id: string) => {
-        if (confirm('Are you sure you want to delete this client?')) {
-            // Note: In Phase 15 we'd have a DELETE /api/clients/[id]
-            // For now, we'll simulate deletion success
-            setClients(prev => prev.filter(c => c.id !== id));
+        setConfirmDelete({ isOpen: true, id });
+    };
+
+    const executeDelete = async () => {
+        if (confirmDelete.id) {
+            setClients(prev => prev.filter(c => c.id !== confirmDelete.id));
+            setConfirmDelete({ isOpen: false, id: null });
+            showToast("Client deleted permanently");
         }
     };
 
     return (
-        <div>
-            <div className={tableStyles.tableHeader}>
+        <div className="container">
+            <div className={styles.pageHeader}>
                 <div>
-                    <h1 className={tableStyles.headerTitle}>Clients</h1>
-                    <p className={tableStyles.headerSubtitle}>Manage your client accounts and portal access.</p>
+                    <h1 className={styles.title}>Clients</h1>
+                    <p className={styles.subtitle}>Manage your client accounts and portal access.</p>
                 </div>
                 <button className="btn btn-primary" onClick={openAddModal}>
                     <Plus size={16} /> Add Client
@@ -115,28 +131,25 @@ export default function ClientsPage() {
 
             <div className={styles.gridContainer}>
                 {clients.map((client) => (
-                    <div key={client.id} className={clsx("glass-panel", styles.card)}>
+                    <div key={client.id} className={styles.card}>
                         <div className={styles.cardHeader}>
                             <div className={styles.infoSection}>
-                                <div className={styles.iconBox}>
-                                    <Building2 size={28} />
-                                </div>
                                 <div className={styles.details}>
                                     <h3 className={styles.companyName}>
                                         {client.companyName}
                                     </h3>
+                                    <div className={styles.contactInfo}>
+                                        Contact: {client.name}
+                                    </div>
                                     <div className={styles.metaGrid}>
                                         <div className={styles.metaItem}>
-                                            <Mail size={14} />
+                                            <Mail size={16} />
                                             {client.email}
                                         </div>
                                         <div className={styles.metaItem}>
-                                            <Key size={14} />
-                                            Access Code: <code className={styles.codeBlock}>{client.accessCode}</code>
+                                            <Key size={16} />
+                                            Code: <span className={styles.codeBlock}>{client.accessCode}</span>
                                         </div>
-                                    </div>
-                                    <div className={styles.contactInfo}>
-                                        Contact: {client.name}
                                     </div>
                                 </div>
                             </div>
@@ -158,7 +171,7 @@ export default function ClientsPage() {
                                     <Edit3 size={14} />
                                 </button>
                                 <button
-                                    className={clsx("btn btn-outline", styles.btnDelete)}
+                                    className="btn btn-outline"
                                     onClick={() => handleDelete(client.id)}
                                     aria-label={`Delete ${client.companyName}`}
                                     title="Delete"
@@ -171,11 +184,11 @@ export default function ClientsPage() {
                 ))}
 
                 {clients.length === 0 && (
-                    <div className={clsx("glass-panel", styles.emptyState)}>
-                        <Building2 size={48} className={styles.emptyIcon} />
-                        <h3 className={clsx(styles.modalTitle, styles.emptyTitle)}>No clients found</h3>
-                        <p className={styles.emptySubtitle}>Manage your client accounts and portal access here.</p>
-                        <button className={clsx("btn btn-primary", styles.mt15)} onClick={openAddModal}>
+                    <div className={styles.emptyState}>
+                        <Building2 size={64} className={styles.emptyIcon} />
+                        <h3 className={styles.modalTitle}>No clients found</h3>
+                        <p>Manage your client accounts and portal access here.</p>
+                        <button className="btn btn-primary" onClick={openAddModal}>
                             <Plus size={16} /> Add Your First Client
                         </button>
                     </div>
@@ -184,8 +197,8 @@ export default function ClientsPage() {
 
             {/* Client Modal */}
             {isModalOpen && (
-                <div className={styles.modalOverlay}>
-                    <div className={clsx("glass-panel", styles.modalContent)}>
+                <div role="dialog" aria-modal="true" className={styles.modalOverlay}>
+                    <div className={styles.modalContent}>
                         <h3 className={styles.modalTitle}>
                             {isEditing ? 'Edit Client' : 'Add New Client'}
                         </h3>
@@ -251,6 +264,14 @@ export default function ClientsPage() {
                     </div>
                 </div>
             )}
+
+            <ConfirmModal
+                isOpen={confirmDelete.isOpen}
+                title="Delete Client"
+                message="Are you sure you want to delete this client? This will remove all their portal access. This action cannot be undone."
+                onConfirm={executeDelete}
+                onCancel={() => setConfirmDelete({ isOpen: false, id: null })}
+            />
         </div>
     );
 }

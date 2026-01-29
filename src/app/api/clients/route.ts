@@ -5,7 +5,7 @@ export async function GET() {
     try {
         const clients = dataStore.getClients();
         return NextResponse.json(clients);
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: 'Failed to fetch clients' }, { status: 500 });
     }
 }
@@ -15,7 +15,7 @@ export async function POST(request: Request) {
         const body = await request.json();
         dataStore.addClient(body);
         return NextResponse.json({ message: 'Client added successfully' }, { status: 201 });
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: 'Failed to add client' }, { status: 500 });
     }
 }

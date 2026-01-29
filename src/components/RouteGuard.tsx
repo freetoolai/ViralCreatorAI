@@ -1,16 +1,18 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 
 export function RouteGuard({ children }: { children: React.ReactNode }) {
     const router = useRouter();
     const pathname = usePathname();
 
-    useEffect(() => {
-        if (typeof window === 'undefined') return;
+    const [mounted, setMounted] = useState(false);
 
-        const hasAccess = localStorage.getItem('viral_access_granted') === 'true';
+    useEffect(() => {
+        setMounted(true);
+
+        const hasAccess = !!localStorage.getItem('viral_access_token');
         const accessType = localStorage.getItem('viral_access_type');
 
         const isAdminRoute = pathname?.startsWith('/admin');
@@ -20,18 +22,10 @@ export function RouteGuard({ children }: { children: React.ReactNode }) {
         const isLoginRoute = pathname === '/login';
 
         // Allow homepage without access
-        if (isHomePage) {
-            return;
-        }
+        if (isHomePage) return;
 
         // Redirect to access page if no access code
-        if (!hasAccess && !isAccessRoute) {
-            router.push('/access');
-            return;
-        }
-
-        // Redirect from login page to access page ONLY if no access code is granted
-        if (isLoginRoute && !hasAccess) {
+        if (!hasAccess && !isAccessRoute && !isLoginRoute) {
             router.push('/access');
             return;
         }
@@ -52,28 +46,30 @@ export function RouteGuard({ children }: { children: React.ReactNode }) {
             return;
         }
 
-        // Block portal routes for admins (optional)
+        // Block portal routes for admins
         if (isPortalRoute && accessType === 'admin') {
             router.push('/admin');
             return;
         }
     }, [pathname, router]);
 
-    // Show nothing while redirecting
-    if (typeof window === 'undefined') {
-        return <>{children}</>;
-    }
-
-    const hasAccess = localStorage.getItem('viral_access_granted') === 'true';
-    const accessType = localStorage.getItem('viral_access_type');
-    const isAdminRoute = pathname?.startsWith('/admin');
-    const isHomePage = pathname === '/';
+    // Handle home/access pages during hydration
     const isAccessRoute = pathname === '/access';
+    const isHomePage = pathname === '/' || pathname === '';
 
-    // Allow access page and homepage
     if (isAccessRoute || isHomePage) {
         return <>{children}</>;
     }
+
+    // Still hydrating or no access - return null to keep client/server sync
+    // This looks like a blank screen for a split second, which is better than a hydration mismatch or data leak flicker
+    if (!mounted) {
+        return null;
+    }
+
+    const hasAccess = !!localStorage.getItem('viral_access_token');
+    const accessType = localStorage.getItem('viral_access_type');
+    const isAdminRoute = pathname?.startsWith('/admin');
 
     // Block if no access
     if (!hasAccess) {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import clsx from 'clsx';
 import { Users, Plus, Mail, Shield } from 'lucide-react';
 import { dataStore } from '@/lib/store';
@@ -8,19 +8,7 @@ import { User } from '@/lib/types';
 import styles from './team.module.css';
 
 export default function TeamPage() {
-    const [users, setUsers] = useState<User[]>([]);
-
-    useEffect(() => {
-        setUsers(dataStore.getUsers());
-    }, []);
-
-    const getRoleBadgeColor = (role: string) => {
-        switch (role) {
-            case 'Admin': return '#007AFF';
-            case 'Campaign Manager': return '#34C759';
-            default: return '#6E6E73';
-        }
-    };
+    const [users] = useState<User[]>(() => dataStore.getUsers());
 
     return (
         <div>
@@ -62,11 +50,7 @@ export default function TeamPage() {
                                 </td>
                                 <td className={styles.tableCell}>
                                     <span
-                                        className={styles.roleBadge}
-                                        style={{
-                                            background: `${getRoleBadgeColor(user.role)}15`,
-                                            color: getRoleBadgeColor(user.role)
-                                        }}
+                                        className={clsx(styles.roleBadge, user.role === 'Admin' ? styles.roleAdmin : styles.roleManager)}
                                     >
                                         <Shield size={12} /> {user.role}
                                     </span>
@@ -88,7 +72,9 @@ export default function TeamPage() {
 
                 {users.length === 0 && (
                     <div className={styles.emptyState}>
-                        <Users size={48} className={styles.emptyIcon} />
+                        <div className={styles.emptyIcon}>
+                            <Users size={48} />
+                        </div>
                         <p>No team members found.</p>
                     </div>
                 )}

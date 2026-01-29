@@ -1,0 +1,66 @@
+/* Mobile Campaign Detail Responsive Styles */
+@media (max-width: 768px) {
+    .container {
+        padding: var(--space-lg) var(--space-md);
+        max-width: 100%;
+    }
+
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-md);
+    }
+
+    .budgetValue {
+        font-size: var(--font-h2);
+    }
+
+    .grid {
+        gap: var(--space-sm);
+    }
+
+    .card {
+        padding: var(--space-md);
+    }
+
+    .profileHeader {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .socials {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .actions {
+        flex-direction: column;
+    }
+
+    .actions button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: var(--space-md);
+    }
+
+    .title {
+        font-size: var(--font-h2);
+    }
+
+    .name {
+        font-size: var(--font-h3);
+    }
+
+    .rateValue {
+        font-size: var(--font-h3);
+    }
+
+    .socialBtn {
+        min-width: 40px;
+        height: 40px;
+    }
+}

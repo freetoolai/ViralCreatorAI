@@ -1,110 +1,144 @@
 import Link from 'next/link';
-import { Sparkles, Zap, Users, BarChart3, CheckCircle, ArrowRight } from 'lucide-react';
-import styles from './home.module.css';
+import Image from 'next/image'; // Triggering build
+import { Database, Users, Zap, ArrowRight, CheckCircle2 } from 'lucide-react';
+import styles from './landing.module.css';
 
 export default function HomePage() {
   return (
-    <div className={styles.container}>
-      {/* Header */}
-      <header className={styles.header}>
-        <div className={styles.logo}>
-          <Sparkles size={24} fill="currentColor" />
-          <span>Viral<strong>CreatorAI</strong></span>
-        </div>
-        <nav className={styles.nav}>
-          <Link href="#features">Features</Link>
-          <Link href="#pricing">Pricing</Link>
-          <Link href="/login" className="btn btn-outline">Sign In</Link>
-          <Link href="/login" className="btn btn-primary">Get Started</Link>
-        </nav>
-      </header>
-
+    <>
       {/* Hero Section */}
       <section className={styles.hero}>
-        <div className={styles.heroContent}>
+        <div className="container">
           <h1 className={styles.heroTitle}>
-            AI-Powered Influencer<br />
-            Campaign Management
+            Campaigns that run themselves.
           </h1>
           <p className={styles.heroSubtitle}>
-            Find, manage, and track creator partnerships in one intelligent platform.
-            Automate workflows, approve campaigns, and measure ROI with AI precision.
+            Manage creators, approve campaigns, and track performance—all in one calm, intelligent platform built for modern agencies.
           </p>
           <div className={styles.heroCta}>
-            <Link href="/login" className="btn btn-primary" style={{ padding: '1rem 2rem', fontSize: '1.0625rem' }}>
-              Start Free Trial <ArrowRight size={20} style={{ marginLeft: '0.5rem' }} />
+            <Link href="/login" className="btn btn-primary">
+              Start free trial <ArrowRight size={18} />
             </Link>
-            <Link href="#demo" className="btn btn-outline" style={{ padding: '1rem 2rem', fontSize: '1.0625rem' }}>
-              Watch Demo
+            <Link href="#preview" className="btn btn-secondary">
+              See how it works
             </Link>
           </div>
-          <p className={styles.heroNote}>
-            ✓ No credit card required  ✓ 14-day free trial  ✓ Cancel anytime
+        </div>
+      </section>
+
+      {/* Product Value Section */}
+      <section className={styles.valueSection}>
+        <div className="container">
+          <h2 className={styles.sectionTitle}>
+            Built for agencies who value clarity over chaos.
+          </h2>
+          <p className={styles.sectionSubtitle}>
+            No spreadsheets. No endless email threads. Just intelligent tools that help you focus on what matters.
           </p>
-        </div>
-      </section>
 
-      {/* Features Section */}
-      <section className={styles.features} id="features">
-        <h2 className={styles.sectionTitle}>Everything you need to scale creator partnerships</h2>
-        <div className={styles.featureGrid}>
-          <div className={styles.featureCard}>
-            <div className={styles.featureIcon}>
-              <Zap size={28} />
+          <div className={styles.valueGrid}>
+            <div className={styles.valueCard}>
+              <div className={styles.valueIcon}>
+                <Database size={24} />
+              </div>
+              <h3 className={styles.valueTitle}>Creator database</h3>
+              <p className={styles.valueDescription}>
+                Import, organize, and search your entire creator network. CSV bulk import, smart tagging, and instant filtering.
+              </p>
             </div>
-            <h3>AI-Powered Matching</h3>
-            <p>Smart recommendations based on niche, engagement, and campaign goals. Find the perfect creators in seconds.</p>
-          </div>
 
-          <div className={styles.featureCard}>
-            <div className={styles.featureIcon}>
-              <Users size={28} />
+            <div className={styles.valueCard}>
+              <div className={styles.valueIcon}>
+                <Zap size={24} />
+              </div>
+              <h3 className={styles.valueTitle}>Campaign management</h3>
+              <p className={styles.valueDescription}>
+                Create campaigns, assign creators, and track deliverables. Everything in one place, nothing forgotten.
+              </p>
             </div>
-            <h3>Automated Workflows</h3>
-            <p>Streamline approvals, contracts, and payments. Let clients review and approve campaigns with one click.</p>
-          </div>
 
-          <div className={styles.featureCard}>
-            <div className={styles.featureIcon}>
-              <BarChart3 size={28} />
+            <div className={styles.valueCard}>
+              <div className={styles.valueIcon}>
+                <Users size={24} />
+              </div>
+              <h3 className={styles.valueTitle}>Client portals</h3>
+              <p className={styles.valueDescription}>
+                Share campaigns with clients via magic links. They approve or reject with one click. No login required.
+              </p>
             </div>
-            <h3>Real-Time Analytics</h3>
-            <p>Track campaign performance, ROI, and creator metrics in one dashboard. Make data-driven decisions.</p>
           </div>
         </div>
       </section>
 
-      {/* Benefits Section */}
-      <section className={styles.benefits}>
-        <div className={styles.benefitsContent}>
-          <h2>Why agencies choose ViralCreatorAI</h2>
-          <ul className={styles.benefitsList}>
-            <li><CheckCircle size={20} /> <span>Save 10+ hours per week on campaign management</span></li>
-            <li><CheckCircle size={20} /> <span>Increase campaign ROI by 40% with AI insights</span></li>
-            <li><CheckCircle size={20} /> <span>Manage 100+ creators without breaking a sweat</span></li>
-            <li><CheckCircle size={20} /> <span>Client portal for seamless approvals</span></li>
-          </ul>
+      {/* Platform Preview Section */}
+      <section className={styles.previewSection} id="preview">
+        <div className="container">
+          <h2 className={styles.sectionTitle}>
+            A platform that feels like a product.
+          </h2>
+          <p className={styles.sectionSubtitle}>
+            Designed with the same care as the campaigns you create.
+          </p>
+
+          <div className={styles.previewContainer}>
+            <div className={styles.previewMockup}>
+              <div className={styles.mockupHeader}>
+                <div className={styles.mockupDot}></div>
+                <div className={styles.mockupDot}></div>
+                <div className={styles.mockupDot}></div>
+              </div>
+              <div className={styles.mockupContent}>
+                <Image
+                  src="/viral_creator_dashboard_preview_v2.png"
+                  alt="ViralCreatorAI Dashboard Preview"
+                  width={1200}
+                  height={800}
+                  className={styles.previewImage}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className={styles.cta}>
-        <h2>Ready to transform your influencer marketing?</h2>
-        <p>Join hundreds of agencies managing campaigns with AI precision</p>
-        <Link href="/login" className="btn btn-primary" style={{ padding: '1rem 2.5rem', fontSize: '1.125rem', marginTop: '1.5rem' }}>
-          Start Free Trial
-        </Link>
+      {/* Trust Section */}
+      <section className={styles.trustSection}>
+        <div className="container">
+          <h2 className={styles.sectionTitle}>
+            Trusted by agencies who ship.
+          </h2>
+
+          <div className={styles.trustGrid}>
+            <div className={styles.trustItem}>
+              <div className={styles.trustLabel}>For agencies</div>
+              <div className={styles.trustValue}>Manage 100+ creators</div>
+            </div>
+            <div className={styles.trustItem}>
+              <div className={styles.trustLabel}>For brands</div>
+              <div className={styles.trustValue}>Track every campaign</div>
+            </div>
+            <div className={styles.trustItem}>
+              <div className={styles.trustLabel}>For teams</div>
+              <div className={styles.trustValue}>One source of truth</div>
+            </div>
+          </div>
+        </div>
       </section>
 
-      {/* Footer */}
-      <footer className={styles.footer}>
-        <p>© 2026 ViralCreatorAI. All rights reserved.</p>
-        <div className={styles.footerLinks}>
-          <Link href="/privacy">Privacy</Link>
-          <Link href="/terms">Terms</Link>
-          <Link href="/contact">Contact</Link>
+      {/* Final CTA */}
+      <section className={styles.ctaSection}>
+        <div className="container">
+          <h2 className={styles.ctaTitle}>
+            Ready to run calmer campaigns?
+          </h2>
+          <p className={styles.ctaSubtitle}>
+            Start your free trial. No credit card required.
+          </p>
+          <Link href="/login" className="btn btn-primary">
+            Get started <ArrowRight size={18} />
+          </Link>
         </div>
-      </footer>
-    </div>
+      </section>
+    </>
   );
 }
