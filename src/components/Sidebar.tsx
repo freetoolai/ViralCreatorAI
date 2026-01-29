@@ -1,5 +1,10 @@
+'use client';
+
+import { useState } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { signOut } from 'next-auth/react';
-import { LayoutDashboard, Users, UserCircle, Briefcase, Settings, LogOut, Search, Bell, Menu, X } from 'lucide-react';
+import { LayoutDashboard, Users, UserCircle, Briefcase, Settings, LogOut, Search } from 'lucide-react';
 import clsx from 'clsx';
 import styles from './Sidebar.module.css';
 import { SearchModal } from './SearchModal';
@@ -14,7 +19,6 @@ const navItems = [
 
 export function Sidebar() {
     const pathname = usePathname();
-    const router = useRouter();
     const [isSearchOpen, setIsSearchOpen] = useState(false);
 
     const handleLogout = async () => {
