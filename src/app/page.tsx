@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image'; // Triggering build
-import { Database, Users, Zap, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Database, Users, Zap, ArrowRight } from 'lucide-react';
 import styles from './landing.module.css';
 
 export default function HomePage() {
@@ -15,6 +15,9 @@ export default function HomePage() {
           <p className={styles.heroSubtitle}>
             Manage creators, approve campaigns, and track performance—all in one calm, intelligent platform built for modern agencies.
           </p>
+          <div className={styles.systemUpdate}>
+            System Update: Jan 30, 2026 (Fix: Mobile Tables & Glassmorphism)
+          </div>
           <div className={styles.heroCta}>
             <Link href="/login" className="btn btn-primary">
               Start free trial <ArrowRight size={18} />
