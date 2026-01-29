@@ -13,7 +13,7 @@ export default function HomePage() {
             Campaigns that <span className={styles.gradientText}>run themselves.</span>
           </h1>
           <p className={styles.heroSubtitle}>
-            Manage creators, approve campaigns, and track performance—all in one calm, intelligent platform built for modern agencies.
+            Manage creators, approve campaigns, and track performance—all in one calm, intelligent platform built for modern agencies. (System Update: Live)
           </p>
           <div className={styles.heroCta}>
             <Link href="/login" className="btn btn-primary">
