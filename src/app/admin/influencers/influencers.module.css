@@ -383,7 +383,6 @@
 @media (max-width: 1024px) {
     .tableContainer {
         overflow-x: auto !important;
-        -webkit-overflow-scrolling: touch;
         border-radius: var(--radius-card);
     }
 }
