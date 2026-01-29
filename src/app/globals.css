@@ -32,21 +32,14 @@
   --space-3xl: 96px;
   --space-4xl: 120px;
 
-  /* === TYPOGRAPHY SCALE === */
-  --font-hero: 2.75rem;
-  /* 44px */
-  --font-h1: 2rem;
-  /* 32px */
-  --font-h2: 1.5rem;
-  /* 24px */
-  --font-h3: 1.125rem;
-  /* 18px */
-  --font-body: 0.9375rem;
-  /* 15px */
+  /* === FLUID TYPOGRAPHY (Mobile-First) === */
+  --font-hero: clamp(2rem, 5vw + 1rem, 3.5rem);
+  --font-h1: clamp(1.75rem, 4vw + 0.5rem, 2.5rem);
+  --font-h2: clamp(1.5rem, 3.5vw + 0.25rem, 2rem);
+  --font-h3: clamp(1.125rem, 2.5vw, 1.5rem);
+  --font-body: clamp(0.9375rem, 1.5vw, 1rem);
   --font-caption: 0.8125rem;
-  /* 13px */
   --font-tiny: 0.75rem;
-  /* 12px */
 
   /* === LAYOUT === */
   --max-width: 1100px;
@@ -134,6 +127,21 @@ p {
   text-decoration: none;
 }
 
+/* Mobile button sizing */
+@media (max-width: 768px) {
+  .btn {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .btn {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.8125rem;
+  }
+}
+
 .btn-primary {
   background: var(--accent-green);
   color: white;
@@ -179,10 +187,16 @@ p {
 .card {
   background: var(--surface-white);
   border-radius: var(--radius-card);
-  padding: var(--space-xl);
+  padding: var(--space-lg);
   border: 1px solid var(--surface-border);
   box-shadow: 0 2px 16px var(--surface-shadow);
   transition: all 0.3s ease;
+}
+
+@media (min-width: 768px) {
+  .card {
+    padding: var(--space-xl);
+  }
 }
 
 .card:hover {
@@ -198,7 +212,10 @@ p {
   border: 1px solid var(--surface-border);
   background: var(--surface-white);
   color: var(--text-primary);
-  font-size: var(--font-body);
+  font-size: 16px;
+  /* Prevent zoom on iOS */
+  min-height: 44px;
+  /* Touch target */
   transition: all 0.2s;
 }
 
@@ -217,15 +234,34 @@ p {
 .container {
   max-width: var(--max-width);
   margin: 0 auto;
-  padding: 0 var(--space-lg);
+  padding: 0 var(--space-md);
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding: 0 var(--space-lg);
+  }
 }
 
 .section {
-  padding: var(--space-3xl) 0;
+  padding: var(--space-2xl) 0;
+}
+
+@media (min-width: 768px) {
+  .section {
+    padding: var(--space-3xl) 0;
+  }
 }
 
 .section-sm {
-  padding: var(--space-2xl) 0;
+  padding: var(--space-lg) 0;
+}
+
+@media (min-width: 768px) {
+  .section-sm {
+    padding: var(--space-2xl) 0;
+  }
 }
 
 /* === BACKGROUND DECORATIONS === */
@@ -373,17 +409,52 @@ main {
 @media (max-width: 1024px) {
   :root {
     --margin-wide: 40px;
-    --space-xl: 48px;
-    --space-2xl: 64px;
-    --space-3xl: 80px;
-    --space-4xl: 100px;
+    --space-xl: 40px;
+    --space-2xl: 56px;
+    --space-3xl: 72px;
+    --space-4xl: 88px;
   }
 }
 
 @media (max-width: 768px) {
   :root {
-    --font-hero: 2.5rem;
-    --font-h1: 2rem;
-    --font-h2: 1.5rem;
+    --font-hero: 2.25rem;
+    --font-h1: 1.75rem;
+    --font-h2: 1.375rem;
+    --font-h3: 1.125rem;
+    --space-lg: 24px;
+    --space-xl: 32px;
+    --space-2xl: 48px;
+    --space-3xl: 64px;
+    --max-width: 100%;
+    --margin-wide: 20px;
+  }
+
+  .btn {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.875rem;
+  }
+
+  .card {
+    padding: var(--space-lg);
+  }
+
+  .container {
+    padding: 0 var(--space-md);
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --font-hero: 2rem;
+    --font-h1: 1.5rem;
+    --font-h2: 1.25rem;
+    --space-lg: 20px;
+    --space-xl: 28px;
+    --space-2xl: 40px;
+  }
+
+  .btn {
+    padding: 0.75rem 1.25rem;
   }
 }

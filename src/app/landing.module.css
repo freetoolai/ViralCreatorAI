@@ -1,44 +1,83 @@
 .hero {
-    min-height: 80vh;
+    min-height: 60vh;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: var(--space-4xl) var(--space-lg);
+    padding: var(--space-2xl) var(--space-md);
     position: relative;
     animation: slideUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@media (min-width: 768px) {
+    .hero {
+        min-height: 80vh;
+        padding: var(--space-4xl) var(--space-lg);
+    }
 }
 
 .heroTitle {
     font-size: var(--font-hero);
     font-weight: 600;
     letter-spacing: -0.04em;
-    line-height: 1.05;
+    line-height: 1.1;
     color: var(--text-primary);
-    max-width: 800px;
+    max-width: 90%;
     margin-bottom: var(--space-md);
 }
 
+@media (min-width: 768px) {
+    .heroTitle {
+        max-width: 800px;
+        line-height: 1.05;
+    }
+}
+
 .heroSubtitle {
-    font-size: 1.125rem;
+    font-size: clamp(1rem, 2vw, 1.125rem);
     line-height: 1.6;
     color: var(--text-secondary);
-    max-width: 560px;
-    margin-bottom: var(--space-2xl);
+    max-width: 90%;
+    margin-bottom: var(--space-xl);
+}
+
+@media (min-width: 768px) {
+    .heroSubtitle {
+        max-width: 560px;
+        margin-bottom: var(--space-2xl);
+    }
 }
 
 .heroCta {
     display: flex;
-    gap: var(--space-md);
-    align-items: center;
+    flex-direction: column;
+    gap: var(--space-sm);
+    align-items: stretch;
     justify-content: center;
+    width: 100%;
+    max-width: 300px;
+}
+
+@media (min-width: 480px) {
+    .heroCta {
+        flex-direction: row;
+        max-width: none;
+        width: auto;
+        gap: var(--space-md);
+    }
 }
 
 /* Product Value Section */
 .valueSection {
-    padding: var(--space-3xl) var(--space-lg);
+    padding: var(--space-xl) var(--space-md);
     text-align: center;
+}
+
+@media (min-width: 768px) {
+    .valueSection {
+        padding: var(--space-3xl) var(--space-lg);
+    }
 }
 
 .sectionTitle {
@@ -47,25 +86,52 @@
     letter-spacing: -0.03em;
     color: var(--text-primary);
     margin-bottom: var(--space-sm);
-    max-width: 700px;
+    max-width: 90%;
     margin-left: auto;
     margin-right: auto;
 }
 
+@media (min-width: 768px) {
+    .sectionTitle {
+        max-width: 700px;
+    }
+}
+
 .sectionSubtitle {
-    font-size: 1rem;
+    font-size: clamp(0.9375rem, 1.5vw, 1rem);
     line-height: 1.6;
     color: var(--text-secondary);
-    max-width: 520px;
-    margin: 0 auto var(--space-3xl);
+    max-width: 90%;
+    margin: 0 auto var(--space-xl);
+}
+
+@media (min-width: 768px) {
+    .sectionSubtitle {
+        max-width: 520px;
+        margin: 0 auto var(--space-3xl);
+    }
 }
 
 .valueGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: var(--space-xl);
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
     max-width: var(--max-width);
     margin: 0 auto;
+}
+
+@media (min-width: 640px) {
+    .valueGrid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-lg);
+    }
+}
+
+@media (min-width: 1024px) {
+    .valueGrid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--space-xl);
+    }
 }
 
 .valueCard {
@@ -203,9 +269,15 @@
 
 /* CTA Section */
 .ctaSection {
-    padding: var(--space-4xl) var(--space-lg);
+    padding: var(--space-2xl) var(--space-md);
     text-align: center;
     background: linear-gradient(180deg, transparent 0%, rgba(47, 94, 78, 0.02) 100%);
+}
+
+@media (min-width: 768px) {
+    .ctaSection {
+        padding: var(--space-4xl) var(--space-lg);
+    }
 }
 
 .ctaTitle {
@@ -217,36 +289,25 @@
 }
 
 .ctaSubtitle {
-    font-size: 1rem;
+    font-size: clamp(0.9375rem, 1.5vw, 1rem);
     color: var(--text-secondary);
-    margin-bottom: var(--space-2xl);
-    max-width: 440px;
+    margin-bottom: var(--space-xl);
+    max-width: 90%;
     margin-left: auto;
     margin-right: auto;
 }
 
-/* Responsive */
-@media (max-width: 1024px) {
-    .valueGrid {
-        gap: var(--space-xl);
+@media (min-width: 768px) {
+    .ctaSubtitle {
+        max-width: 440px;
+        margin-bottom: var(--space-2xl);
     }
 }
 
+/* Preview Section Mobile Optimization */
 @media (max-width: 768px) {
-    .heroTitle {
-        font-size: 2.5rem;
-    }
-
-    .sectionTitle {
-        font-size: 2rem;
-    }
-
-    .valueGrid,
-    .trustGrid {
-        grid-template-columns: 1fr;
-    }
-
-    .hero {
-        padding-top: 100px;
+    .previewMockup {
+        max-width: 100%;
+        padding: 0 var(--space-md);
     }
 }

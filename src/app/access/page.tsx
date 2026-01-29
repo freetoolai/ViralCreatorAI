@@ -27,13 +27,12 @@ export default function AccessPage() {
         setLoading(true);
 
         const trimmedCode = code.trim().toUpperCase();
-        console.log('Verifying code:', trimmedCode);
-        console.log('Expected Admin:', ADMIN_CODE);
 
         // Check if it's the admin code
         if (trimmedCode === ADMIN_CODE) {
+            const token = btoa(`admin:${Date.now()}:${Math.random()}`);
+            localStorage.setItem('viral_access_token', token);
             localStorage.setItem('viral_access_type', 'admin');
-            localStorage.setItem('viral_access_granted', 'true');
             router.push('/admin');
             return;
         }
@@ -41,9 +40,10 @@ export default function AccessPage() {
         // Check if it's a client code
         const clientId = CLIENT_CODES[trimmedCode];
         if (clientId) {
+            const token = btoa(`client:${clientId}:${Date.now()}`);
+            localStorage.setItem('viral_access_token', token);
             localStorage.setItem('viral_access_type', 'client');
             localStorage.setItem('viral_client_id', clientId);
-            localStorage.setItem('viral_access_granted', 'true');
             router.push('/portal/dashboard');
             return;
         }
