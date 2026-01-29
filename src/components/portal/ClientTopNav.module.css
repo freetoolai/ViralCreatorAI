@@ -73,3 +73,29 @@
     color: hsl(var(--muted-foreground));
     line-height: 1;
 }
+
+.logoutBtn {
+    background: transparent;
+    border: 1px solid hsl(var(--border));
+    color: hsl(var(--muted-foreground));
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.logoutBtn:hover {
+    background: hsl(var(--accent));
+    color: hsl(var(--foreground));
+    border-color: hsl(var(--accent));
+}
+
+@media (max-width: 640px) {
+    .profileInfo {
+        display: none;
+    }
+}

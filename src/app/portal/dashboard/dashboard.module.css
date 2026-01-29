@@ -148,68 +148,90 @@
 
 .emptyState {
     grid-column: 1 / -1;
-    padding: 4rem;
+    padding: 4rem 2rem;
     text-align: center;
-    background: hsl(var(--card));
-    border-radius: var(--radius);
-    color: hsl(var(--muted-foreground));
+    background: var(--surface-white);
+    border: 1px solid var(--surface-border);
+    border-radius: var(--radius-card);
+    color: var(--text-secondary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 2px 12px var(--surface-shadow);
+}
+
+.emptyIcon {
+    opacity: 0.2;
+    color: var(--accent-green);
+    margin-bottom: 0.5rem;
+}
+
+.emptyState h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.emptyState p {
+    max-width: 400px;
+    margin: 0 auto;
+    font-size: 0.9375rem;
+    line-height: 1.6;
 }
 
 /* Mobile Dashboard Responsive Styles */
 @media (max-width: 768px) {
     .container {
-        padding: var(--space-lg) var(--space-md);
+        padding: var(--space-xl) var(--space-md);
     }
 
-    .header {
-        margin-bottom: var(--space-lg);
+    .title {
+        font-size: 2rem;
+        margin-bottom: 0.25rem;
     }
 
-    .grid {
-        gap: var(--space-md);
+    .subtitle {
+        font-size: 0.9375rem;
     }
 
     .card {
-        padding: var(--space-md);
+        padding: 1.5rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
     }
 
     .cardHeader {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: var(--space-sm);
+        margin-bottom: 1rem;
     }
 
-    .iconWrapper {
-        width: 44px;
-        height: 44px;
+    .cardTitle {
+        font-size: 1.25rem;
+        margin-bottom: 0.375rem;
+    }
+
+    .meta {
+        margin-bottom: 1.5rem;
     }
 
     .cardFooter {
-        flex-direction: column;
-        align-items: stretch;
-        gap: var(--space-sm);
+        padding-top: 1.25rem;
     }
 
-    .portalLink {
-        width: 100%;
-        justify-content: center;
+    .creatorsCount {
+        font-size: 1rem;
     }
 }
 
 @media (max-width: 480px) {
     .container {
-        padding: var(--space-md);
+        padding: var(--space-lg) var(--space-md);
     }
 
     .title {
-        font-size: var(--font-h2);
+        font-size: 1.75rem;
     }
 
-    .subtitle {
-        font-size: 0.875rem;
-    }
-
-    .cardTitle {
-        font-size: var(--font-h3);
+    .card {
+        padding: 1.25rem;
     }
 }

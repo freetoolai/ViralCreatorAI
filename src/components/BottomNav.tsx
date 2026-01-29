@@ -18,7 +18,6 @@ const adminItems = [
 const portalItems = [
     { name: 'Dashboard', href: '/portal/dashboard', icon: LayoutDashboard },
     { name: 'Campaigns', href: '/portal/campaigns', icon: Briefcase },
-    { name: 'Groups', href: '/portal/groups', icon: Users },
 ];
 
 export function BottomNav() {

@@ -16,20 +16,23 @@ export default function ClientDashboard() {
     const [hasMounted, setHasMounted] = useState(false);
 
     useEffect(() => {
-        setHasMounted(true);
         const clientId = localStorage.getItem('portal_client_id');
-        if (!clientId) {
-            router.push('/portal');
-            return;
-        }
+        const timer = setTimeout(() => {
+            setHasMounted(true);
+            if (!clientId) {
+                router.push('/portal');
+                return;
+            }
 
-        const foundClient = dataStore.getClients().find(c => c.id === clientId);
-        if (foundClient) {
-            setClient(foundClient);
-            setCampaigns(dataStore.getCampaigns(clientId));
-        } else {
-            router.push('/portal');
-        }
+            const foundClient = dataStore.getClients().find(c => c.id === clientId);
+            if (foundClient) {
+                setClient(foundClient);
+                setCampaigns(dataStore.getCampaigns(clientId));
+            } else {
+                router.push('/portal');
+            }
+        }, 0);
+        return () => clearTimeout(timer);
     }, [router]);
 
     if (!hasMounted || !client) return null;
@@ -73,7 +76,9 @@ export default function ClientDashboard() {
                 ))}
                 {campaigns.length === 0 && (
                     <div className={styles.emptyState}>
-                        <p>No active campaigns found.</p>
+                        <Briefcase size={48} className={styles.emptyIcon} />
+                        <h3>No active campaigns</h3>
+                        <p>Your active campaigns will appear here once they are launched. Contact your account manager for more details.</p>
                     </div>
                 )}
             </div>
