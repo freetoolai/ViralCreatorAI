@@ -91,9 +91,10 @@ export default function HomePage() {
                 <Image
                   src="/viral_creator_dashboard_preview_v2.png"
                   alt="ViralCreatorAI Dashboard Preview"
-                  width={1200}
-                  height={800}
+                  width={1400}
+                  height={933}
                   className={styles.previewImage}
+                  priority
                 />
               </div>
             </div>
