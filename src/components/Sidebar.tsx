@@ -1,9 +1,5 @@
-'use client';
-
-import { useState } from 'react';
-import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, Users, UserCircle, Briefcase, Settings, LogOut, Search, Bell } from 'lucide-react';
+import { signOut } from 'next-auth/react';
+import { LayoutDashboard, Users, UserCircle, Briefcase, Settings, LogOut, Search, Bell, Menu, X } from 'lucide-react';
 import clsx from 'clsx';
 import styles from './Sidebar.module.css';
 import { SearchModal } from './SearchModal';
@@ -21,11 +17,11 @@ export function Sidebar() {
     const router = useRouter();
     const [isSearchOpen, setIsSearchOpen] = useState(false);
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
         localStorage.removeItem('viral_access_token');
         localStorage.removeItem('viral_access_type');
         localStorage.removeItem('viral_client_id');
-        router.push('/');
+        await signOut({ redirect: true, callbackUrl: '/' });
     };
 
     return (
@@ -40,8 +36,8 @@ export function Sidebar() {
                     <button className={styles.mobileIconBtn} aria-label="Search" onClick={() => setIsSearchOpen(true)}>
                         <Search size={20} />
                     </button>
-                    <button className={styles.mobileIconBtn} aria-label="Notifications" onClick={() => alert("No new notifications")}>
-                        <Bell size={20} />
+                    <button className={styles.mobileIconBtn} aria-label="Logout" onClick={handleLogout}>
+                        <LogOut size={20} />
                     </button>
                     <div className={styles.mobileAvatar}>A</div>
                 </div>

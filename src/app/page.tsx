@@ -10,14 +10,11 @@ export default function HomePage() {
       <section className={styles.hero}>
         <div className="container">
           <h1 className={styles.heroTitle}>
-            Campaigns that run themselves.
+            Campaigns that <span className={styles.gradientText}>run themselves.</span>
           </h1>
           <p className={styles.heroSubtitle}>
             Manage creators, approve campaigns, and track performance—all in one calm, intelligent platform built for modern agencies.
           </p>
-          <div className={styles.systemUpdate}>
-            System Update: Jan 30, 2026 (Fix: Mobile Tables & Glassmorphism)
-          </div>
           <div className={styles.heroCta}>
             <Link href="/login" className="btn btn-primary">
               Start free trial <ArrowRight size={18} />

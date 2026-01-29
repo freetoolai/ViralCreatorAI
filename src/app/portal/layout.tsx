@@ -1,4 +1,5 @@
 import { ClientTopNav } from '@/components/portal/ClientTopNav';
+import { BottomNav } from '@/components/BottomNav';
 import styles from './layout.module.css';
 
 export default function PortalLayout({
@@ -12,6 +13,7 @@ export default function PortalLayout({
             <main className={styles.main}>
                 {children}
             </main>
+            <BottomNav />
         </div>
     );
 }

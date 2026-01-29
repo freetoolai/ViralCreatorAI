@@ -27,7 +27,14 @@ export default function LoginPage() {
         });
 
         if (result?.ok) {
-            router.push('/admin');
+            // Set localStorage for legacy RouteGuard support
+            // This ensures immediate access without waiting for session hydration
+            const targetRole = email.includes('admin') ? 'admin' : 'client';
+            const token = btoa(`${targetRole}:${Date.now()}`);
+            localStorage.setItem('viral_access_token', token);
+            localStorage.setItem('viral_access_type', targetRole);
+
+            router.push(targetRole === 'admin' ? '/admin' : '/portal/dashboard');
         } else {
             setError('Invalid credentials. Try the demo accounts below.');
             setLoading(false);

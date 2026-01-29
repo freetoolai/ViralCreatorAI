@@ -25,6 +25,16 @@
     color: var(--text-primary);
     max-width: 90%;
     margin-bottom: var(--space-md);
+    font-size: clamp(2.75rem, 9vw, 4.5rem);
+    /* Increased slightly for punch */
+}
+
+.gradientText {
+    background: linear-gradient(135deg, var(--accent-green) 0%, #4facfe 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: inline-block;
 }
 
 @media (min-width: 768px) {
@@ -40,13 +50,8 @@
     color: var(--text-secondary);
     max-width: 90%;
     margin-bottom: var(--space-xl);
-}
-
-.systemUpdate {
-    font-size: 0.7rem;
-    color: var(--text-muted);
-    margin-bottom: 1rem;
-    opacity: 0.6;
+    font-size: 1rem;
+    /* Slightly smaller for mobile */
 }
 
 @media (min-width: 768px) {

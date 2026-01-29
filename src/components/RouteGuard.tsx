@@ -2,18 +2,31 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+
+interface CustomUser {
+    role?: string;
+}
 
 export function RouteGuard({ children }: { children: React.ReactNode }) {
+    const { data: session, status } = useSession();
     const router = useRouter();
     const pathname = usePathname();
 
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
-        setMounted(true);
+        const timer = setTimeout(() => setMounted(true), 0);
+        return () => clearTimeout(timer);
+    }, []);
 
-        const hasAccess = !!localStorage.getItem('viral_access_token');
-        const accessType = localStorage.getItem('viral_access_type');
+    useEffect(() => {
+        // Don't do anything until session is determined
+        if (status === 'loading') return;
+
+        const sessionUser = session?.user as CustomUser | undefined;
+        const hasAccess = !!localStorage.getItem('viral_access_token') || status === 'authenticated';
+        const accessType = localStorage.getItem('viral_access_type') || sessionUser?.role;
 
         const isAdminRoute = pathname?.startsWith('/admin');
         const isPortalRoute = pathname?.startsWith('/portal');
@@ -21,11 +34,11 @@ export function RouteGuard({ children }: { children: React.ReactNode }) {
         const isHomePage = pathname === '/';
         const isLoginRoute = pathname === '/login';
 
-        // Allow homepage without access
-        if (isHomePage) return;
+        // Allow homepage and login without access
+        if (isHomePage || isLoginRoute) return;
 
-        // Redirect to access page if no access code
-        if (!hasAccess && !isAccessRoute && !isLoginRoute) {
+        // Redirect to access page if no access code and not logged in
+        if (!hasAccess && !isAccessRoute) {
             router.push('/access');
             return;
         }
@@ -51,24 +64,25 @@ export function RouteGuard({ children }: { children: React.ReactNode }) {
             router.push('/admin');
             return;
         }
-    }, [pathname, router]);
+    }, [pathname, router, status, session]);
 
-    // Handle home/access pages during hydration
+    // Handle home/access/login pages during hydration
     const isAccessRoute = pathname === '/access';
     const isHomePage = pathname === '/' || pathname === '';
+    const isLoginRoute = pathname === '/login';
 
-    if (isAccessRoute || isHomePage) {
+    if (isAccessRoute || isHomePage || isLoginRoute) {
         return <>{children}</>;
     }
 
-    // Still hydrating or no access - return null to keep client/server sync
-    // This looks like a blank screen for a split second, which is better than a hydration mismatch or data leak flicker
-    if (!mounted) {
+    // Still hydrating or session loading
+    if (!mounted || status === 'loading') {
         return null;
     }
 
-    const hasAccess = !!localStorage.getItem('viral_access_token');
-    const accessType = localStorage.getItem('viral_access_type');
+    const sessionUser = session?.user as CustomUser | undefined;
+    const hasAccess = !!localStorage.getItem('viral_access_token') || status === 'authenticated';
+    const accessType = localStorage.getItem('viral_access_type') || sessionUser?.role;
     const isAdminRoute = pathname?.startsWith('/admin');
 
     // Block if no access
