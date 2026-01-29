@@ -1,0 +1,75 @@
+.header {
+    height: 60px;
+    padding: 0 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: hsl(var(--card));
+    border-bottom: 1px solid hsl(var(--border));
+    position: sticky;
+    top: 0;
+    z-index: 50;
+}
+
+.brand {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: hsl(var(--foreground));
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    letter-spacing: -0.02em;
+}
+
+.brandAccent {
+    color: hsl(var(--primary));
+}
+
+.logoContainer {
+    background: hsl(var(--primary));
+    border-radius: 6px;
+    padding: 3px;
+    color: white;
+    display: flex;
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.profile {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.25rem 0.375rem;
+    transition: all 0.2s;
+    cursor: default;
+}
+
+.avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(260 80% 60%) 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.8125rem;
+    box-shadow: 0 2px 8px rgba(79, 70, 229, 0.2);
+}
+
+.clientName {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: hsl(var(--foreground));
+}
+
+.role {
+    font-size: 0.6875rem;
+    color: hsl(var(--muted-foreground));
+    line-height: 1;
+}

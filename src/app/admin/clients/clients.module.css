@@ -1,0 +1,268 @@
+.gridContainer {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    padding: var(--space-lg) 0;
+}
+
+.card {
+    background: var(--surface-white);
+    border: 1px solid var(--surface-border);
+    border-radius: var(--radius-card);
+    padding: var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 2px 12px var(--surface-shadow);
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+}
+
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.infoSection {
+    display: flex;
+    gap: 1.25rem;
+    flex: 1;
+}
+
+.details {
+    flex: 1;
+}
+
+.companyName {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 0.125rem;
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
+}
+
+.contactInfo {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.metaGrid {
+    display: flex;
+    gap: 1.25rem;
+    margin-top: 0.75rem;
+}
+
+.metaItem {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.codeBlock {
+    background: var(--bg-base);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    color: var(--text-primary);
+    border: 1px solid var(--surface-border);
+}
+
+.buttonGroup {
+    display: flex;
+    gap: 0.625rem;
+    align-items: center;
+}
+
+.emptyState {
+    padding: 4rem;
+    text-align: center;
+    color: var(--text-secondary);
+    background: var(--surface-white);
+    border: 1px solid var(--surface-border);
+    border-radius: var(--radius-card);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+/* Modal Styles */
+.modalOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.modalContent {
+    width: 100%;
+    max-width: 440px;
+    background: var(--surface-white);
+    padding: var(--space-lg);
+    border-radius: 20px;
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--surface-border);
+}
+
+.modalTitle {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: var(--space-lg);
+    color: var(--text-primary);
+}
+
+.formGrid {
+    display: grid;
+    gap: var(--space-sm);
+}
+
+.formField {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+}
+
+.label {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.modalFooter {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+    margin-top: var(--space-lg);
+    padding-top: var(--space-sm);
+    border-top: 1px solid var(--surface-border);
+}
+
+.pageHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: var(--space-2xl);
+    padding-bottom: var(--space-lg);
+    border-bottom: 1px solid var(--surface-border);
+}
+
+.title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    margin-bottom: 0.25rem;
+    color: var(--text-primary);
+}
+
+.subtitle {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+    .pageHeader {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-md);
+        margin-bottom: var(--space-lg);
+    }
+
+    .pageHeader button {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .card {
+        padding: var(--space-md);
+    }
+
+    .cardHeader {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-md);
+    }
+
+    .infoSection {
+        width: 100%;
+        gap: var(--space-md);
+    }
+
+    .metaGrid {
+        flex-wrap: wrap;
+        gap: var(--space-sm);
+    }
+
+    .buttonGroup {
+        width: 100%;
+        margin-top: var(--space-sm);
+        justify-content: stretch;
+    }
+
+    .buttonGroup button {
+        flex: 1;
+        justify-content: center;
+    }
+
+    .modalOverlay {
+        padding: 20px;
+        align-items: center;
+    }
+
+    .modalContent {
+        width: 100%;
+        max-width: 100%;
+        padding: 24px;
+        border-radius: 24px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+        max-height: 85vh;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .modalTitle {
+        text-align: center;
+        margin-bottom: 24px;
+        font-size: 1.25rem;
+    }
+
+    .modalFooter {
+        flex-direction: column-reverse;
+        gap: 12px;
+        margin-top: 24px;
+    }
+
+    .modalFooter button {
+        width: 100% !important;
+        justify-content: center !important;
+        padding: 16px !important;
+        /* Larger touch area */
+        font-size: 1rem !important;
+        height: auto !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .title {
+        font-size: 1.25rem;
+    }
+
+    .companyName {
+        font-size: 1rem;
+    }
+}

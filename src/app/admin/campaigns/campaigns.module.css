@@ -1,0 +1,49 @@
+/* Mobile Campaigns Page Responsive Styles */
+@media (max-width: 768px) {
+    .pageHeader {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-md);
+    }
+
+    .headerActions {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .headerActions button {
+        width: 100%;
+    }
+
+    .filters {
+        flex-direction: column;
+        gap: var(--space-sm);
+    }
+
+    .filterGroup {
+        width: 100%;
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-md);
+    }
+
+    .campaignCard {
+        padding: var(--space-md);
+    }
+}
+
+@media (max-width: 480px) {
+    .title {
+        font-size: var(--font-h2);
+    }
+
+    .campaignTitle {
+        font-size: var(--font-h3);
+    }
+
+    .stat {
+        font-size: 0.875rem;
+    }
+}

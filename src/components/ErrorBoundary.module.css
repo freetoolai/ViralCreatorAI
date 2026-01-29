@@ -1,0 +1,52 @@
+.container {
+    min-height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+}
+
+.content {
+    max-width: 500px;
+    text-align: center;
+}
+
+.icon {
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 59, 48, 0.1);
+    color: #D9534F;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+}
+
+.title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    color: hsl(var(--foreground));
+}
+
+.message {
+    color: hsl(var(--muted-foreground));
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+}
+
+.actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.actions button,
+.actions a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}

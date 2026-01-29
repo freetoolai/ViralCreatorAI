@@ -1,0 +1,45 @@
+.layout {
+    display: flex;
+    min-height: 100vh;
+    background: transparent;
+}
+
+.main {
+    flex: 1;
+    margin-left: 220px;
+    /* Sidebar width */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.content {
+    padding: var(--space-xl) var(--space-lg);
+    max-width: var(--max-width);
+    width: 100%;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+@media (max-width: 1024px) {
+    .main {
+        margin-left: 0;
+    }
+
+    .content {
+        padding: var(--space-lg) var(--space-md);
+    }
+}
+
+@media (max-width: 768px) {
+    .main {
+        padding-top: 56px;
+        /* Space for merged mobile header only */
+    }
+
+    .content {
+        padding: var(--space-md);
+    }
+}

@@ -1,0 +1,144 @@
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.title {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.25rem;
+}
+
+.subtitle {
+    color: var(--muted-foreground);
+}
+
+.plusIcon {
+    margin-right: 0.5rem;
+}
+
+.tableWrapper {
+    margin-top: 1.5rem;
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tableHeaderRow {
+    border-bottom: 1px solid var(--border);
+}
+
+.tableHeaderCell {
+    padding: 1rem;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--muted-foreground);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.tableRow {
+    border-bottom: 1px solid var(--border);
+    transition: background-color 0.2s;
+}
+
+.tableRow:hover {
+    background-color: rgba(var(--foreground-rgb), 0.02);
+}
+
+.tableCell {
+    padding: 1rem;
+    vertical-align: middle;
+}
+
+.memberCell {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.memberName {
+    font-weight: 600;
+    color: var(--foreground);
+}
+
+.memberEmail {
+    font-size: 0.8125rem;
+    color: var(--muted-foreground);
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.roleBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.25rem 0.625rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.roleAdmin {
+    background: #007AFF15;
+    color: #007AFF;
+}
+
+.roleManager {
+    background: #34C75915;
+    color: #34C759;
+}
+
+.badge {
+    display: inline-flex;
+    padding: 0.25rem 0.625rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.activeBadge {
+    background: #34C75915;
+    color: #34C759;
+}
+
+.textRight {
+    text-align: right;
+}
+
+.editBtn {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.8125rem;
+}
+
+.emptyState {
+    padding: 4rem 2rem;
+    text-align: center;
+    color: var(--muted-foreground);
+}
+
+.emptyIcon {
+    margin: 0 auto 1rem;
+    opacity: 0.2;
+}

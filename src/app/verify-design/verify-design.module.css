@@ -1,0 +1,53 @@
+.container {
+    padding: 50px;
+    background: #FFFFFF;
+    color: #000000;
+    font-family: sans-serif;
+}
+
+.card {
+    margin-top: 30px;
+    border: 1px solid #EAEAEA;
+    border-radius: 14px;
+    padding: 20px;
+}
+
+.colorGrid {
+    display: flex;
+    gap: 20px;
+    margin-top: 10px;
+}
+
+.colorBox {
+    width: 40px;
+    height: 40px;
+}
+
+.border {
+    border: 1px solid #CCC;
+}
+
+.bgWhite {
+    background-color: #FFFFFF;
+}
+
+.bgBlack {
+    background-color: #000000;
+}
+
+.bgBlue {
+    background-color: #007AFF;
+}
+
+.mt20 {
+    margin-top: 20px;
+}
+
+.mt15 {
+    margin-top: 15px;
+}
+
+.demoCard {
+    padding: 20px;
+    max-width: 300px;
+}

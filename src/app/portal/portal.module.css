@@ -1,0 +1,109 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh;
+    padding: var(--space-lg);
+}
+
+.loginCard {
+    background: var(--surface-white);
+    border: 1px solid var(--surface-border);
+    border-radius: var(--radius-card);
+    box-shadow: 0 4px 24px var(--surface-shadow);
+    padding: var(--space-xl);
+    width: 100%;
+    max-width: 440px;
+    text-align: center;
+}
+
+.iconWrapper {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: rgba(47, 94, 78, 0.08);
+    color: var(--accent-green);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem auto;
+}
+
+.title {
+    font-size: var(--font-h1);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+}
+
+.subtitle {
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    font-size: var(--font-body);
+    line-height: 1.6;
+}
+
+.input {
+    margin-bottom: 1.5rem;
+    text-align: center;
+    letter-spacing: 0.2rem;
+    font-size: 1.25rem;
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+    font-weight: 500;
+}
+
+.error {
+    color: #DC2626;
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+    background: rgba(220, 38, 38, 0.08);
+    padding: 0.75rem;
+    border-radius: 8px;
+    border: 1px solid rgba(220, 38, 38, 0.15);
+}
+
+.submitBtn {
+    width: 100%;
+    padding: 1rem 2rem;
+    font-weight: 600;
+}
+
+.btnArrow {
+    margin-left: 0.5rem;
+}/* Mobile Portal Responsive Styles */
+@media (max-width: 768px) {
+    .container {
+        padding: var(--space-lg) 0;
+    }
+
+    .loginCard {
+        max-width: 100%;
+        padding: var(--space-lg);
+        margin: 0 var(--space-md);
+    }
+
+    .title {
+        font-size: var(--font-h1);
+    }
+
+    .subtitle {
+        font-size: 0.9375rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .loginCard {
+        padding: var(--space-md);
+    }
+
+    .iconWrapper {
+        width: 56px;
+        height: 56px;
+    }
+
+    .input {
+        font-size: 1.125rem;
+    }
+}
