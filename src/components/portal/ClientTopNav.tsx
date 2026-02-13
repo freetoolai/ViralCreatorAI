@@ -1,3 +1,5 @@
+'use client';
+
 import { Sparkles, LogOut } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 import styles from './ClientTopNav.module.css';

@@ -1,0 +1,57 @@
+﻿
+> agency-app@0.1.0 build
+> next build
+
+Γû▓ Next.js 16.1.4 (Turbopack)
+- Environments: .env.local
+
+  Creating an optimized production build ...
+Γ£ô Compiled successfully in 5.6s
+  Running TypeScript ...
+  Collecting page data using 11 workers ...
+node.exe : ΓÜá∩╕Å Supabase URL or Anon Key is 
+missing. Database features will not work in this 
+environment.
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program 
+Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ΓÜá∩╕Å S 
+   upabase...is environment.:String) [], RemoteExcep  
+  tion
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+ΓÜá∩╕Å Supabase URL or Anon Key is missing. Database 
+features will not work in this environment.
+ΓÜá∩╕Å Supabase URL or Anon Key is missing. Database 
+features will not work in this environment.
+ΓÜá∩╕Å Supabase URL or Anon Key is missing. Database 
+features will not work in this environment.
+ΓÜá∩╕Å Supabase URL or Anon Key is missing. Database 
+features will not work in this environment.
+  Generating static pages using 11 workers (0/25) ...
+ΓÜá∩╕Å Supabase URL or Anon Key is missing. Database 
+features will not work in this environment.
+  Generating static pages using 11 workers (6/25) 
+ΓÜá∩╕Å Supabase URL or Anon Key is missing. Database 
+features will not work in this environment.
+  Generating static pages using 11 workers (12/25) 
+Error occurred prerendering page "/portal/dashboard". 
+Read more: 
+https://nextjs.org/docs/messages/prerender-error
+Error: Event handlers cannot be passed to Client 
+Component props.
+  {className: ..., onClick: function c, title: ..., 
+aria-label: ..., children: ...}
+                            ^^^^^^^^^^
+If you need interactivity, consider converting part 
+of this to a Client Component.
+    at stringify (<anonymous>) {
+  digest: '2776742516'
+}
+Export encountered an error on 
+/portal/dashboard/page: /portal/dashboard, exiting 
+the build.
+Γ¿» Next.js build worker exited with code: 1 and 
+signal: null

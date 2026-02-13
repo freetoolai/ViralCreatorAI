@@ -1,9 +1,11 @@
 import { useState, useCallback } from 'react';
 import { dataStore } from '@/lib/store';
 
+import { Influencer, Client, Campaign } from '@/lib/types';
+
 export type SearchResultGroup = {
     type: string;
-    items: any[];
+    items: (Influencer | Client | Campaign)[];
     path: string;
     key: string;
     label: string;

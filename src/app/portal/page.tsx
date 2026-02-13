@@ -12,27 +12,28 @@ export default function PortalLogin() {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
-    const handleLogin = (e: React.FormEvent) => {
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setError('');
 
-        // Simulate API delay
-        setTimeout(() => {
-            const clients = dataStore.getClients();
+        try {
+            const clients = await dataStore.getClients();
             const client = clients.find(c => c.accessCode === code);
 
             if (client) {
                 // In real app, set cookie/session here.
-                // For now, we'll just pass the ID via query param or simple state navigation
-                // A real app would use context or session management
                 localStorage.setItem('portal_client_id', client.id);
                 router.push('/portal/dashboard');
             } else {
                 setError('Invalid access code. Please try again.');
                 setLoading(false);
             }
-        }, 1000);
+        } catch (err) {
+            console.error(err);
+            setError('An error occurred. Please try again.');
+            setLoading(false);
+        }
     };
 
     return (

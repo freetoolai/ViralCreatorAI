@@ -19,10 +19,14 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
     // Focus input when opening
     useEffect(() => {
         if (isOpen) {
-            setTimeout(() => inputRef.current?.focus(), 50);
+            const timer = setTimeout(() => inputRef.current?.focus(), 50);
+            return () => clearTimeout(timer);
         } else {
-            setQuery('');
-            clearResults();
+            // Use requestAnimationFrame or similar to avoid synchronous setState inside effect warning
+            requestAnimationFrame(() => {
+                setQuery('');
+                clearResults();
+            });
         }
     }, [isOpen, clearResults]);
 
@@ -57,10 +61,10 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                         results.map((group) => (
                             <div key={group.type} className={styles.resultGroup}>
                                 <div className={styles.groupTitle}>{group.type}</div>
-                                {group.items.map((item: any) => (
+                                {group.items.map((item) => (
                                     <Link
-                                        key={item[group.key]}
-                                        href={group.type === 'Campaigns' ? `/admin/campaigns/${item.id}` : group.path}
+                                        key={(item as unknown as Record<string, string>)[group.key]}
+                                        href={group.type === 'Campaigns' ? `/admin/campaigns/${(item as unknown as Record<string, string>).id}` : group.path}
                                         className={styles.resultItem}
                                         onClick={onClose}
                                     >
@@ -68,8 +72,8 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                                             {group.type === 'Influencers' ? 'I' : group.type === 'Clients' ? 'C' : 'P'}
                                         </div>
                                         <div className={styles.resultInfo}>
-                                            <span className={styles.resultName}>{item[group.label]}</span>
-                                            <span className={styles.resultMeta}>{item[group.sub]}</span>
+                                            <span className={styles.resultName}>{(item as unknown as Record<string, string>)[group.label]}</span>
+                                            <span className={styles.resultMeta}>{(item as unknown as Record<string, string>)[group.sub]}</span>
                                         </div>
                                         <ChevronRight size={16} color="var(--text-muted)" />
                                     </Link>

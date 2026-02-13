@@ -67,10 +67,10 @@ export function TopNav() {
                             results.map((group) => (
                                 <div key={group.type} className={styles.resultGroup}>
                                     <div className={styles.groupTitle}>{group.type}</div>
-                                    {group.items.map((item: any) => (
+                                    {group.items.map((item) => (
                                         <Link
-                                            key={item[group.key]}
-                                            href={group.type === 'Campaigns' ? `/admin/campaigns/${item.id}` : group.path}
+                                            key={(item as unknown as Record<string, string>)[group.key]}
+                                            href={group.type === 'Campaigns' ? `/admin/campaigns/${(item as unknown as Record<string, string>).id}` : group.path}
                                             className={styles.resultItem}
                                             onClick={() => setShowResults(false)}
                                         >
@@ -78,8 +78,8 @@ export function TopNav() {
                                                 {group.type === 'Influencers' ? 'I' : group.type === 'Clients' ? 'C' : 'P'}
                                             </div>
                                             <div className={styles.resultInfo}>
-                                                <span className={styles.resultName}>{item[group.label]}</span>
-                                                <span className={styles.resultMeta}>{item[group.sub]}</span>
+                                                <span className={styles.resultName}>{(item as unknown as Record<string, string>)[group.label]}</span>
+                                                <span className={styles.resultMeta}>{(item as unknown as Record<string, string>)[group.sub]}</span>
                                             </div>
                                         </Link>
                                     ))}
