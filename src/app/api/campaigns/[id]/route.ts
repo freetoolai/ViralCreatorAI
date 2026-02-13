@@ -7,7 +7,7 @@ export async function GET(
 ) {
     const { id } = await params;
     try {
-        const campaign = dataStore.getCampaign(id);
+        const campaign = await dataStore.getCampaign(id);
         if (!campaign) {
             return NextResponse.json({ error: 'Campaign not found' }, { status: 404 });
         }

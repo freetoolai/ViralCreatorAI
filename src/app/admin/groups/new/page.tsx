@@ -22,17 +22,26 @@ export default function NewGroupPage() {
     const [selectedCampaigns, setSelectedCampaigns] = useState<Set<string>>(new Set());
 
     useEffect(() => {
-        Promise.resolve().then(() => {
-            setClients(dataStore.getClients());
-            setCampaigns(dataStore.getCampaigns());
-        });
+        const fetchData = async () => {
+            try {
+                const [c, camp] = await Promise.all([
+                    dataStore.getClients(),
+                    dataStore.getCampaigns()
+                ]);
+                setClients(c);
+                setCampaigns(camp);
+            } catch (error) {
+                console.error("Failed to load data for new group:", error);
+            }
+        };
+        fetchData();
     }, []);
 
     const filteredCampaigns = campaigns.filter(c =>
         !form.clientId || c.clientId === form.clientId
     );
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!form.clientId || selectedCampaigns.size === 0) {
             alert('Please select a client and at least one campaign.');
@@ -48,8 +57,12 @@ export default function NewGroupPage() {
             createdAt: new Date().toISOString()
         };
 
-        dataStore.addGroup(newGroup);
-        router.push('/admin/groups');
+        try {
+            await dataStore.addGroup(newGroup);
+            router.push('/admin/groups');
+        } catch (error) {
+            console.error("Failed to create group:", error);
+        }
     };
 
     const toggleCampaign = (id: string) => {

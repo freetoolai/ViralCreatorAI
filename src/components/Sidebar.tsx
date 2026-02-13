@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { signOut } from 'next-auth/react';
-import { LayoutDashboard, Users, UserCircle, Briefcase, Settings, LogOut, Search } from 'lucide-react';
+import { LayoutDashboard, Users, UserCircle, Briefcase, Settings, LogOut, Search, Folder } from 'lucide-react';
 import clsx from 'clsx';
 import styles from './Sidebar.module.css';
 import { SearchModal } from './SearchModal';
@@ -14,6 +14,7 @@ const navItems = [
     { name: 'Influencers', href: '/admin/influencers', icon: Users },
     { name: 'Clients', href: '/admin/clients', icon: UserCircle },
     { name: 'Campaigns', href: '/admin/campaigns', icon: Briefcase },
+    { name: 'Campaign Groups', href: '/admin/groups', icon: Folder },
     { name: 'Settings', href: '/admin/settings', icon: Settings },
 ];
 

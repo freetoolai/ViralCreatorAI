@@ -529,3 +529,90 @@
         display: none !important;
     }
 }
+/* Actions Column & Buttons */
+.actionsCell {
+    text-align: right !important;
+    padding-right: 1.25rem !important;
+    width: 140px;
+}
+
+.actionButtons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+.iconButton {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    color: var(--text-muted);
+    background: transparent;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.iconButton:hover {
+    background: var(--bg-base);
+    color: var(--text-primary);
+    border-color: var(--surface-border);
+}
+
+.deleteButton:hover {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.05);
+    border-color: rgba(239, 68, 68, 0.1);
+}
+
+.mobileActions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: var(--space-md);
+    padding-top: var(--space-sm);
+    border-top: 1px solid var(--surface-border);
+}
+
+.actionBtn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    padding: 0.5rem;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    background: var(--bg-base);
+    border: 1px solid var(--surface-border);
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.actionBtn:hover {
+    background: var(--surface-white);
+    color: var(--text-primary);
+}
+
+.deleteAction {
+    flex: 0 0 40px;
+    color: #ef4444;
+}
+
+.deleteAction:hover {
+    background: rgba(239, 68, 68, 0.05);
+    border-color: #ef4444;
+}
+
+.nameLink {
+    text-decoration: none;
+    color: inherit;
+}
+
+.nameLink:hover .name {
+    color: var(--accent-green);
+}

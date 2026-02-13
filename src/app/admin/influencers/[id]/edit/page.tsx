@@ -1,16 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import clsx from 'clsx';
-import { ArrowLeft, Save, AlertCircle, Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, Save, AlertCircle, Plus, Trash2, Loader2 } from 'lucide-react';
 import { dataStore } from '@/lib/store';
 import { Influencer, SocialProfile, PlatformName, Tier } from '@/lib/types';
-import styles from './new-influencer.module.css';
+import styles from '../../new/new-influencer.module.css';
 
-
-export default function NewInfluencerPage() {
+export default function EditInfluencerPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = use(params);
     const router = useRouter();
     const [formData, setFormData] = useState({
         name: '',
@@ -26,11 +26,41 @@ export default function NewInfluencerPage() {
     const [platforms, setPlatforms] = useState<SocialProfile[]>([]);
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [isFetching, setIsFetching] = useState(true);
 
     // Options
     const niches = ['Tech', 'Fashion', 'Gaming', 'Lifestyle', 'Beauty', 'Finance', 'Food', 'Travel', 'Fitness'];
     const tiers: Tier[] = ['Nano', 'Micro', 'Mid-Tier', 'Macro', 'Mega'];
     const platformOptions: PlatformName[] = ['Instagram', 'TikTok', 'YouTube', 'Twitter', 'Twitch', 'Other'];
+
+    useEffect(() => {
+        const fetchInfluencer = async () => {
+            try {
+                const inf = await dataStore.getInfluencer(id);
+                if (inf) {
+                    setFormData({
+                        name: inf.name,
+                        email: inf.email,
+                        phone: inf.phone || '',
+                        shippingAddress: inf.shippingAddress || '',
+                        primaryNiche: inf.primaryNiche,
+                        secondaryNiches: inf.secondaryNiches || [],
+                        tier: inf.tier,
+                        internalNotes: inf.internalNotes || ''
+                    });
+                    setPlatforms(inf.platforms || []);
+                } else {
+                    setError('Influencer not found.');
+                }
+            } catch (err) {
+                console.error("Failed to fetch influencer:", err);
+                setError('Failed to load influencer data.');
+            } finally {
+                setIsFetching(false);
+            }
+        };
+        fetchInfluencer();
+    }, [id]);
 
     const handleAddPlatform = () => {
         const newPlatform: SocialProfile = {
@@ -65,30 +95,28 @@ export default function NewInfluencerPage() {
         }
 
         try {
-            const influencers = await dataStore.getInfluencers();
-            const existing = influencers.find(i => i.email.toLowerCase() === formData.email.toLowerCase());
-
-            if (existing) {
-                setError('An influencer with this email already exists.');
-                setIsLoading(false);
-                return;
-            }
-
-            const newInfluencer: Influencer = {
-                id: `inf-${Date.now()}`,
+            const updatedInfluencer: Partial<Influencer> = {
                 ...formData,
                 platforms: platforms
             };
 
-            await dataStore.addInfluencer(newInfluencer);
+            await dataStore.updateInfluencer(id, updatedInfluencer);
             router.push('/admin/influencers');
         } catch (error) {
-            console.error("Failed to save influencer:", error);
-            setError('Failed to save influencer.');
+            console.error("Failed to update influencer:", error);
+            setError('Failed to update influencer.');
         } finally {
             setIsLoading(false);
         }
     };
+
+    if (isFetching) {
+        return (
+            <div className={styles.loadingContainer}>
+                <Loader2 className="animate-spin" size={32} />
+            </div>
+        );
+    }
 
     return (
         <div className={clsx("container", styles.formContainer)}>
@@ -98,8 +126,8 @@ export default function NewInfluencerPage() {
 
             <div className={clsx("glass-panel", styles.formCard)}>
                 <header className={styles.formHeader}>
-                    <h1 className={styles.formTitle}>Add new talent</h1>
-                    <p className={styles.formSubtitle}>Create a comprehensive profile for your influencer network.</p>
+                    <h1 className={styles.formTitle}>Edit Profile</h1>
+                    <p className={styles.formSubtitle}>Update information for {formData.name}.</p>
                 </header>
 
                 {error && (
@@ -306,7 +334,7 @@ export default function NewInfluencerPage() {
                         <Link href="/admin/influencers" className={clsx("btn btn-secondary", styles.footerBtn)}>Cancel</Link>
                         <button type="submit" className={clsx("btn btn-primary", styles.primaryFooterBtn)} disabled={isLoading}>
                             <Save size={18} className={styles.iconMargin} />
-                            {isLoading ? 'Saving Talent...' : 'Create Influencer'}
+                            {isLoading ? 'Saving Changes...' : 'Save Changes'}
                         </button>
                     </div>
                 </form>

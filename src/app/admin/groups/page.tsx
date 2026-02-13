@@ -13,21 +13,35 @@ export default function GroupsPage() {
     const [campaigns, setCampaigns] = useState<Campaign[]>([]);
 
     useEffect(() => {
-        // Hydrate async to avoid sync-in-effect warning
-        Promise.resolve().then(() => {
-            setGroups(dataStore.getGroups());
-            setClients(dataStore.getClients());
-            setCampaigns(dataStore.getCampaigns());
-        });
+        const fetchData = async () => {
+            try {
+                const [g, c, camp] = await Promise.all([
+                    dataStore.getGroups(),
+                    dataStore.getClients(),
+                    dataStore.getCampaigns()
+                ]);
+                setGroups(g);
+                setClients(c);
+                setCampaigns(camp);
+            } catch (error) {
+                console.error("Failed to load groups:", error);
+            }
+        };
+        fetchData();
     }, []);
 
     const getClientName = (id: string) => clients.find(c => c.id === id)?.companyName || 'Unknown Client';
     const getCampaignName = (id: string) => campaigns.find(c => c.id === id)?.title || id;
 
-    const handleDelete = (id: string) => {
+    const handleDelete = async (id: string) => {
         if (confirm('Are you sure you want to delete this group?')) {
-            dataStore.deleteGroup(id);
-            setGroups(dataStore.getGroups());
+            try {
+                await dataStore.deleteGroup(id);
+                const updated = await dataStore.getGroups();
+                setGroups(updated);
+            } catch (error) {
+                console.error("Failed to delete group:", error);
+            }
         }
     };
 

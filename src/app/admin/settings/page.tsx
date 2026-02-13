@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Settings as SettingsIcon, Bell, Lock, Database, RotateCcw } from 'lucide-react';
 import clsx from 'clsx';
+import { dataStore } from '@/lib/store';
 import styles from './settings.module.css';
 
 export default function SettingsPage() {
@@ -45,10 +46,20 @@ export default function SettingsPage() {
         }, 800);
     };
 
-    const handleClearCache = () => {
-        if (confirm("Are you sure you want to clear all local data? This will reset your mock data and logout.")) {
-            localStorage.clear();
-            window.location.href = '/';
+    const handleClearCache = async () => {
+        if (confirm("Are you sure you want to PERMANENTLY delete all data from the database? This cannot be undone.")) {
+            try {
+                setIsLoading(true);
+                await dataStore.purgeAllData();
+                localStorage.clear();
+                alert("All data cleared successfully.");
+                window.location.reload();
+            } catch (error) {
+                console.error("Purge failed:", error);
+                alert("Failed to clear database. Check console for details.");
+            } finally {
+                setIsLoading(false);
+            }
         }
     };
 

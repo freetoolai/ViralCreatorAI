@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import clsx from 'clsx';
@@ -11,8 +11,20 @@ import styles from './new.module.css';
 
 export default function NewCampaignPage() {
     const router = useRouter();
-    const [clients] = useState<Client[]>(() => dataStore.getClients());
+    const [clients, setClients] = useState<Client[]>([]);
     const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        const fetchClients = async () => {
+            try {
+                const data = await dataStore.getClients();
+                setClients(data);
+            } catch (error) {
+                console.error("Failed to fetch clients:", error);
+            }
+        };
+        fetchClients();
+    }, []);
 
     // Form State
     const [title, setTitle] = useState('');
@@ -25,7 +37,7 @@ export default function NewCampaignPage() {
         setPlatforms(prev => prev.includes(p) ? prev.filter(x => x !== p) : [...prev, p]);
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
 
@@ -41,12 +53,13 @@ export default function NewCampaignPage() {
             createdAt: new Date().toISOString()
         };
 
-        // Use real store method
-        dataStore.addCampaign(newCampaign);
-
-        setTimeout(() => {
+        try {
+            await dataStore.addCampaign(newCampaign);
             router.push('/admin/campaigns');
-        }, 800);
+        } catch (error) {
+            console.error("Failed to create campaign:", error);
+            setLoading(false);
+        }
     };
 
     const availablePlatforms: PlatformName[] = ['YouTube', 'Instagram', 'TikTok', 'Twitter', 'Twitch'];

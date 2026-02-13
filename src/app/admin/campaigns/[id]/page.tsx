@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useState, useEffect, useMemo, useCallback } from 'react';
+import { use, useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Users, Calendar, Plus, X, Search } from 'lucide-react';
 import { Campaign, Influencer, CampaignInfluencerRef, InfluencerApprovalStatus } from '@/lib/types';
@@ -29,39 +29,57 @@ export default function CampaignAdminDetail({ params }: { params: Promise<{ id: 
     const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
     const [influencerToDelete, setInfluencerToDelete] = useState<string | null>(null);
 
-    const loadData = useCallback(() => {
-        const camp = dataStore.getCampaign(id);
-        const infs = dataStore.getInfluencers();
-        if (camp) setCampaign({ ...camp });
-        if (infs) setAllInfluencers(infs);
-    }, [id]);
+    const [financials, setFinancials] = useState({ totalPayout: 0, totalRevenue: 0, totalProfit: 0 });
+
+    const loadData = useCallback(async () => {
+        try {
+            const camp = await dataStore.getCampaign(id);
+            const infs = await dataStore.getInfluencers();
+            const fins = await dataStore.getCampaignFinancials(id);
+
+            if (camp) setCampaign({ ...camp });
+            if (infs) setAllInfluencers(infs);
+            if (fins) setFinancials(fins);
+        } catch (error) {
+            console.error("Failed to load campaign data:", error);
+            showToast("Error loading campaign details.");
+        }
+    }, [id, showToast]);
 
     useEffect(() => {
-        loadData();
+        const init = async () => {
+            await loadData();
+        };
+        init();
     }, [loadData]);
 
-    const financials = useMemo(() => {
-        if (!campaign) return { totalPayout: 0, totalRevenue: 0, totalProfit: 0 };
-        return dataStore.getCampaignFinancials(id);
-    }, [campaign, id]);
 
-    const handleAddInfluencers = () => {
-        selectedForAdd.forEach(infId => {
-            dataStore.addInfluencerToCampaign(id, infId);
-        });
-        const count = selectedForAdd.size;
-        setIsModalOpen(false);
-        setSelectedForAdd(new Set());
-        loadData();
-        showToast(`Successfully added ${count} talent to campaign`);
+    const handleAddInfluencers = async () => {
+        try {
+            for (const infId of selectedForAdd) {
+                await dataStore.addInfluencerToCampaign(id, infId);
+            }
+            const count = selectedForAdd.size;
+            setIsModalOpen(false);
+            setSelectedForAdd(new Set());
+            await loadData();
+            showToast(`Successfully added ${count} talent to campaign`);
+        } catch (error) {
+            console.error("Failed to add influencers:", error);
+            showToast("Error adding influencers to campaign.");
+        }
     };
 
-    const handleUpdateInfluencer = (infId: string, field: keyof CampaignInfluencerRef, value: string | number | boolean) => {
-        dataStore.updateInfluencerInCampaign(id, infId, { [field]: value });
-        loadData();
-        // Silent update for small fields, maybe toast for status?
-        if (field === 'status') {
-            showToast(`Status updated to ${value}`);
+    const handleUpdateInfluencer = async (infId: string, field: keyof CampaignInfluencerRef, value: string | number | boolean) => {
+        try {
+            await dataStore.updateInfluencerInCampaign(id, infId, { [field]: value });
+            await loadData();
+            if (field === 'status') {
+                showToast(`Status updated to ${value}`);
+            }
+        } catch (error) {
+            console.error("Failed to update influencer:", error);
+            showToast("Error updating talent info.");
         }
     };
 
@@ -70,13 +88,18 @@ export default function CampaignAdminDetail({ params }: { params: Promise<{ id: 
         setIsConfirmDeleteOpen(true);
     };
 
-    const confirmDelete = () => {
+    const confirmDelete = async () => {
         if (influencerToDelete) {
-            dataStore.removeInfluencerFromCampaign(id, influencerToDelete);
-            setIsConfirmDeleteOpen(false);
-            setInfluencerToDelete(null);
-            loadData();
-            showToast("Talent removed from campaign");
+            try {
+                await dataStore.removeInfluencerFromCampaign(id, influencerToDelete);
+                setIsConfirmDeleteOpen(false);
+                setInfluencerToDelete(null);
+                await loadData();
+                showToast("Talent removed from campaign");
+            } catch (error) {
+                console.error("Failed to remove influencer:", error);
+                showToast("Error removing talent from campaign.");
+            }
         }
     };
 

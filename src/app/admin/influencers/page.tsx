@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import clsx from 'clsx';
 import Link from 'next/link';
-import { Search, Plus, Instagram, MessageCircle, Twitter, Youtube } from 'lucide-react';
+import { Search, Plus, Instagram, MessageCircle, Twitter, Youtube, Trash2, Edit2, Eye } from 'lucide-react';
 import { Influencer, PlatformName, Campaign } from '@/lib/types';
 import { dataStore } from '@/lib/store';
 import { useToast } from '@/components/ToastContext';
@@ -19,9 +19,19 @@ export default function InfluencersPage() {
     const [campaigns, setCampaigns] = useState<Campaign[]>([]);
 
     useEffect(() => {
-        setInfluencers(dataStore.getInfluencers());
-        setCampaigns(dataStore.getCampaigns());
-    }, []);
+        const fetchData = async () => {
+            try {
+                const infs = await dataStore.getInfluencers();
+                const camps = await dataStore.getCampaigns();
+                setInfluencers(infs);
+                setCampaigns(camps);
+            } catch (error) {
+                console.error("Failed to fetch data:", error);
+                showToast("Failed to load creators or campaigns.");
+            }
+        };
+        fetchData();
+    }, [showToast]);
 
     const stats = useMemo(() => {
         const totalCreators = influencers.length;
@@ -62,17 +72,35 @@ export default function InfluencersPage() {
         });
     }, [influencers, searchQuery, selectedPlatform]);
 
-    const handleAddToCampaign = (campaignId: string) => {
-        const camp = dataStore.getCampaign(campaignId);
+    const handleAddToCampaign = async (campaignId: string) => {
+        const camp = await dataStore.getCampaign(campaignId);
         if (!camp) return;
 
-        selectedInfluencerIds.forEach(id => {
-            dataStore.addInfluencerToCampaign(campaignId, id);
-        });
+        try {
+            await Promise.all(selectedInfluencerIds.map(id =>
+                dataStore.addInfluencerToCampaign(campaignId, id)
+            ));
 
-        setIsAddModalOpen(false);
-        setSelectedInfluencerIds([]);
-        showToast(`Successfully added ${selectedInfluencerIds.length} creators to ${camp.title}`);
+            setIsAddModalOpen(false);
+            setSelectedInfluencerIds([]);
+            showToast(`Successfully added ${selectedInfluencerIds.length} creators to ${camp.title}`);
+        } catch (error) {
+            console.error("Failed to add to campaign:", error);
+            showToast("Failed to add creators to campaign.");
+        }
+    };
+
+    const handleDeleteInfluencer = async (id: string, name: string) => {
+        if (!confirm(`Are you sure you want to delete ${name}? This action cannot be undone.`)) return;
+
+        try {
+            await dataStore.deleteInfluencer(id);
+            setInfluencers(prev => prev.filter(inf => inf.id !== id));
+            showToast(`${name} has been removed from the network.`);
+        } catch (error) {
+            console.error("Failed to delete influencer:", error);
+            showToast("Failed to remove creator.");
+        }
     };
 
     return (
@@ -195,6 +223,24 @@ export default function InfluencersPage() {
                                     {inf.tier}
                                 </span>
                             </div>
+                            <div className={styles.mobileActions}>
+                                <Link href={`/admin/influencers/${inf.id}`} className={styles.actionBtn} onClick={e => e.stopPropagation()}>
+                                    <Eye size={16} /> Details
+                                </Link>
+                                <Link href={`/admin/influencers/${inf.id}/edit`} className={styles.actionBtn} onClick={e => e.stopPropagation()}>
+                                    <Edit2 size={16} /> Edit
+                                </Link>
+                                <button
+                                    className={clsx(styles.actionBtn, styles.deleteAction)}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDeleteInfluencer(inf.id, inf.name);
+                                    }}
+                                    title={`Delete ${inf.name}`}
+                                >
+                                    <Trash2 size={16} />
+                                </button>
+                            </div>
                         </div>
                     )
                 })}
@@ -225,6 +271,7 @@ export default function InfluencersPage() {
                             <th>Profitability</th>
                             <th>Niche</th>
                             <th>Tier</th>
+                            <th className={styles.actionsCell}>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -252,7 +299,9 @@ export default function InfluencersPage() {
                                         <div className={styles.influencerCell}>
                                             <div className={styles.avatar}>{inf.name[0]}</div>
                                             <div className={styles.nameInfo}>
-                                                <span className={styles.name}>{inf.name}</span>
+                                                <Link href={`/admin/influencers/${inf.id}`} className={styles.nameLink} onClick={e => e.stopPropagation()}>
+                                                    <span className={styles.name}>{inf.name}</span>
+                                                </Link>
                                                 <span className={styles.handle}>{primaryProfile?.handle || '@handle'}</span>
                                             </div>
                                         </div>
@@ -280,6 +329,36 @@ export default function InfluencersPage() {
                                         <span className={clsx(styles.tierBadge, styles[`tier${inf.tier.replace('-', '')}`])}>
                                             {inf.tier}
                                         </span>
+                                    </td>
+                                    <td className={styles.actionsCell}>
+                                        <div className={styles.actionButtons}>
+                                            <Link
+                                                href={`/admin/influencers/${inf.id}`}
+                                                className={styles.iconButton}
+                                                title="View Details"
+                                                onClick={e => e.stopPropagation()}
+                                            >
+                                                <Eye size={18} />
+                                            </Link>
+                                            <Link
+                                                href={`/admin/influencers/${inf.id}/edit`}
+                                                className={styles.iconButton}
+                                                title="Edit Influencer"
+                                                onClick={e => e.stopPropagation()}
+                                            >
+                                                <Edit2 size={18} />
+                                            </Link>
+                                            <button
+                                                className={clsx(styles.iconButton, styles.deleteButton)}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleDeleteInfluencer(inf.id, inf.name);
+                                                }}
+                                                title="Delete Influencer"
+                                            >
+                                                <Trash2 size={18} />
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             );

@@ -3,6 +3,14 @@
     padding-bottom: var(--space-4xl);
 }
 
+.loadingContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    color: var(--accent-green);
+}
+
 .backBtn {
     margin-bottom: var(--space-2xl);
     display: inline-flex;

@@ -54,9 +54,9 @@ export default function InfluencerDetail({ params }: { params: Promise<{ id: str
                         </div>
                     </div>
                 </div>
-                <button className="btn btn-primary">
+                <Link href={`/admin/influencers/${id}/edit`} className="btn btn-primary">
                     <Edit size={16} /> Edit Profile
-                </button>
+                </Link>
             </div>
 
             <div className={styles.grid}>

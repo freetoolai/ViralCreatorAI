@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Upload, CheckCircle, AlertCircle, ArrowLeft, FileText, X } from 'lucide-react';
+import { Upload, ArrowLeft, FileText, X } from 'lucide-react';
 import Link from 'next/link';
 import Papa from 'papaparse';
 import { dataStore } from '@/lib/store';
@@ -84,57 +84,60 @@ export default function ImportPage() {
         });
     };
 
-    const handleImport = () => {
-        const existingInfluencers = dataStore.getInfluencers();
-        const existingEmails = new Set(existingInfluencers.map(i => i.email.toLowerCase()));
+    const handleImport = async () => {
+        try {
+            const existingInfluencers = await dataStore.getInfluencers();
+            const existingEmails = new Set(existingInfluencers.map(i => i.email.toLowerCase()));
 
-        const newInfluencers: Influencer[] = [];
-        let duplicates = 0;
-        let skipped = 0;
+            const newInfluencers: Influencer[] = [];
+            let duplicates = 0;
 
-        preview.forEach((row: CSVRow, index: number) => {
-            if (!row.Name || !row.Email) {
-                skipped++;
-                return;
-            }
+            preview.forEach((row: CSVRow, index: number) => {
+                if (!row.Name || !row.Email) {
+                    return;
+                }
 
-            const normalizedEmail = row.Email.toLowerCase().trim();
+                const normalizedEmail = row.Email.toLowerCase().trim();
 
-            if (existingEmails.has(normalizedEmail)) {
-                duplicates++;
-                return;
-            }
+                if (existingEmails.has(normalizedEmail)) {
+                    duplicates++;
+                    return;
+                }
 
-            newInfluencers.push({
-                id: `imported-${Date.now()}-${index}`,
-                name: row.Name,
-                email: row.Email,
-                phone: row.Phone,
-                shippingAddress: row.Address,
-                internalNotes: row.Notes,
-                primaryNiche: row.Niche || 'General',
-                secondaryNiches: [],
-                tier: (row.Tier as Tier) || 'Micro',
-                platforms: [
-                    {
-                        platform: (row.Platform as PlatformName) || 'Instagram',
-                        handle: row.Handle || '',
-                        link: row.Link || '',
-                        followers: parseInt(row.Followers || '0') || 0,
-                        price: parseInt(row.Price || '0') || 0
-                    }
-                ]
+                newInfluencers.push({
+                    id: `imported-${Date.now()}-${index}`,
+                    name: row.Name,
+                    email: row.Email,
+                    phone: row.Phone,
+                    shippingAddress: row.Address,
+                    internalNotes: row.Notes,
+                    primaryNiche: row.Niche || 'General',
+                    secondaryNiches: [],
+                    tier: (row.Tier as Tier) || 'Micro',
+                    platforms: [
+                        {
+                            platform: (row.Platform as PlatformName) || 'Instagram',
+                            handle: row.Handle || '',
+                            link: row.Link || '',
+                            followers: parseInt(row.Followers || '0') || 0,
+                            price: parseInt(row.Price || '0') || 0
+                        }
+                    ]
+                });
+
+                existingEmails.add(normalizedEmail);
             });
 
-            existingEmails.add(normalizedEmail);
-        });
-
-        if (newInfluencers.length > 0) {
-            dataStore.addInfluencers(newInfluencers);
-            showToast(`Import Success: ${newInfluencers.length} added`);
-            router.push('/admin/influencers');
-        } else {
-            showToast(`No new influencers added. ${duplicates} duplicates found.`, "error");
+            if (newInfluencers.length > 0) {
+                await dataStore.addInfluencers(newInfluencers);
+                showToast(`Import Success: ${newInfluencers.length} added`);
+                router.push('/admin/influencers');
+            } else {
+                showToast(`No new influencers added. ${duplicates} duplicates found.`, "error");
+            }
+        } catch (error) {
+            console.error("Failed to import influencers:", error);
+            showToast("Import failed. Please check your data format.", "error");
         }
     };
 

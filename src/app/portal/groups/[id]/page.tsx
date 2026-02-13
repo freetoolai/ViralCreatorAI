@@ -14,17 +14,23 @@ export default function PortalGroupDetail({ params }: { params: Promise<{ id: st
     const [allInfluencers, setAllInfluencers] = useState<Influencer[]>([]);
 
     useEffect(() => {
-        Promise.resolve().then(() => {
-            const g = dataStore.getGroups().find(groupOpt => groupOpt.id === id);
-            if (g) {
-                setGroup(g);
-                // Fetch only relevant campaigns
-                const allCamps = dataStore.getCampaigns();
-                const groupCamps = allCamps.filter(c => g.campaignIds.includes(c.id));
-                setCampaigns(groupCamps);
-                setAllInfluencers(dataStore.getInfluencers());
+        const fetchGroup = async () => {
+            try {
+                const g = await dataStore.getGroup(id);
+                if (g) {
+                    setGroup(g);
+                    // Fetch only relevant campaigns
+                    const allCamps = await dataStore.getCampaigns();
+                    const groupCamps = allCamps.filter(c => g.campaignIds.includes(c.id));
+                    setCampaigns(groupCamps);
+                    const allInfs = await dataStore.getInfluencers();
+                    setAllInfluencers(allInfs);
+                }
+            } catch (error) {
+                console.error("Failed to load shared view:", error);
             }
-        });
+        };
+        fetchGroup();
     }, [id]);
 
     if (!group) return <div className={styles.loading}>Loading shared view...</div>;

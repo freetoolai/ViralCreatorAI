@@ -1,249 +1,270 @@
-import { Influencer, Client, Campaign, User, CampaignInfluencerRef, CampaignGroup } from './types';
+import { Influencer, Client, Campaign, CampaignInfluencerRef, CampaignGroup } from './types';
+import { supabase } from './supabase';
 
-// Mock Users (Team)
-const MOCK_USERS: User[] = [
-    { id: 'u1', name: 'Alice Admin', email: 'alice@agency.com', role: 'Admin' },
-    { id: 'u2', name: 'Bob Manager', email: 'bob@agency.com', role: 'Campaign Manager' },
-];
+interface InfluencerRow {
+    id: string;
+    name: string;
+    email: string;
+    phone: string | null;
+    shipping_address: string | null;
+    primary_niche: string | null;
+    secondary_niches: string[] | null;
+    tier: Influencer['tier'];
+    internal_notes: string | null;
+    platforms: import('./types').SocialProfile[] | null;
+    typical_payout: number | null;
+    typical_charge: number | null;
+    media_kit_url: string | null;
+    created_at?: string;
+}
 
-// Mock Data
-const MOCK_INFLUENCERS: Influencer[] = [
-    {
-        id: '1',
-        name: 'Tech Reviewer A',
-        email: 'contact@techA.com',
-        primaryNiche: 'Tech',
-        secondaryNiches: ['Gaming', 'Software'],
-        tier: 'Macro',
-        platforms: [
-            {
-                platform: 'YouTube',
-                handle: 'TechA',
-                link: 'https://youtube.com/@techa',
-                followers: 1200000,
-                avgViews: 450000,
-                price: 5000,
-                deliverableType: 'Dedicated Review'
-            },
-            {
-                platform: 'Twitter',
-                handle: '@techa',
-                link: 'https://twitter.com/techa',
-                followers: 500000
-            },
-        ],
-        internalNotes: 'Great for B2B software reviews. High conversion.',
-        typicalPayout: 5000,
-        typicalCharge: 7500
-    },
-    {
-        id: '2',
-        name: 'Sarah Style',
-        email: 'sarah@style.com',
-        primaryNiche: 'Fashion',
-        secondaryNiches: ['Lifestyle', 'Beauty'],
-        tier: 'Mid-Tier',
-        platforms: [
-            {
-                platform: 'Instagram',
-                handle: '@sarahstyle',
-                link: 'https://instagram.com/sarahstyle',
-                followers: 150000,
-                engagementRate: 4.5,
-                price: 1500,
-                deliverableType: 'Reel + Story'
-            },
-        ],
-        typicalPayout: 1500,
-        typicalCharge: 2200
-    },
-    {
-        id: '3',
-        name: 'Dev Daily',
-        email: 'dev@daily.com',
-        primaryNiche: 'Coding',
-        secondaryNiches: ['Tech', 'Career'],
-        tier: 'Micro',
-        platforms: [
-            { platform: 'Twitter', handle: '@devdaily', link: 'https://x.com', followers: 25000, price: 300 }
-        ],
-        typicalPayout: 300,
-        typicalCharge: 500
-    }
-];
+interface ClientRow {
+    id: string;
+    name: string;
+    email: string;
+    company_name: string | null;
+    access_code: string | null;
+    created_at?: string;
+}
 
-const MOCK_CLIENTS: Client[] = [
-    {
-        id: 'c1',
-        name: 'Jane Doe',
-        email: 'jane@fintech.com',
-        companyName: 'FinTech Co',
-        accessCode: '1111',
-    },
-    {
-        id: 'c2',
-        name: 'Mike Shoe',
-        email: 'mike@sneakers.com',
-        companyName: 'SneakerHead',
-        accessCode: '2222',
-    },
-];
+interface CampaignRow {
+    id: string;
+    client_id: string;
+    title: string;
+    status: Campaign['status'];
+    total_budget: number | null;
+    platform_focus: string[] | null;
+    required_niches: string[] | null;
+    influencers: CampaignInfluencerRef[] | null;
+    description: string | null;
+    created_at?: string;
+}
 
-const MOCK_CAMPAIGNS: Campaign[] = [
-    {
-        id: 'camp1',
-        clientId: 'c1',
-        title: 'Q3 Product Launch',
-        status: 'Active',
-        totalBudget: 75000,
-        platformFocus: ['YouTube', 'Twitter'],
-        requiredNiches: ['Tech', 'Finance'],
-        influencers: [
-            {
-                influencerId: '1',
-                status: 'Approved',
-                influencerFee: 5000,
-                clientFee: 7500,
-                deliverables: 'YouTube Integration',
-                productAccess: true,
-                plannedDate: '2026-02-15',
-                updatedAt: new Date().toISOString()
-            }
-        ],
-        createdAt: new Date().toISOString(),
-        description: 'Launching our new SaaS product to the tech community.'
-    },
-];
-
-const MOCK_GROUPS: CampaignGroup[] = [
-    {
-        id: 'grp1',
-        title: 'Q1 Active Groups',
-        description: 'Core campaigns for the first quarter.',
-        campaignIds: ['camp1'],
-        clientId: 'c1',
-        createdAt: new Date().toISOString()
-    }
-];
+interface GroupRow {
+    id: string;
+    title: string;
+    description: string | null;
+    campaign_ids: string[] | null;
+    client_id: string;
+    created_at: string;
+}
 
 class Store {
-    private influencers: Influencer[] = MOCK_INFLUENCERS;
-    private clients: Client[] = MOCK_CLIENTS;
-    private campaigns: Campaign[] = MOCK_CAMPAIGNS;
-    private users: User[] = MOCK_USERS;
-    private groups: CampaignGroup[] = MOCK_GROUPS;
-
-    constructor() {
-        if (typeof window !== 'undefined') {
-            const saved = localStorage.getItem('apple_crm_state');
-            if (saved) {
-                const parsed = JSON.parse(saved);
-                this.influencers = parsed.influencers || MOCK_INFLUENCERS;
-                this.clients = parsed.clients || MOCK_CLIENTS;
-                this.campaigns = parsed.campaigns || MOCK_CAMPAIGNS;
-                this.groups = parsed.groups || MOCK_GROUPS;
-            }
-        }
-    }
-
-    // Getters
-    getInfluencers() { return this.influencers; }
-    getClients() { return this.clients; }
-    getUsers() { return this.users; }
-    getGroups(clientId?: string) {
-        if (clientId) return this.groups.filter(g => g.clientId === clientId);
-        return this.groups;
-    }
-
-    getCampaigns(clientId?: string) {
-        if (clientId) return this.campaigns.filter(c => c.clientId === clientId);
-        return this.campaigns;
-    }
-
-    getCampaign(id: string) {
-        return this.campaigns.find(c => c.id === id);
-    }
-
-    getInfluencer(id: string) {
-        return this.influencers.find(i => i.id === id);
-    }
-
-    // Setters / Actions
     // --- INFLUENCER ACTIONS ---
 
-    addInfluencer(inf: Influencer) {
-        this.influencers = [inf, ...this.influencers];
-        this.save();
+    async getInfluencers(): Promise<Influencer[]> {
+        const { data, error } = await supabase
+            .from('influencers')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        // Map snake_case from DB to camelCase for app
+        return (data || []).map(this.mapInfluencerFromDB);
     }
 
-    addInfluencers(infs: Influencer[]) {
-        this.influencers = [...infs, ...this.influencers];
-        this.save();
+    async getInfluencer(id: string): Promise<Influencer | undefined> {
+        const { data, error } = await supabase
+            .from('influencers')
+            .select('*')
+            .eq('id', id)
+            .single();
+
+        if (error) return undefined;
+        return this.mapInfluencerFromDB(data);
     }
 
-    updateInfluencer(id: string, updates: Partial<Influencer>) {
-        this.influencers = this.influencers.map(inf =>
-            inf.id === id ? { ...inf, ...updates } : inf
-        );
-        this.save();
+    async addInfluencer(inf: Influencer) {
+        const dbEntry = this.mapInfluencerToDB(inf);
+        const { error } = await supabase
+            .from('influencers')
+            .insert(dbEntry);
+
+        if (error) throw error;
     }
 
-    deleteInfluencer(id: string) {
-        this.influencers = this.influencers.filter(inf => inf.id !== id);
-        this.campaigns.forEach(camp => {
-            if (camp.influencers) {
-                camp.influencers = camp.influencers.filter(ref => ref.influencerId !== id);
-            }
-        });
-        this.save();
+    async addInfluencers(influencers: Influencer[]) {
+        const dbEntries = influencers.map(inf => this.mapInfluencerToDB(inf));
+        const { error } = await supabase
+            .from('influencers')
+            .insert(dbEntries);
+
+        if (error) throw error;
+    }
+
+    async updateInfluencer(id: string, updates: Partial<Influencer>) {
+        const updatesToApply: Partial<InfluencerRow> = { ...this.mapInfluencerToDB(updates as Influencer) };
+        delete updatesToApply.id;
+        const { error } = await supabase
+            .from('influencers')
+            .update(updatesToApply)
+            .eq('id', id);
+
+        if (error) throw error;
+    }
+
+    async deleteInfluencer(id: string) {
+        const { error } = await supabase
+            .from('influencers')
+            .delete()
+            .eq('id', id);
+
+        if (error) throw error;
     }
 
     // --- CLIENT ACTIONS ---
 
-    addClient(client: Client) {
-        this.clients = [client, ...this.clients];
-        this.save();
+    async getClients(): Promise<Client[]> {
+        const { data, error } = await supabase
+            .from('clients')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        return (data || []).map(this.mapClientFromDB);
     }
 
-    updateClient(id: string, updates: Partial<Client>) {
-        this.clients = this.clients.map(c =>
-            c.id === id ? { ...c, ...updates } : c
-        );
-        this.save();
+    async addClient(client: Client) {
+        const dbEntry = this.mapClientToDB(client);
+        const { error } = await supabase
+            .from('clients')
+            .insert(dbEntry);
+
+        if (error) throw error;
     }
 
-    deleteClient(id: string) {
-        this.clients = this.clients.filter(c => c.id !== id);
-        this.save();
+    async updateClient(id: string, updates: Partial<Client>) {
+        const updatesToApply: Partial<ClientRow> = { ...this.mapClientToDB(updates as Client) };
+        delete updatesToApply.id;
+        const { error } = await supabase
+            .from('clients')
+            .update(updatesToApply)
+            .eq('id', id);
+
+        if (error) throw error;
+    }
+
+    async deleteClient(id: string) {
+        const { error } = await supabase
+            .from('clients')
+            .delete()
+            .eq('id', id);
+
+        if (error) throw error;
     }
 
     // --- CAMPAIGN ACTIONS ---
 
-    addCampaign(camp: Campaign) {
-        this.campaigns = [camp, ...this.campaigns];
-        this.save();
+    async getCampaigns(clientId?: string): Promise<Campaign[]> {
+        let query = supabase.from('campaigns').select('*').order('created_at', { ascending: false });
+        if (clientId) query = query.eq('client_id', clientId);
+
+        const { data, error } = await query;
+        if (error) throw error;
+        return (data || []).map(this.mapCampaignFromDB);
     }
 
-    updateCampaign(id: string, updates: Partial<Campaign>) {
-        this.campaigns = this.campaigns.map(c =>
-            c.id === id ? { ...c, ...updates } : c
-        );
-        this.save();
+    async getCampaign(id: string): Promise<Campaign | undefined> {
+        const { data, error } = await supabase
+            .from('campaigns')
+            .select('*')
+            .eq('id', id)
+            .single();
+
+        if (error) return undefined;
+        return this.mapCampaignFromDB(data);
     }
 
-    deleteCampaign(id: string) {
-        this.campaigns = this.campaigns.filter(c => c.id !== id);
-        this.save();
+    async addCampaign(camp: Campaign) {
+        const dbEntry = this.mapCampaignToDB(camp);
+        const { error } = await supabase
+            .from('campaigns')
+            .insert(dbEntry);
+
+        if (error) throw error;
+    }
+
+    async updateCampaign(id: string, updates: Partial<Campaign>) {
+        const updatesToApply: Partial<CampaignRow> = { ...this.mapCampaignToDB(updates as Campaign) };
+        delete updatesToApply.id;
+        const { error } = await supabase
+            .from('campaigns')
+            .update(updatesToApply)
+            .eq('id', id);
+
+        if (error) throw error;
+    }
+
+    async deleteCampaign(id: string) {
+        const { error } = await supabase
+            .from('campaigns')
+            .delete()
+            .eq('id', id);
+
+        if (error) throw error;
+    }
+
+    // --- GROUP ACTIONS ---
+
+    async getGroups(clientId?: string): Promise<CampaignGroup[]> {
+        let query = supabase.from('campaign_groups').select('*').order('created_at', { ascending: false });
+        if (clientId) query = query.eq('client_id', clientId);
+
+        const { data, error } = await query;
+        if (error) throw error;
+        return (data || []).map(this.mapGroupFromDB);
+    }
+
+    async getGroup(id: string): Promise<CampaignGroup | undefined> {
+        const { data, error } = await supabase
+            .from('campaign_groups')
+            .select('*')
+            .eq('id', id)
+            .single();
+
+        if (error) return undefined;
+        return this.mapGroupFromDB(data);
+    }
+
+    async addGroup(group: CampaignGroup) {
+        const dbEntry = this.mapGroupToDB(group);
+        const { error } = await supabase
+            .from('campaign_groups')
+            .insert(dbEntry);
+
+        if (error) throw error;
+    }
+
+    async deleteGroup(id: string) {
+        const { error } = await supabase
+            .from('campaign_groups')
+            .delete()
+            .eq('id', id);
+
+        if (error) throw error;
+    }
+
+    async purgeAllData() {
+        // Delete in order to handle potential dependencies (though RLS/FK might handle it)
+        const tables = ['campaign_groups', 'campaigns', 'influencers', 'clients'];
+        for (const table of tables) {
+            const { error } = await supabase.from(table).delete().neq('id', '00000000-0000-0000-0000-000000000000'); // Delete everything
+            if (error) {
+                console.error(`Failed to purge ${table}:`, error);
+                throw error;
+            }
+        }
     }
 
     // --- CAMPAIGN ROSTER ACTIONS ---
 
-    addInfluencerToCampaign(campaignId: string, influencerId: string) {
-        const camp = this.campaigns.find(c => c.id === campaignId);
-        const inf = this.influencers.find(i => i.id === influencerId);
+    async addInfluencerToCampaign(campaignId: string, influencerId: string) {
+        const camp = await this.getCampaign(campaignId);
+        const inf = await this.getInfluencer(influencerId);
 
         if (camp && inf) {
-            if (camp.influencers?.some(ref => ref.influencerId === influencerId)) return;
+            if (camp.influencers?.some((ref: CampaignInfluencerRef) => ref.influencerId === influencerId)) return;
 
             const newRef: CampaignInfluencerRef = {
                 influencerId: inf.id,
@@ -255,53 +276,36 @@ class Store {
                 updatedAt: new Date().toISOString()
             };
 
-            camp.influencers = [...(camp.influencers || []), newRef];
-            this.save();
+            const updatedInfluencers = [...(camp.influencers || []), newRef];
+            await this.updateCampaign(campaignId, { influencers: updatedInfluencers });
         }
     }
 
-    updateInfluencerInCampaign(campaignId: string, influencerId: string, updates: Partial<CampaignInfluencerRef>) {
-        const camp = this.campaigns.find(c => c.id === campaignId);
+    async updateInfluencerInCampaign(campaignId: string, influencerId: string, updates: Partial<CampaignInfluencerRef>) {
+        const camp = await this.getCampaign(campaignId);
         if (camp) {
-            camp.influencers = camp.influencers.map(ref =>
+            const updatedInfluencers = camp.influencers.map((ref: CampaignInfluencerRef) =>
                 ref.influencerId === influencerId ? { ...ref, ...updates, updatedAt: new Date().toISOString() } : ref
             );
-            this.save();
+            await this.updateCampaign(campaignId, { influencers: updatedInfluencers });
         }
     }
 
-    removeInfluencerFromCampaign(campaignId: string, influencerId: string) {
-        const camp = this.campaigns.find(c => c.id === campaignId);
+    async removeInfluencerFromCampaign(campaignId: string, influencerId: string) {
+        const camp = await this.getCampaign(campaignId);
         if (camp && camp.influencers) {
-            camp.influencers = camp.influencers.filter(ref => ref.influencerId !== influencerId);
-            this.save();
+            const updatedInfluencers = camp.influencers.filter((ref: CampaignInfluencerRef) => ref.influencerId !== influencerId);
+            await this.updateCampaign(campaignId, { influencers: updatedInfluencers });
         }
-    }
-
-    // --- GROUP ACTIONS ---
-
-    addGroup(group: CampaignGroup) {
-        this.groups = [group, ...this.groups];
-        this.save();
-    }
-
-    updateGroup(id: string, updates: Partial<CampaignGroup>) {
-        this.groups = this.groups.map(g => g.id === id ? { ...g, ...updates } : g);
-        this.save();
-    }
-
-    deleteGroup(id: string) {
-        this.groups = this.groups.filter(g => g.id !== id);
-        this.save();
     }
 
     // --- FINANCIAL SUMMARY ---
 
-    getCampaignFinancials(campaignId: string) {
-        const camp = this.getCampaign(campaignId);
+    async getCampaignFinancials(campaignId: string) {
+        const camp = await this.getCampaign(campaignId);
         if (!camp || !camp.influencers) return { totalPayout: 0, totalRevenue: 0, totalProfit: 0 };
 
-        return camp.influencers.reduce((acc, curr) => {
+        return camp.influencers.reduce((acc: { totalPayout: number, totalRevenue: number, totalProfit: number }, curr: CampaignInfluencerRef) => {
             const infFee = Number(curr.influencerFee) || 0;
             const cliFee = Number(curr.clientFee) || 0;
             return {
@@ -312,16 +316,123 @@ class Store {
         }, { totalPayout: 0, totalRevenue: 0, totalProfit: 0 });
     }
 
-    private save() {
-        if (typeof window !== 'undefined') {
-            const state = {
-                influencers: this.influencers,
-                clients: this.clients,
-                campaigns: this.campaigns,
-                groups: this.groups
-            };
-            localStorage.setItem('apple_crm_state', JSON.stringify(state));
-        }
+    // --- UTILS / MAPPING ---
+
+    private mapInfluencerFromDB(row: InfluencerRow): Influencer {
+        return {
+            id: row.id,
+            name: row.name,
+            email: row.email,
+            phone: row.phone || undefined,
+            shippingAddress: row.shipping_address || undefined,
+            primaryNiche: row.primary_niche || '',
+            secondaryNiches: row.secondary_niches || [],
+            tier: row.tier,
+            internalNotes: row.internal_notes || undefined,
+            platforms: row.platforms || [],
+            typicalPayout: row.typical_payout || undefined,
+            typicalCharge: row.typical_charge || undefined,
+            mediaKitUrl: row.media_kit_url || undefined
+        };
+    }
+
+    private mapInfluencerToDB(inf: Influencer): InfluencerRow {
+        return {
+            id: inf.id,
+            name: inf.name,
+            email: inf.email,
+            phone: inf.phone || null,
+            shipping_address: inf.shippingAddress || null,
+            primary_niche: inf.primaryNiche || null,
+            secondary_niches: inf.secondaryNiches || null,
+            tier: inf.tier,
+            internal_notes: inf.internalNotes || null,
+            platforms: inf.platforms || null,
+            typical_payout: inf.typicalPayout || null,
+            typical_charge: inf.typicalCharge || null,
+            media_kit_url: inf.mediaKitUrl || null
+        };
+    }
+
+    private mapClientFromDB(row: ClientRow): Client {
+        return {
+            id: row.id,
+            name: row.name,
+            email: row.email,
+            companyName: row.company_name || '',
+            accessCode: row.access_code || ''
+        };
+    }
+
+    private mapClientToDB(client: Client): ClientRow {
+        return {
+            id: client.id,
+            name: client.name,
+            email: client.email,
+            company_name: client.companyName || null,
+            access_code: client.accessCode || null
+        };
+    }
+
+    private mapCampaignFromDB(row: CampaignRow): Campaign {
+        return {
+            id: row.id,
+            clientId: row.client_id,
+            title: row.title,
+            status: row.status,
+            totalBudget: row.total_budget || 0,
+            platformFocus: (row.platform_focus || []) as import('./types').PlatformName[],
+            requiredNiches: row.required_niches || [],
+            influencers: row.influencers || [],
+            createdAt: row.created_at || new Date().toISOString(),
+            description: row.description || undefined
+        };
+    }
+
+    private mapCampaignToDB(camp: Campaign): CampaignRow {
+        return {
+            id: camp.id,
+            client_id: camp.clientId,
+            title: camp.title,
+            status: camp.status,
+            total_budget: camp.totalBudget || null,
+            platform_focus: camp.platformFocus || null,
+            required_niches: camp.requiredNiches || null,
+            influencers: camp.influencers || null,
+            description: camp.description || null
+        };
+    }
+
+    private mapGroupFromDB(row: GroupRow): CampaignGroup {
+        return {
+            id: row.id,
+            title: row.title,
+            description: row.description || undefined,
+            campaignIds: row.campaign_ids || [],
+            clientId: row.client_id,
+            createdAt: row.created_at
+        };
+    }
+
+    private mapGroupToDB(group: CampaignGroup): Partial<GroupRow> {
+        return {
+            id: group.id,
+            title: group.title,
+            description: group.description || null,
+            campaign_ids: group.campaignIds || null,
+            client_id: group.clientId
+        };
+    }
+
+    // --- USER / TEAM ACTIONS ---
+
+    getUsers(): import('./types').User[] {
+        // This is still using mock data for the team view for now as we don't have a users table yet
+        return [
+            { id: 'u1', name: 'Admin User', email: 'admin@viralcreatorai.io', role: 'Admin' },
+            { id: 'u2', name: 'Sarah Campaigner', email: 'sarah@agency.com', role: 'Campaign Manager' },
+            { id: 'u3', name: 'James Viewer', email: 'james@client.com', role: 'Viewer' }
+        ];
     }
 }
 

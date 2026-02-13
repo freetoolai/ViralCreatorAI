@@ -1,9 +1,9 @@
 'use client';
 
-import { use, useState, useMemo, useEffect } from 'react';
+import { use, useState, useEffect } from 'react';
 import { ArrowLeft, Check, X, ExternalLink, Instagram, Youtube, Twitter, Twitch, MessageCircle, Globe, LucideIcon } from 'lucide-react';
 import { dataStore } from '@/lib/store';
-import { Campaign, PlatformName, Influencer, CampaignInfluencerRef } from '@/lib/types';
+import { PlatformName, Influencer, CampaignInfluencerRef, Campaign } from '@/lib/types';
 import Link from 'next/link';
 import styles from './campaign.module.css';
 
@@ -22,42 +22,58 @@ export default function CampaignDetail({ params }: { params: Promise<{ id: strin
     const { id } = use(params);
     const [campaign, setCampaign] = useState<Campaign | null>(null);
     const [hasMounted, setHasMounted] = useState(false);
+    const [influencers, setInfluencers] = useState<PortalInfluencer[]>([]);
 
-    // Load data after mount to prevent hydration mismatch
     useEffect(() => {
-        const found = dataStore.getCampaign(id);
-        setCampaign(found ? { ...found } : null);
-        setHasMounted(true);
+        const fetchData = async () => {
+            try {
+                const found = await dataStore.getCampaign(id);
+                setCampaign(found ? { ...found } : null);
+
+                if (found) {
+                    const allInfs = await dataStore.getInfluencers();
+                    const roster = (found.influencers || []).map((ref: CampaignInfluencerRef) => {
+                        const details = allInfs.find(i => i.id === ref.influencerId);
+                        if (!details) return null;
+                        return { ...details, ...ref } as PortalInfluencer;
+                    }).filter((i): i is PortalInfluencer => i !== null);
+                    setInfluencers(roster);
+                }
+            } catch (error) {
+                console.error("Failed to fetch portal campaign data:", error);
+            } finally {
+                setHasMounted(true);
+            }
+        };
+        fetchData();
     }, [id]);
 
-    // Derive Influencers and Approvals from campaign state
-    const influencers = useMemo(() => {
-        if (!campaign) return [];
-        const all = dataStore.getInfluencers();
-        return (campaign.influencers || []).map(ref => {
-            const details = all.find(i => i.id === ref.influencerId);
-            if (!details) return null;
-            return { ...details, ...ref } as PortalInfluencer;
-        }).filter((i): i is PortalInfluencer => i !== null);
-    }, [campaign]);
-
-    const handleDecision = (influencerId: string, status: 'Approved' | 'Rejected') => {
+    const handleDecision = async (influencerId: string, status: 'Approved' | 'Rejected') => {
         if (!campaign) return;
 
         const now = new Date().toISOString();
 
-        // Update Store
-        dataStore.updateInfluencerInCampaign(id, influencerId, { status });
+        try {
+            // Update Store
+            await dataStore.updateInfluencerInCampaign(id, influencerId, { status });
 
-        // Update local state to trigger re-render
-        const updatedInfluencers = (campaign.influencers || []).map(ref => {
-            if (ref.influencerId === influencerId) {
-                return { ...ref, status, updatedAt: now };
-            }
-            return ref;
-        });
+            // Update local state to trigger re-render
+            const updatedInfluencers = (campaign.influencers || []).map((ref: CampaignInfluencerRef) => {
+                if (ref.influencerId === influencerId) {
+                    return { ...ref, status, updatedAt: now };
+                }
+                return ref;
+            });
 
-        setCampaign({ ...campaign, influencers: updatedInfluencers });
+            setCampaign({ ...campaign, influencers: updatedInfluencers });
+
+            // Update the combined roster state
+            setInfluencers(prev => prev.map(inf =>
+                inf.id === influencerId ? { ...inf, status, updatedAt: now } : inf
+            ));
+        } catch (error) {
+            console.error("Failed to update decision:", error);
+        }
     };
 
     if (!hasMounted || !campaign) return <div className="container">Loading...</div>;

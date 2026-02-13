@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import clsx from 'clsx';
-import { Briefcase, PlusCircle, Globe, Calendar } from 'lucide-react';
+import { Briefcase, PlusCircle, Globe, Calendar, Folder } from 'lucide-react';
 import { dataStore } from '@/lib/store';
 import { AnalyticsChart } from '@/components/admin/AnalyticsChart';
 import { ResponsiveContainer, AreaChart, Area } from 'recharts';
@@ -33,24 +33,57 @@ export default function AdminDashboard() {
     const [isHydrated, setIsHydrated] = useState(false);
 
     useEffect(() => {
-        setInfluencers(dataStore.getInfluencers());
-        setCampaigns(dataStore.getCampaigns());
-        setIsHydrated(true);
+        const fetchData = async () => {
+            try {
+                const infs = await dataStore.getInfluencers();
+                const camps = await dataStore.getCampaigns();
+                setInfluencers(infs);
+                setCampaigns(camps);
+            } catch (error) {
+                console.error("Failed to fetch dashboard data:", error);
+            } finally {
+                setIsHydrated(true);
+            }
+        };
+        fetchData();
     }, []);
 
     // Prevent render until hydrated to avoid mismatch
     if (!isHydrated) return <div className={clsx("container", styles.loadingState)}>Loading...</div>;
 
+    const totalReach = influencers.reduce((acc, inf) => {
+        const primaryProfile = inf.platforms?.[0];
+        return acc + (primaryProfile?.followers || 0);
+    }, 0);
+
+    const formatReach = (reach: number) => {
+        if (reach >= 1000000) return `${(reach / 1000000).toFixed(1)}M`;
+        if (reach >= 1000) return `${(reach / 1000).toFixed(1)}K`;
+        return reach.toString();
+    };
+
+    // Calculate ROI from campaigns
+    let totalClientFees = 0;
+    let totalInfluencerFees = 0;
+    campaigns.forEach(c => {
+        (c.influencers || []).forEach(ref => {
+            totalClientFees += Number(ref.clientFee) || 0;
+            totalInfluencerFees += Number(ref.influencerFee) || 0;
+        });
+    });
+    const avgROI = totalInfluencerFees > 0 ? (totalClientFees / totalInfluencerFees).toFixed(1) : '0';
+
     const statsData = [
-        { label: 'Total Creators', value: influencers.length, color: '#2F5E4E', trend: [{ v: 10 }, { v: 12 }, { v: 11 }, { v: 14 }, { v: 15 }, { v: influencers.length }] },
-        { label: 'Campaigns', value: campaigns.length, color: '#2F5E4E', trend: [{ v: 2 }, { v: 3 }, { v: 2 }, { v: 4 }, { v: 3 }, { v: campaigns.length }] },
-        { label: 'Network Reach', value: '4.2M', color: '#2F5E4E', trend: [{ v: 3.8 }, { v: 3.9 }, { v: 4.1 }, { v: 4.0 }, { v: 4.2 }, { v: 4.2 }] },
-        { label: 'Avg ROI', value: '3.4x', color: '#2F5E4E', trend: [{ v: 2.8 }, { v: 3.0 }, { v: 3.2 }, { v: 3.1 }, { v: 3.4 }, { v: 3.4 }] },
+        { label: 'Total Creators', value: influencers.length, color: '#2F5E4E', trend: [{ v: 0 }, { v: 2 }, { v: 5 }, { v: influencers.length }] },
+        { label: 'Campaigns', value: campaigns.length, color: '#2F5E4E', trend: [{ v: 0 }, { v: 1 }, { v: campaigns.length }] },
+        { label: 'Network Reach', value: formatReach(totalReach), color: '#2F5E4E', trend: [{ v: 0 }, { v: totalReach }] },
+        { label: 'Avg ROI', value: `${avgROI}x`, color: '#2F5E4E', trend: [{ v: 0 }, { v: Number(avgROI) }] },
     ];
 
     const quickActions = [
         { title: 'Add Creator', icon: PlusCircle, href: '/admin/influencers/new' },
         { title: 'New Campaign', icon: Briefcase, href: '/admin/campaigns' },
+        { title: 'New Group', icon: Folder, href: '/admin/groups/new' },
         { title: 'Export Data', icon: Globe, href: '#' },
     ];
 
@@ -100,12 +133,8 @@ export default function AdminDashboard() {
                 <AnalyticsChart
                     title="Network Growth"
                     data={[
-                        { name: 'Jan', value: 12 },
-                        { name: 'Feb', value: 18 },
-                        { name: 'Mar', value: 25 },
-                        { name: 'Apr', value: 34 },
-                        { name: 'May', value: 42 },
-                        { name: 'Jun', value: influencers.length },
+                        { name: 'Start', value: 0 },
+                        { name: 'Current', value: influencers.length },
                     ]}
                     dataKey="value"
                 />
