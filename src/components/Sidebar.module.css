@@ -118,15 +118,17 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: var(--space-sm) var(--space-md);
-        background: var(--surface-white);
-        border-bottom: 1px solid var(--surface-border);
+        padding: 0 var(--space-md);
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
         position: fixed;
         top: 0;
         left: 0;
         right: 0;
         z-index: 1001;
-        height: 56px;
+        height: 60px;
     }
 
     .mobileLogo h2 {

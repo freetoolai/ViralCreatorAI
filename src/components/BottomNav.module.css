@@ -3,15 +3,18 @@
     bottom: 0;
     left: 0;
     right: 0;
-    height: 64px;
-    background: var(--surface-white);
-    border-top: 1px solid var(--surface-border);
+    height: 68px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
     display: none;
     justify-content: space-around;
     align-items: center;
     z-index: 9000;
-    padding: 0 8px;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.03);
+    padding: 0 12px;
+    padding-bottom: env(safe-area-inset-bottom);
+    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.04);
 }
 
 @media (max-width: 768px) {
@@ -28,11 +31,16 @@
     gap: 4px;
     color: var(--text-muted);
     text-decoration: none;
-    font-size: 0.625rem;
+    font-size: 0.65rem;
     font-weight: 500;
     flex: 1;
     height: 100%;
-    transition: all 0.2s;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-tap-highlight-color: transparent;
+}
+
+.navItem:active {
+    transform: scale(0.92);
 }
 
 .active {
