@@ -15,15 +15,16 @@ function PortalLoginContent() {
     const hasAutoTried = useRef(false);
 
     const handleLogin = useCallback(async (providedCode?: string) => {
-        const codeToUse = providedCode || code;
-        if (!codeToUse) return;
+        const rawCode = providedCode || code;
+        if (!rawCode) return;
 
+        const codeToUse = rawCode.trim();
         setLoading(true);
         setError('');
 
         try {
             const clients = await dataStore.getClients();
-            const client = clients.find(c => c.accessCode === codeToUse);
+            const client = clients.find(c => c.accessCode?.trim() === codeToUse);
 
             if (client) {
                 localStorage.setItem('portal_client_id', client.id);
@@ -37,7 +38,7 @@ function PortalLoginContent() {
                 setLoading(false);
             }
         } catch (err) {
-            console.error(err);
+            console.error("Portal login error:", err);
             setError('An error occurred. Please try again.');
             setLoading(false);
         }
@@ -47,7 +48,10 @@ function PortalLoginContent() {
         const urlCode = searchParams?.get('code');
         if (urlCode && !loading && !error && !hasAutoTried.current) {
             hasAutoTried.current = true;
-            handleLogin(urlCode);
+            // Use microtask to avoid cascading render error
+            queueMicrotask(() => {
+                handleLogin(urlCode);
+            });
         }
     }, [searchParams, handleLogin, loading, error]);
 
