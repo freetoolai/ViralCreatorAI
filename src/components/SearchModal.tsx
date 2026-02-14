@@ -41,13 +41,13 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
     return (
         <div className={styles.overlay}>
             <div className={styles.modal}>
-                <div className={styles.header}>
+                <div className={styles.searchHeader}>
                     <Search size={20} className={styles.searchIcon} />
                     <input
                         ref={inputRef}
                         type="text"
                         placeholder="Search influencers, clients..."
-                        className={styles.input}
+                        className={styles.searchInput}
                         value={query}
                         onChange={handleSearch}
                     />
@@ -56,11 +56,11 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                     </button>
                 </div>
 
-                <div className={styles.results}>
+                <div className={styles.resultsContainer}>
                     {results.length > 0 ? (
                         results.map((group) => (
-                            <div key={group.type} className={styles.resultGroup}>
-                                <div className={styles.groupTitle}>{group.type}</div>
+                            <div key={group.type} className={styles.categorySection}>
+                                <div className={styles.categoryTitle}>{group.type}</div>
                                 {group.items.map((item) => (
                                     <Link
                                         key={(item as unknown as Record<string, string>)[group.key]}
