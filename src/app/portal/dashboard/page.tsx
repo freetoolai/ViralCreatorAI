@@ -60,6 +60,25 @@ export default function ClientDashboard() {
                 </p>
             </header>
 
+            <div className={styles.statsGrid}>
+                <div className={styles.statBox}>
+                    <span className={styles.statLabel}>Total Campaigns</span>
+                    <span className={styles.statValue}>{campaigns.length + groups.length}</span>
+                </div>
+                <div className={styles.statBox}>
+                    <span className={styles.statLabel}>Pending Reviews</span>
+                    <span className={styles.statValue}>
+                        {campaigns.reduce((acc, camp) => acc + (camp.influencers?.filter(i => i.status === 'Client Review').length || 0), 0)}
+                    </span>
+                </div>
+                <div className={styles.statBox}>
+                    <span className={styles.statLabel}>Total Budget</span>
+                    <span className={styles.statValue}>
+                        ${(campaigns.reduce((acc, camp) => acc + (Number(camp.totalBudget) || 0), 0)).toLocaleString()}
+                    </span>
+                </div>
+            </div>
+
             {groups.length > 0 && (
                 <section className={styles.groupsSection}>
                     <h2 className={styles.sectionTitle}>Shared Groups</h2>

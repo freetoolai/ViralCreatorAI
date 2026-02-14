@@ -33,9 +33,14 @@ export default function CampaignAdminDetail({ params }: { params: Promise<{ id: 
 
     const loadData = useCallback(async () => {
         try {
-            const camp = await dataStore.getCampaign(id);
-            const infs = await dataStore.getInfluencers();
-            const fins = await dataStore.getCampaignFinancials(id);
+            // Use dataStore via dynamic import for mock mode support
+            const mod = await import('@/lib/store');
+
+            const [camp, infs, fins] = await Promise.all([
+                mod.dataStore.getCampaign(id),
+                mod.dataStore.getInfluencers(),
+                mod.dataStore.getCampaignFinancials(id)
+            ]);
 
             if (camp) setCampaign({ ...camp });
             if (infs) setAllInfluencers(infs);

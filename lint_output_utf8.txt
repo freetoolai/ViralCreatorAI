@@ -1,0 +1,44 @@
+﻿
+> agency-app@0.1.0 lint
+> eslint
+
+
+E:\agency app\src\app\admin\clients\page.tsx
+  46:8  warning  React Hook useEffect has a missing dependency: 'fetchClients'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+E:\agency app\src\app\portal\groups\[id]\page.tsx
+  6:10  warning  'dataStore' is defined but never used  @typescript-eslint/no-unused-vars
+
+E:\agency app\src\lib\store.ts
+   13:64  warning  'e' is defined but never used                    @typescript-eslint/no-unused-vars
+   17:63  warning  'e' is defined but never used                    @typescript-eslint/no-unused-vars
+   21:64  warning  'e' is defined but never used                    @typescript-eslint/no-unused-vars
+   25:62  warning  'e' is defined but never used                    @typescript-eslint/no-unused-vars
+  141:32  error    Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+  172:52  error    Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+  172:81  error    Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+  183:31  error    Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+  187:56  error    Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+  274:23  warning  'fullMapped' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  276:39  error    Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+  286:71  error    Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+  287:75  error    Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+  288:49  error    Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+  288:75  error    Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+  383:23  warning  'fullMapped' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  389:39  error    Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+  403:68  error    Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+  404:76  error    Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+  405:78  error    Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+  406:79  error    Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+  407:49  error    Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+  407:75  error    Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+  480:19  warning  'dbEntry' is assigned a value but never used     @typescript-eslint/no-unused-vars
+
+E:\agency app\src\lib\supabase.ts
+  17:33  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  28:37  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  28:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+Γ£û 29 problems (20 errors, 9 warnings)
+

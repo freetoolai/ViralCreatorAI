@@ -178,6 +178,30 @@
     background: var(--accent-green);
 }
 
+.emptyStateRow td {
+    text-align: center;
+    padding: 3rem !important;
+    color: var(--text-muted);
+}
+
+/* Table Header Sorting */
+.sortableHeader {
+    cursor: pointer;
+    -webkit-user-select: none;
+    user-select: none;
+    transition: background 0.2s;
+}
+
+.sortableHeader:hover {
+    background: var(--bg-top) !important;
+}
+
+.headerContent {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
 /* Cells */
 .avatar {
     width: 36px;
@@ -529,6 +553,7 @@
         display: none !important;
     }
 }
+
 /* Actions Column & Buttons */
 .actionsCell {
     text-align: right !important;

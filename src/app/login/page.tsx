@@ -27,16 +27,15 @@ export default function LoginPage() {
         });
 
         if (result?.ok) {
-            // Set localStorage for legacy RouteGuard support
-            // This ensures immediate access without waiting for session hydration
-            const targetRole = email.includes('admin') ? 'admin' : 'client';
-            const token = btoa(`${targetRole}:${Date.now()}`);
-            localStorage.setItem('viral_access_token', token);
-            localStorage.setItem('viral_access_type', targetRole);
+            // NextAuth will handle the session. The RouteGuard will detect the change.
+            // We just need to redirect based on the email for now or wait for session.
+            // Since we want immediate redirect, let's keep a simpler version but more reliable.
+            const isAdmin = email === (process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'admin@viralcreatorai.com');
+            const targetRole = isAdmin ? 'admin' : 'client';
 
             router.push(targetRole === 'admin' ? '/admin' : '/portal/dashboard');
         } else {
-            setError('Invalid credentials. Try the demo accounts below.');
+            setError('Invalid email or password. Please try again.');
             setLoading(false);
         }
     };
@@ -48,8 +47,8 @@ export default function LoginPage() {
                     <div className={styles.logo}>
                         <Sparkles size={32} fill="currentColor" />
                     </div>
-                    <h1 className={styles.title}>Welcome to ViralCreatorAI</h1>
-                    <p className={styles.subtitle}>Sign in to manage your influencer campaigns</p>
+                    <h1 className={styles.title}>Admin Access</h1>
+                    <p className={styles.subtitle}>Sign in to manage agency operations</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className={styles.form}>
@@ -98,17 +97,6 @@ export default function LoginPage() {
                     </button>
                 </form>
 
-                <div className={styles.demo}>
-                    <p className={styles.demoTitle}>Demo Accounts:</p>
-                    <div className={styles.demoAccounts}>
-                        <div className={styles.demoAccount}>
-                            <strong>Admin:</strong> admin@viralcreatorai.com / demo123
-                        </div>
-                        <div className={styles.demoAccount}>
-                            <strong>Client:</strong> client@example.com / demo123
-                        </div>
-                    </div>
-                </div>
 
                 <div className={styles.footer}>
                     <Link href="/">← Back to homepage</Link>

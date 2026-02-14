@@ -5,43 +5,60 @@ import Link from 'next/link';
 import { Plus, Folder, Trash2, ExternalLink } from 'lucide-react';
 import { CampaignGroup, Client, Campaign } from '@/lib/types';
 import { dataStore } from '@/lib/store';
+import { useToast } from '@/components/ToastContext';
+import { ConfirmModal } from '@/components/ConfirmModal';
 import styles from './groups.module.css';
 
 export default function GroupsPage() {
+    const { showToast } = useToast();
     const [groups, setGroups] = useState<CampaignGroup[]>([]);
     const [clients, setClients] = useState<Client[]>([]);
     const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+    const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; groupId: string; groupTitle: string }>({
+        isOpen: false,
+        groupId: '',
+        groupTitle: ''
+    });
 
     useEffect(() => {
         const fetchData = async () => {
             try {
+                // Use dataStore directly for mock mode support
+                const mod = await import('@/lib/store');
                 const [g, c, camp] = await Promise.all([
-                    dataStore.getGroups(),
-                    dataStore.getClients(),
-                    dataStore.getCampaigns()
+                    mod.dataStore.getGroups(),
+                    mod.dataStore.getClients(),
+                    mod.dataStore.getCampaigns()
                 ]);
                 setGroups(g);
                 setClients(c);
                 setCampaigns(camp);
             } catch (error) {
                 console.error("Failed to load groups:", error);
+                showToast("Failed to load groups", "error");
             }
         };
         fetchData();
-    }, []);
+    }, [showToast]);
 
     const getClientName = (id: string) => clients.find(c => c.id === id)?.companyName || 'Unknown Client';
     const getCampaignName = (id: string) => campaigns.find(c => c.id === id)?.title || id;
 
-    const handleDelete = async (id: string) => {
-        if (confirm('Are you sure you want to delete this group?')) {
-            try {
-                await dataStore.deleteGroup(id);
-                const updated = await dataStore.getGroups();
-                setGroups(updated);
-            } catch (error) {
-                console.error("Failed to delete group:", error);
-            }
+    const handleDeleteClick = (id: string, title: string) => {
+        setDeleteModal({ isOpen: true, groupId: id, groupTitle: title });
+    };
+
+    const handleDeleteConfirm = async () => {
+        try {
+            await dataStore.deleteGroup(deleteModal.groupId);
+            const updated = await dataStore.getGroups();
+            setGroups(updated);
+            showToast("Group deleted successfully");
+        } catch (error) {
+            console.error("Failed to delete group:", error);
+            showToast("Failed to delete group", "error");
+        } finally {
+            setDeleteModal({ isOpen: false, groupId: '', groupTitle: '' });
         }
     };
 
@@ -67,7 +84,7 @@ export default function GroupsPage() {
                             <div className={styles.actions}>
                                 <button
                                     className={styles.iconBtn}
-                                    onClick={() => handleDelete(group.id)}
+                                    onClick={() => handleDeleteClick(group.id, group.title)}
                                     title="Delete Group"
                                 >
                                     <Trash2 size={16} />
@@ -113,6 +130,16 @@ export default function GroupsPage() {
                     </div>
                 )}
             </div>
+
+            <ConfirmModal
+                isOpen={deleteModal.isOpen}
+                title="Delete Group"
+                message={`Are you sure you want to delete "${deleteModal.groupTitle}"? This action cannot be undone.`}
+                confirmLabel="Delete"
+                cancelLabel="Cancel"
+                onConfirm={handleDeleteConfirm}
+                onCancel={() => setDeleteModal({ isOpen: false, groupId: '', groupTitle: '' })}
+            />
         </div>
     );
 }

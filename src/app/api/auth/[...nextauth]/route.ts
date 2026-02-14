@@ -6,35 +6,19 @@ const handler = NextAuth({
         CredentialsProvider({
             name: "Credentials",
             credentials: {
-                email: { label: "Email", type: "email", placeholder: "admin@viralcreatorai.com" },
+                email: { label: "Email", type: "email", placeholder: "your@email.com" },
                 password: { label: "Password", type: "password" }
             },
             async authorize(credentials) {
-                // DEMO USERS (Hardcoded for now, will be replaced with DB check in Phase 15)
-                const demoUsers = [
-                    {
-                        id: "1",
-                        name: "Admin User",
-                        email: "admin@viralcreatorai.com",
-                        password: "demo123",
-                        role: "admin"
-                    },
-                    {
-                        id: "2",
-                        name: "Client User",
-                        email: "client@example.com",
-                        password: "demo123",
-                        role: "client"
-                    }
-                ];
-
                 if (!credentials?.email || !credentials?.password) return null;
 
-                const user = demoUsers.find(u => u.email === credentials.email && u.password === credentials.password);
+                const adminEmail = process.env.ADMIN_EMAIL;
+                const adminPass = process.env.ADMIN_PASSWORD;
 
-                if (user) {
-                    return { id: user.id, name: user.name, email: user.email, role: user.role };
+                if (adminEmail && adminPass && credentials.email === adminEmail && credentials.password === adminPass) {
+                    return { id: "1", name: "Admin User", email: adminEmail, role: "admin" };
                 }
+
                 return null;
             }
         })

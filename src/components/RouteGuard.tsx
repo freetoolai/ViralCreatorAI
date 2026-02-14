@@ -25,17 +25,18 @@ export function RouteGuard({ children }: { children: React.ReactNode }) {
         if (status === 'loading') return;
 
         const sessionUser = session?.user as CustomUser | undefined;
-        const hasAccess = !!localStorage.getItem('viral_access_token') || status === 'authenticated';
-        const accessType = localStorage.getItem('viral_access_type') || sessionUser?.role;
+        const hasAccess = !!localStorage.getItem('viral_access_token') || !!localStorage.getItem('portal_client_id') || status === 'authenticated';
+        const accessType = localStorage.getItem('viral_access_type') || (localStorage.getItem('portal_client_id') ? 'client' : sessionUser?.role);
 
         const isAdminRoute = pathname?.startsWith('/admin');
         const isPortalRoute = pathname?.startsWith('/portal');
+        const isSharedGroupRoute = pathname?.startsWith('/portal/groups/');
         const isAccessRoute = pathname === '/access';
         const isHomePage = pathname === '/';
         const isLoginRoute = pathname === '/login';
 
-        // Allow homepage and login without access
-        if (isHomePage || isLoginRoute) return;
+        // Allow homepage, login, and shared group routes without access checks
+        if (isHomePage || isLoginRoute || isSharedGroupRoute) return;
 
         // Redirect to access page if no access code and not logged in
         if (!hasAccess && !isAccessRoute) {
@@ -59,19 +60,20 @@ export function RouteGuard({ children }: { children: React.ReactNode }) {
             return;
         }
 
-        // Block portal routes for admins
-        if (isPortalRoute && accessType === 'admin') {
+        // Block portal routes for admins (except shared views)
+        if (isPortalRoute && accessType === 'admin' && !isSharedGroupRoute) {
             router.push('/admin');
             return;
         }
     }, [pathname, router, status, session]);
 
-    // Handle home/access/login pages during hydration
+    // Handle home/access/login/shared pages during hydration
     const isAccessRoute = pathname === '/access';
     const isHomePage = pathname === '/' || pathname === '';
     const isLoginRoute = pathname === '/login';
+    const isSharedGroupRoute = pathname?.startsWith('/portal/groups/');
 
-    if (isAccessRoute || isHomePage || isLoginRoute) {
+    if (isAccessRoute || isHomePage || isLoginRoute || isSharedGroupRoute) {
         return <>{children}</>;
     }
 
@@ -81,8 +83,8 @@ export function RouteGuard({ children }: { children: React.ReactNode }) {
     }
 
     const sessionUser = session?.user as CustomUser | undefined;
-    const hasAccess = !!localStorage.getItem('viral_access_token') || status === 'authenticated';
-    const accessType = localStorage.getItem('viral_access_type') || sessionUser?.role;
+    const hasAccess = !!localStorage.getItem('viral_access_token') || !!localStorage.getItem('portal_client_id') || status === 'authenticated';
+    const accessType = localStorage.getItem('viral_access_type') || (localStorage.getItem('portal_client_id') ? 'client' : sessionUser?.role);
     const isAdminRoute = pathname?.startsWith('/admin');
 
     // Block if no access

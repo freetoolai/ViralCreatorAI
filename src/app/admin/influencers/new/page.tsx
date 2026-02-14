@@ -6,12 +6,14 @@ import Link from 'next/link';
 import clsx from 'clsx';
 import { ArrowLeft, Save, AlertCircle, Plus, Trash2 } from 'lucide-react';
 import { dataStore } from '@/lib/store';
+import { useToast } from '@/components/ToastContext';
 import { Influencer, SocialProfile, PlatformName, Tier } from '@/lib/types';
 import styles from './new-influencer.module.css';
 
 
 export default function NewInfluencerPage() {
     const router = useRouter();
+    const { showToast } = useToast();
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -80,10 +82,12 @@ export default function NewInfluencerPage() {
                 platforms: platforms
             };
 
-            await dataStore.addInfluencer(newInfluencer);
-            router.push('/admin/influencers');
+            const savedInfluencer = await dataStore.addInfluencer(newInfluencer);
+            showToast(`${formData.name} has been added to your network`);
+            router.push(`/admin/influencers/${savedInfluencer.id}`);
         } catch (error) {
             console.error("Failed to save influencer:", error);
+            showToast('Failed to save influencer', 'error');
             setError('Failed to save influencer.');
         } finally {
             setIsLoading(false);

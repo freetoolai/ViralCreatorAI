@@ -64,7 +64,15 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                                 {group.items.map((item) => (
                                     <Link
                                         key={(item as unknown as Record<string, string>)[group.key]}
-                                        href={group.type === 'Campaigns' ? `/admin/campaigns/${(item as unknown as Record<string, string>).id}` : group.path}
+                                        href={
+                                            group.type === 'Campaigns'
+                                                ? `/admin/campaigns/${(item as unknown as Record<string, string>).id}`
+                                                : group.type === 'Influencers'
+                                                    ? `/admin/influencers/${(item as unknown as Record<string, string>).id}`
+                                                    : group.type === 'Clients'
+                                                        ? `/admin/clients/${(item as unknown as Record<string, string>).id}`
+                                                        : group.path
+                                        }
                                         className={styles.resultItem}
                                         onClick={onClose}
                                     >

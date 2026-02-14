@@ -5,26 +5,30 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import clsx from 'clsx';
 import { ArrowLeft, Save } from 'lucide-react';
-import { dataStore } from '@/lib/store';
-import { Client, PlatformName } from '@/lib/types';
+import { useToast } from '@/components/ToastContext';
+import { Client, PlatformName, Campaign } from '@/lib/types';
 import styles from './new.module.css';
 
 export default function NewCampaignPage() {
     const router = useRouter();
+    const { showToast } = useToast();
     const [clients, setClients] = useState<Client[]>([]);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const fetchClients = async () => {
             try {
-                const data = await dataStore.getClients();
+                // Use dataStore via dynamic import for mock mode support
+                const mod = await import('@/lib/store');
+                const data = await mod.dataStore.getClients();
                 setClients(data);
             } catch (error) {
                 console.error("Failed to fetch clients:", error);
+                showToast("Failed to fetch clients list", "error");
             }
         };
         fetchClients();
-    }, []);
+    }, [showToast]);
 
     // Form State
     const [title, setTitle] = useState('');
@@ -41,11 +45,18 @@ export default function NewCampaignPage() {
         e.preventDefault();
         setLoading(true);
 
-        const newCampaign = {
+        // Required fields check, though HTML required attribute handles most
+        if (!clientId) {
+            showToast("Please select a client.", "error");
+            setLoading(false);
+            return;
+        }
+
+        const newCampaign: Campaign = {
             id: `camp-${Date.now()}`,
             clientId,
             title,
-            status: 'Draft' as const,
+            status: 'Draft',
             totalBudget: Number(budget),
             platformFocus: platforms,
             requiredNiches: niches,
@@ -54,10 +65,13 @@ export default function NewCampaignPage() {
         };
 
         try {
-            await dataStore.addCampaign(newCampaign);
+            const mod = await import('@/lib/store');
+            await mod.dataStore.addCampaign(newCampaign);
+            showToast("Campaign draft created successfully");
             router.push('/admin/campaigns');
         } catch (error) {
             console.error("Failed to create campaign:", error);
+            showToast("Failed to create campaign draft", "error");
             setLoading(false);
         }
     };

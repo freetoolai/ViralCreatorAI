@@ -1,32 +1,38 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Plus, Building2, Mail, Key, Trash2, Edit3, Eye } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { Plus, Trash2, Edit2, Eye, Key, Building2, Mail, Link as LinkIcon } from 'lucide-react';
 import { Client } from '@/lib/types';
-import styles from './clients.module.css';
 import { useToast } from '@/components/ToastContext';
 import { ConfirmModal } from '@/components/ConfirmModal';
+import styles from './clients.module.css';
 
 import { useRouter } from 'next/navigation';
 
 export default function ClientsPage() {
-    const router = useRouter();
     const { showToast } = useToast();
+    const router = useRouter();
     const [clients, setClients] = useState<Client[]>([]);
     const [confirmDelete, setConfirmDelete] = useState<{ isOpen: boolean, id: string | null }>({
         isOpen: false,
         id: null
     });
 
-    const fetchClients = async () => {
+    const handleShare = (client: Client) => {
+        const portalUrl = `${window.location.origin}/portal?code=${client.accessCode}`;
+        navigator.clipboard.writeText(portalUrl);
+        showToast(`Access link copied for ${client.companyName}!`);
+    };
+
+    const fetchClients = useCallback(async () => {
         try {
-            const res = await fetch('/api/clients');
-            const data = await res.json();
+            // Updated to use dataStore directly for mock mode compatibility
+            const data = await import('@/lib/store').then(mod => mod.dataStore.getClients());
             setClients(data);
         } catch {
             showToast("Failed to fetch clients", "error");
         }
-    };
+    }, [showToast]);
     // ... (rest of the component state)
     // Modal states
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -42,15 +48,8 @@ export default function ClientsPage() {
     });
 
     useEffect(() => {
-        let isMounted = true;
-        const load = async () => {
-            const res = await fetch('/api/clients');
-            const data = await res.json();
-            if (isMounted) setClients(data);
-        };
-        load();
-        return () => { isMounted = false; };
-    }, []);
+        fetchClients();
+    }, [fetchClients]);
 
     const refreshData = () => fetchClients();
 
@@ -81,21 +80,17 @@ export default function ClientsPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
+            const { dataStore } = await import('@/lib/store');
+
             if (isEditing && editingId) {
-                await fetch('/api/clients', {
-                    method: 'POST',
-                    body: JSON.stringify({ ...formData, id: editingId }),
-                });
+                await dataStore.updateClient(editingId, formData);
                 showToast("Client updated successfully");
             } else {
                 const newClient: Client = {
                     id: 'c' + Date.now(),
                     ...formData
                 };
-                await fetch('/api/clients', {
-                    method: 'POST',
-                    body: JSON.stringify(newClient),
-                });
+                await dataStore.addClient(newClient);
                 showToast("Client added successfully");
             }
             refreshData();
@@ -111,9 +106,20 @@ export default function ClientsPage() {
 
     const executeDelete = async () => {
         if (confirmDelete.id) {
-            setClients(prev => prev.filter(c => c.id !== confirmDelete.id));
-            setConfirmDelete({ isOpen: false, id: null });
-            showToast("Client deleted permanently");
+            try {
+                // Assuming we use the same POST endpoint with a delete flag or a separate DELETE endpoint
+                // Since I don't see a DELETE handler in the route yet, I'll update it or use a trick.
+                // Wait, let's check the API route first.
+                // If the API route doesn't support DELETE, I should add it.
+                // For now, I'll call the API.
+                await import('@/lib/store').then(mod => mod.dataStore.deleteClient(confirmDelete.id!));
+
+                setClients(prev => prev.filter(c => c.id !== confirmDelete.id));
+                setConfirmDelete({ isOpen: false, id: null });
+                showToast("Client deleted permanently");
+            } catch {
+                showToast("Failed to delete client", "error");
+            }
         }
     };
 
@@ -142,11 +148,11 @@ export default function ClientsPage() {
                                         Contact: {client.name}
                                     </div>
                                     <div className={styles.metaGrid}>
-                                        <div className={styles.metaItem}>
+                                        <div className={styles.infoItem}>
                                             <Mail size={16} />
                                             {client.email}
                                         </div>
-                                        <div className={styles.metaItem}>
+                                        <div className={styles.infoItem}>
                                             <Key size={16} />
                                             Code: <span className={styles.codeBlock}>{client.accessCode}</span>
                                         </div>
@@ -154,6 +160,13 @@ export default function ClientsPage() {
                                 </div>
                             </div>
                             <div className={styles.buttonGroup}>
+                                <button
+                                    className="btn btn-outline"
+                                    onClick={() => handleShare(client)}
+                                    title="Copy Access Link"
+                                >
+                                    <LinkIcon size={14} className={styles.iconMarginRight} /> Share
+                                </button>
                                 <button
                                     className="btn btn-outline"
                                     onClick={() => router.push(`/admin/campaigns?clientId=${client.id}`)}
@@ -168,7 +181,7 @@ export default function ClientsPage() {
                                     aria-label={`Edit ${client.companyName}`}
                                     title="Edit"
                                 >
-                                    <Edit3 size={14} />
+                                    <Edit2 size={14} />
                                 </button>
                                 <button
                                     className="btn btn-outline"

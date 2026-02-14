@@ -7,9 +7,11 @@ import { Search, Bell, LogOut } from 'lucide-react';
 import clsx from 'clsx';
 import styles from './TopNav.module.css';
 import { useGlobalSearch } from '@/hooks/useGlobalSearch';
+import { useToast } from '@/components/ToastContext';
 
 export function TopNav() {
     const { data: session } = useSession();
+    const { showToast } = useToast();
     const user = session?.user as { name?: string; role?: string } | undefined;
     const { results, search, clearResults } = useGlobalSearch();
     const [query, setQuery] = useState('');
@@ -70,7 +72,15 @@ export function TopNav() {
                                     {group.items.map((item) => (
                                         <Link
                                             key={(item as unknown as Record<string, string>)[group.key]}
-                                            href={group.type === 'Campaigns' ? `/admin/campaigns/${(item as unknown as Record<string, string>).id}` : group.path}
+                                            href={
+                                                group.type === 'Campaigns'
+                                                    ? `/admin/campaigns/${(item as unknown as Record<string, string>).id}`
+                                                    : group.type === 'Influencers'
+                                                        ? `/admin/influencers/${(item as unknown as Record<string, string>).id}`
+                                                        : group.type === 'Clients'
+                                                            ? `/admin/clients/${(item as unknown as Record<string, string>).id}`
+                                                            : group.path
+                                            }
                                             className={styles.resultItem}
                                             onClick={() => setShowResults(false)}
                                         >
@@ -97,7 +107,7 @@ export function TopNav() {
                     className={styles.iconBtn}
                     aria-label="Notifications"
                     title="Notifications"
-                    onClick={() => alert("You have no new notifications.")}
+                    onClick={() => showToast("You have no new notifications.", "info")}
                 >
                     <Bell size={20} />
                 </button>
@@ -114,7 +124,12 @@ export function TopNav() {
 
                 {/* LogOut button re-added based on original structure */}
                 <button
-                    onClick={() => signOut({ callbackUrl: '/' })}
+                    onClick={async () => {
+                        localStorage.removeItem('portal_client_id');
+                        localStorage.removeItem('viral_access_token');
+                        localStorage.removeItem('viral_access_type');
+                        await signOut({ callbackUrl: '/' });
+                    }}
                     className={clsx(styles.iconBtn, styles.btnLogout)}
                     aria-label="Logout"
                     title="Logout"

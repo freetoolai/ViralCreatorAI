@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Plus, Briefcase, MoreHorizontal } from 'lucide-react';
 import { Campaign, Client } from '@/lib/types';
+import { useToast } from '@/components/ToastContext';
 import tableStyles from '@/components/admin/Table.module.css';
 import styles from './list.module.css';
 import clsx from 'clsx';
@@ -13,6 +14,7 @@ import { useSearchParams } from 'next/navigation';
 function CampaignsContent() {
     const searchParams = useSearchParams();
     const clientId = searchParams.get('clientId');
+    const { showToast } = useToast();
 
     const [campaigns, setCampaigns] = useState<Campaign[]>([]);
     const [clients, setClients] = useState<Client[]>([]);
@@ -20,21 +22,22 @@ function CampaignsContent() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [campsRes, clientsRes] = await Promise.all([
-                    fetch(clientId ? `/api/campaigns?clientId=${clientId}` : '/api/campaigns'),
-                    fetch('/api/clients')
+                // Use dataStore directly for mock mode support
+                const mod = await import('@/lib/store');
+                const [campsData, clientsData] = await Promise.all([
+                    mod.dataStore.getCampaigns(clientId || undefined),
+                    mod.dataStore.getClients()
                 ]);
-                const campsData = (await campsRes.json()) as Campaign[];
-                const clientsData = (await clientsRes.json()) as Client[];
 
                 setCampaigns(campsData);
                 setClients(clientsData);
-            } catch {
-                // Error fetching campaigns/clients - handle silently
+            } catch (error) {
+                console.error("Failed to load campaigns:", error);
+                showToast("Failed to load campaigns", "error");
             }
         };
         fetchData();
-    }, [clientId]);
+    }, [clientId, showToast]);
 
     const getClientName = (id: string) => clients.find(c => c.id === id)?.companyName || 'Unknown Client';
 

@@ -23,9 +23,16 @@ export function Sidebar() {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
 
     const handleLogout = async () => {
-        localStorage.removeItem('viral_access_token');
-        localStorage.removeItem('viral_access_type');
-        localStorage.removeItem('viral_client_id');
+        // Clear all session and access related localStorage keys
+        const keysToRemove = [
+            'viral_access_token',
+            'viral_access_type',
+            'viral_client_id',
+            'portal_client_id',
+            'viral_portal_client_id'
+        ];
+        keysToRemove.forEach(k => localStorage.removeItem(k));
+
         await signOut({ redirect: true, callbackUrl: '/' });
     };
 

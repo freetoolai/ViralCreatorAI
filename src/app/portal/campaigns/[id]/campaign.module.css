@@ -309,3 +309,175 @@
         font-size: 1.125rem;
     }
 }
+
+/* Modal Styles */
+.modalOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: var(--space-md);
+}
+
+.modalContent {
+    background: var(--surface-white);
+    padding: var(--space-xl);
+    border-radius: 24px;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.15);
+    border: 1px solid var(--surface-border);
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-lg);
+}
+
+.modalTitle {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+}
+
+.closeButton {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s;
+}
+
+.closeButton:hover {
+    background: var(--bg-base);
+    color: var(--text-primary);
+}
+
+.detailGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-lg);
+    margin-bottom: var(--space-xl);
+}
+
+.detailItem {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.detailLabel {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+}
+
+.detailValue {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.influencerBio {
+    margin-bottom: var(--space-xl);
+    line-height: 1.6;
+    color: var(--text-secondary);
+    font-size: 0.9375rem;
+}
+
+.socialRow {
+    display: flex;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+    margin-top: var(--space-md);
+}
+
+.viewDetailsBtn {
+    width: 100%;
+    margin-bottom: var(--space-md);
+    font-weight: 600;
+    padding: 0.75rem !important;
+}
+
+.platformsGrid {
+    display: grid;
+    gap: var(--space-sm);
+    margin-top: var(--space-md);
+}
+
+.platformDetail {
+    background: var(--bg-base);
+    padding: 0.875rem;
+    border-radius: 12px;
+    border: 1px solid var(--surface-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.platformInfo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.platformMetrics {
+    text-align: right;
+}
+
+.metricValueMain {
+    font-weight: 600;
+    color: var(--text-primary);
+    display: block;
+}
+
+.metricLabelSub {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+.headerStats {
+    text-align: right;
+}
+
+.btnIcon {
+    margin-right: 8px;
+}
+
+.btnIconSmall {
+    margin-left: 4px;
+}
+
+.accentIcon {
+    color: var(--accent-green);
+}
+
+.socialLink {
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+}
+
+.modalFooterDetail {
+    margin-top: 2rem;
+}
+
+.modalFooterDetail button {
+    width: 100%;
+}

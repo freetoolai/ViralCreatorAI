@@ -52,8 +52,8 @@ export default function AdminDashboard() {
     if (!isHydrated) return <div className={clsx("container", styles.loadingState)}>Loading...</div>;
 
     const totalReach = influencers.reduce((acc, inf) => {
-        const primaryProfile = inf.platforms?.[0];
-        return acc + (primaryProfile?.followers || 0);
+        const infReach = (inf.platforms || []).reduce((sum, p) => sum + (p.followers || 0), 0);
+        return acc + infReach;
     }, 0);
 
     const formatReach = (reach: number) => {

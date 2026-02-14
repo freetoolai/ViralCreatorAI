@@ -4,9 +4,12 @@ import { useState, useEffect } from 'react';
 import { Settings as SettingsIcon, Bell, Lock, Database, RotateCcw } from 'lucide-react';
 import clsx from 'clsx';
 import { dataStore } from '@/lib/store';
+import { useToast } from '@/components/ToastContext';
+import { ConfirmModal } from '@/components/ConfirmModal';
 import styles from './settings.module.css';
 
 export default function SettingsPage() {
+    const { showToast } = useToast();
     const [companyName, setCompanyName] = useState('ViralCreatorAI');
     const [email, setEmail] = useState('admin@viralcreatorai.io');
     const [notifications, setNotifications] = useState({
@@ -15,6 +18,7 @@ export default function SettingsPage() {
         activity: false
     });
     const [isLoading, setIsLoading] = useState(false);
+    const [showClearModal, setShowClearModal] = useState(false);
 
     // Load settings from localStorage on mount
     useEffect(() => {
@@ -42,40 +46,61 @@ export default function SettingsPage() {
             const settings = { companyName, email, notifications };
             localStorage.setItem('viral_settings', JSON.stringify(settings));
             setIsLoading(false);
-            alert("Settings saved successfully!");
+            showToast("Settings saved successfully!");
         }, 800);
     };
 
-    const handleClearCache = async () => {
-        if (confirm("Are you sure you want to PERMANENTLY delete all data from the database? This cannot be undone.")) {
-            try {
-                setIsLoading(true);
-                await dataStore.purgeAllData();
-                localStorage.clear();
-                alert("All data cleared successfully.");
-                window.location.reload();
-            } catch (error) {
-                console.error("Purge failed:", error);
-                alert("Failed to clear database. Check console for details.");
-            } finally {
-                setIsLoading(false);
-            }
+    const handleClearDataConfirm = async () => {
+        try {
+            setIsLoading(true);
+            await dataStore.purgeAllData();
+            localStorage.clear();
+            showToast("All data cleared successfully.");
+            window.location.reload();
+        } catch (error) {
+            console.error("Purge failed:", error);
+            showToast("Failed to clear database.", "error");
+        } finally {
+            setIsLoading(false);
+            setShowClearModal(false);
         }
     };
 
     const handleExport = () => {
-        const data = localStorage.getItem('apple_crm_state');
-        if (!data) {
-            alert("No data available to export.");
-            return;
-        }
-        const blob = new Blob([data], { type: 'application/json' });
+        const exportData = {
+            influencers: JSON.parse(localStorage.getItem('data_store_influencers') || '[]'),
+            clients: JSON.parse(localStorage.getItem('data_store_clients') || '[]'),
+            campaigns: JSON.parse(localStorage.getItem('data_store_campaigns') || '[]'),
+            groups: JSON.parse(localStorage.getItem('data_store_groups') || '[]'),
+            settings: JSON.parse(localStorage.getItem('viral_settings') || '{}'),
+            exportedAt: new Date().toISOString()
+        };
+
+        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `viral_creator_ai_export_${new Date().toISOString().split('T')[0]}.json`;
+        a.download = `viral_creator_ai_backup_${new Date().toISOString().split('T')[0]}.json`;
         a.click();
         URL.revokeObjectURL(url);
+    };
+
+    const handleSync = async () => {
+        const { syncToSupabase } = await import('@/lib/sync-tool');
+        try {
+            setIsLoading(true);
+            const stats = await syncToSupabase();
+            showToast(`Sync complete! Migrated: ${stats.influencers} influencers, ${stats.clients} clients.`, "success");
+            if (stats.errors.length > 0) {
+                console.warn("Sync warnings:", stats.errors);
+            }
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : "Unknown error";
+            console.error("Sync failed:", error);
+            showToast("Sync failed: " + message, "error");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -185,7 +210,7 @@ export default function SettingsPage() {
 
                     <button
                         className={clsx("btn btn-outline", styles.fullWidth)}
-                        onClick={() => alert("Password reset link sent to your email.")}
+                        onClick={() => showToast("Password reset link sent to your email.", "info")}
                     >
                         Change Password
                     </button>
@@ -207,9 +232,17 @@ export default function SettingsPage() {
                         <button className={clsx("btn btn-outline", styles.flex1)} onClick={handleExport}>
                             Export Data
                         </button>
-                        <button className={clsx("btn btn-outline", styles.flex1, styles.destructBtn)} onClick={handleClearCache}>
+                        <button
+                            className={clsx("btn btn-primary", styles.flex1, isLoading && "loading")}
+                            onClick={handleSync}
+                            disabled={isLoading}
+                        >
+                            <Database size={14} style={{ marginRight: '8px' }} />
+                            Sync to Cloud
+                        </button>
+                        <button className={clsx("btn btn-outline", styles.flex1, styles.destructBtn)} onClick={() => setShowClearModal(true)}>
                             <RotateCcw size={14} style={{ marginRight: '8px' }} />
-                            Clear All Data
+                            Clear Local
                         </button>
                     </div>
                 </div>
@@ -228,6 +261,16 @@ export default function SettingsPage() {
                     </button>
                 </div>
             </div>
+
+            <ConfirmModal
+                isOpen={showClearModal}
+                title="Purge Database"
+                message="Are you sure you want to PERMANENTLY delete all data from the database? This cannot be undone."
+                confirmLabel="Purge Data"
+                cancelLabel="Cancel"
+                onConfirm={handleClearDataConfirm}
+                onCancel={() => setShowClearModal(false)}
+            />
         </div>
     );
 }

@@ -28,6 +28,23 @@
     border-bottom: 1px solid var(--surface-border);
 }
 
+.headerActions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.deleteBtn {
+    color: #ef4444 !important;
+    border-color: rgba(239, 68, 68, 0.2) !important;
+    background: transparent !important;
+}
+
+.deleteBtn:hover {
+    background: rgba(239, 68, 68, 0.05) !important;
+    border-color: #ef4444 !important;
+}
+
 .profileInfo {
     display: flex;
     gap: 1.5rem;

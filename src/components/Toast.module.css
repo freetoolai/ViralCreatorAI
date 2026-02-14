@@ -1,88 +1,177 @@
 .toastContainer {
     position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%);
+    top: 24px;
+    right: 24px;
     z-index: 10000;
     display: flex;
     flex-direction: column;
     gap: 12px;
-    width: 100%;
-    max-width: 400px;
-    padding: 0 16px;
     pointer-events: none;
 }
 
 @media (max-width: 768px) {
     .toastContainer {
-        bottom: 80px;
-        /* Above bottom nav */
+        top: 16px;
+        right: 16px;
+        left: 16px;
     }
 }
 
-.toast {
-    background: var(--surface-white);
-    border: 1px solid var(--surface-border);
+.toastItem {
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.08);
     border-radius: 12px;
-    padding: 12px 16px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    padding: 16px 20px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.08);
     display: flex;
     align-items: center;
     gap: 12px;
+    min-width: 360px;
+    max-width: 420px;
+    animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     pointer-events: auto;
-    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    position: relative;
+    overflow: hidden;
 }
 
-.toastSuccess {
-    border-left: 4px solid #22c55e;
+.toastItem::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: var(--accent-green);
 }
 
-.toastError {
-    border-left: 4px solid #ef4444;
+.toastItem:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.16), 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.toastInfo {
-    border-left: 4px solid #3b82f6;
-}
-
-.iconSuccess {
-    color: #22c55e;
-}
-
-.iconError {
-    color: #ef4444;
-}
-
-.iconInfo {
-    color: #3b82f6;
-}
-
-.content {
-    flex: 1;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--text-primary);
-}
-
-.close {
-    background: none;
-    border: none;
-    padding: 4px;
-    cursor: pointer;
-    color: var(--text-muted);
+.iconWrapper {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
+    animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) 0.1s backwards;
 }
 
-@keyframes slideUp {
+.toastMessage {
+    flex: 1;
+    font-size: 15px;
+    color: var(--text-primary);
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.closeButton {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s;
+    opacity: 0.6;
+}
+
+.closeButton:hover {
+    background: var(--bg-base);
+    opacity: 1;
+}
+
+/* Success variant */
+.toastSuccess::before {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.toastSuccess .iconWrapper {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.15) 100%);
+    color: #059669;
+}
+
+/* Error variant */
+.toastError::before {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.toastError .iconWrapper {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.15) 100%);
+    color: #dc2626;
+}
+
+/* Info variant */
+.toastInfo::before {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.toastInfo .iconWrapper {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.15) 100%);
+    color: #2563eb;
+}
+
+/* Warning variant */
+.toastWarning::before {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.toastWarning .iconWrapper {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(217, 119, 6, 0.15) 100%);
+    color: #d97706;
+}
+
+@keyframes slideInRight {
     from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateX(100px);
     }
 
     to {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateX(0);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateX(100px);
+    }
+}
+
+.toastExit {
+    animation: slideOutRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@media (max-width: 768px) {
+    .toastItem {
+        min-width: unset;
+        max-width: unset;
+        width: 100%;
     }
 }

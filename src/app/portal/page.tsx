@@ -1,28 +1,31 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Lock, ArrowRight } from 'lucide-react';
 import { dataStore } from '@/lib/store';
 import styles from './portal.module.css';
 
 export default function PortalLogin() {
     const router = useRouter();
-    const [code, setCode] = useState('');
+    const searchParams = useSearchParams();
+    const [code, setCode] = useState(searchParams?.get('code') || '');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const hasAutoTried = useRef(false);
 
-    const handleLogin = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleLogin = useCallback(async (providedCode?: string) => {
+        const codeToUse = providedCode || code;
+        if (!codeToUse) return;
+
         setLoading(true);
         setError('');
 
         try {
             const clients = await dataStore.getClients();
-            const client = clients.find(c => c.accessCode === code);
+            const client = clients.find(c => c.accessCode === codeToUse);
 
             if (client) {
-                // In real app, set cookie/session here.
                 localStorage.setItem('portal_client_id', client.id);
                 router.push('/portal/dashboard');
             } else {
@@ -34,6 +37,19 @@ export default function PortalLogin() {
             setError('An error occurred. Please try again.');
             setLoading(false);
         }
+    }, [code, router]);
+
+    useEffect(() => {
+        const urlCode = searchParams?.get('code');
+        if (urlCode && !loading && !error && !hasAutoTried.current) {
+            hasAutoTried.current = true;
+            handleLogin(urlCode);
+        }
+    }, [searchParams, handleLogin, loading, error]);
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        handleLogin();
     };
 
     return (
@@ -48,7 +64,7 @@ export default function PortalLogin() {
                     Enter your unique access code to view your campaigns.
                 </p>
 
-                <form onSubmit={handleLogin}>
+                <form onSubmit={handleSubmit}>
                     <input
                         type="password"
                         className={`input ${styles.input}`}

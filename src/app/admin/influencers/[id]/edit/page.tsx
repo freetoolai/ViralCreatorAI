@@ -101,7 +101,7 @@ export default function EditInfluencerPage({ params }: { params: Promise<{ id: s
             };
 
             await dataStore.updateInfluencer(id, updatedInfluencer);
-            router.push('/admin/influencers');
+            router.push(`/admin/influencers/${id}`);
         } catch (error) {
             console.error("Failed to update influencer:", error);
             setError('Failed to update influencer.');

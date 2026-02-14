@@ -3,12 +3,12 @@
 import { use, useState, useEffect } from 'react';
 import { ExternalLink } from 'lucide-react';
 import { CampaignGroup, Campaign, Influencer } from '@/lib/types';
-import { dataStore } from '@/lib/store';
 import styles from './portal-group.module.css';
 import clsx from 'clsx';
 
 export default function PortalGroupDetail({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
+    const [loading, setLoading] = useState(true);
     const [group, setGroup] = useState<CampaignGroup | null>(null);
     const [campaigns, setCampaigns] = useState<Campaign[]>([]);
     const [allInfluencers, setAllInfluencers] = useState<Influencer[]>([]);
@@ -16,24 +16,31 @@ export default function PortalGroupDetail({ params }: { params: Promise<{ id: st
     useEffect(() => {
         const fetchGroup = async () => {
             try {
-                const g = await dataStore.getGroup(id);
+                // Use dataStore via dynamic import for mock mode support
+                const mod = await import('@/lib/store');
+                const g = await mod.dataStore.getGroup(id);
+
                 if (g) {
                     setGroup(g);
                     // Fetch only relevant campaigns
-                    const allCamps = await dataStore.getCampaigns();
+                    const allCamps = await mod.dataStore.getCampaigns();
+                    // In a real app we would query optimized, but for mock this filter is fine
                     const groupCamps = allCamps.filter(c => g.campaignIds.includes(c.id));
                     setCampaigns(groupCamps);
-                    const allInfs = await dataStore.getInfluencers();
+                    const allInfs = await mod.dataStore.getInfluencers();
                     setAllInfluencers(allInfs);
                 }
             } catch (error) {
                 console.error("Failed to load shared view:", error);
+            } finally {
+                setLoading(false);
             }
         };
         fetchGroup();
     }, [id]);
 
-    if (!group) return <div className={styles.loading}>Loading shared view...</div>;
+    if (loading) return <div className={styles.loading}>Loading shared view...</div>;
+    if (!group) return <div className={styles.loading}>Group not found.</div>;
 
     const getInfluencerDetails = (infId: string) => allInfluencers.find(i => i.id === infId);
 
@@ -81,14 +88,14 @@ export default function PortalGroupDetail({ params }: { params: Promise<{ id: st
                                             <tr key={ref.influencerId}>
                                                 <td>
                                                     <div className={styles.influencerCell}>
-                                                        <div className={styles.avatar}>{inf?.name[0]}</div>
+                                                        <div className={styles.avatar}>{inf?.name ? inf.name[0] : '?'}</div>
                                                         <div>
-                                                            <div className={styles.name}>{inf?.name}</div>
-                                                            <div className={styles.handle}>{inf?.platforms[0]?.handle}</div>
+                                                            <div className={styles.name}>{inf?.name || 'Unknown Creator'}</div>
+                                                            <div className={styles.handle}>{inf?.platforms?.[0]?.handle || '@handle'}</div>
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td>{inf?.platforms[0]?.platform}</td>
+                                                <td>{inf?.platforms?.[0]?.platform || 'Other'}</td>
                                                 <td>
                                                     <span className={clsx(styles.statusTag, styles[`status${ref.status.replace(/\s/g, '')}`])}>
                                                         {ref.status}

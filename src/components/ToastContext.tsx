@@ -5,7 +5,7 @@ import { CheckCircle, AlertCircle, Info, X } from 'lucide-react';
 import styles from './Toast.module.css';
 import clsx from 'clsx';
 
-type ToastType = 'success' | 'error' | 'info';
+type ToastType = 'success' | 'error' | 'info' | 'warning';
 
 interface Toast {
     id: string;
@@ -43,19 +43,27 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                     <div
                         key={toast.id}
                         className={clsx(
-                            styles.toast,
+                            styles.toastItem,
                             toast.type === 'success' && styles.toastSuccess,
                             toast.type === 'error' && styles.toastError,
-                            toast.type === 'info' && styles.toastInfo
+                            toast.type === 'info' && styles.toastInfo,
+                            toast.type === 'warning' && styles.toastWarning
                         )}
                     >
-                        {toast.type === 'success' && <CheckCircle className={styles.iconSuccess} size={20} />}
-                        {toast.type === 'error' && <AlertCircle className={styles.iconError} size={20} />}
-                        {toast.type === 'info' && <Info className={styles.iconInfo} size={20} />}
+                        <div className={styles.iconWrapper}>
+                            {toast.type === 'success' && <CheckCircle size={20} />}
+                            {toast.type === 'error' && <AlertCircle size={20} />}
+                            {toast.type === 'info' && <Info size={20} />}
+                            {toast.type === 'warning' && <AlertCircle size={20} />}
+                        </div>
 
-                        <div className={styles.content}>{toast.message}</div>
+                        <div className={styles.toastMessage}>{toast.message}</div>
 
-                        <button className={styles.close} onClick={() => removeToast(toast.id)} aria-label="Dismiss notification">
+                        <button
+                            className={styles.closeButton}
+                            onClick={() => removeToast(toast.id)}
+                            aria-label="Dismiss notification"
+                        >
                             <X size={16} />
                         </button>
                     </div>

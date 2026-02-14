@@ -4,13 +4,14 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Save } from 'lucide-react';
-import { Client, Campaign } from '@/lib/types';
-import { dataStore } from '@/lib/store';
+import { Client, Campaign, CampaignGroup } from '@/lib/types';
+import { useToast } from '@/components/ToastContext';
 import styles from './new-group.module.css';
 import clsx from 'clsx';
 
 export default function NewGroupPage() {
     const router = useRouter();
+    const { showToast } = useToast();
     const [clients, setClients] = useState<Client[]>([]);
     const [campaigns, setCampaigns] = useState<Campaign[]>([]);
 
@@ -24,18 +25,21 @@ export default function NewGroupPage() {
     useEffect(() => {
         const fetchData = async () => {
             try {
+                // Use dataStore directly for mock mode support
+                const mod = await import('@/lib/store');
                 const [c, camp] = await Promise.all([
-                    dataStore.getClients(),
-                    dataStore.getCampaigns()
+                    mod.dataStore.getClients(),
+                    mod.dataStore.getCampaigns()
                 ]);
                 setClients(c);
                 setCampaigns(camp);
             } catch (error) {
                 console.error("Failed to load data for new group:", error);
+                showToast("Failed to load clients and campaigns", "error");
             }
         };
         fetchData();
-    }, []);
+    }, [showToast]);
 
     const filteredCampaigns = campaigns.filter(c =>
         !form.clientId || c.clientId === form.clientId
@@ -43,25 +47,34 @@ export default function NewGroupPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!form.clientId || selectedCampaigns.size === 0) {
-            alert('Please select a client and at least one campaign.');
-            return;
-        }
-
-        const newGroup = {
-            id: `grp_${Date.now()}`,
-            title: form.title,
-            description: form.description,
-            clientId: form.clientId,
-            campaignIds: Array.from(selectedCampaigns),
-            createdAt: new Date().toISOString()
-        };
-
         try {
-            await dataStore.addGroup(newGroup);
+            const mod = await import('@/lib/store');
+
+            if (!form.clientId || selectedCampaigns.size === 0) {
+                showToast('Please select a client and at least one campaign.', 'error');
+                return;
+            }
+
+            // We need to construct the full CampaignGroup object as required by addGroup
+            // Note: addGroup in store expects CampaignGroup, but the internal mapping handles IDs.
+            // The usage here was passing a plain object, which matches the shape roughly.
+            // Let's ensure it matches the full type.
+
+            const newGroup: CampaignGroup = {
+                id: `grp_${Date.now()}`,
+                title: form.title,
+                description: form.description,
+                clientId: form.clientId,
+                campaignIds: Array.from(selectedCampaigns),
+                createdAt: new Date().toISOString()
+            };
+
+            await mod.dataStore.addGroup(newGroup);
+            showToast("Campaign group created successfully");
             router.push('/admin/groups');
         } catch (error) {
             console.error("Failed to create group:", error);
+            showToast("Failed to create group", "error");
         }
     };
 

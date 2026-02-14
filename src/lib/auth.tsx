@@ -18,20 +18,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Demo credentials
-const DEMO_USERS = {
-    admin: {
-        email: 'admin@viralcreatorai.com',
-        password: 'demo123',
-        user: { id: '1', name: 'Admin User', email: 'admin@viralcreatorai.com', role: 'admin' as const }
-    },
-    client: {
-        email: 'client@example.com',
-        password: 'demo123',
-        user: { id: '2', name: 'Client User', email: 'client@example.com', role: 'client' as const }
-    }
-};
-
+// Auth context for client-side state
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(() => {
         if (typeof window !== 'undefined') {
@@ -42,17 +29,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     const login = async (email: string, password: string): Promise<boolean> => {
-        // Demo authentication
-        const demoUser = Object.values(DEMO_USERS).find(
-            u => u.email === email && u.password === password
-        );
-
-        if (demoUser) {
-            setUser(demoUser.user);
-            localStorage.setItem('viral_auth_user', JSON.stringify(demoUser.user));
-            return true;
-        }
-
+        // This is a legacy method. Please use NextAuth instead.
+        console.warn('Legacy login method called with:', email, password);
         return false;
     };
 
