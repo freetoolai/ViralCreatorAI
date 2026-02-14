@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Lock, ArrowRight } from 'lucide-react';
 import { dataStore } from '@/lib/store';
 import styles from './portal.module.css';
 
-export default function PortalLogin() {
+function PortalLoginContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [code, setCode] = useState(searchParams?.get('code') || '');
@@ -27,6 +27,10 @@ export default function PortalLogin() {
 
             if (client) {
                 localStorage.setItem('portal_client_id', client.id);
+                // Clear any admin tokens to prevent RouteGuard conflicts when previewing
+                localStorage.removeItem('viral_access_token');
+                localStorage.removeItem('viral_access_type');
+
                 router.push('/portal/dashboard');
             } else {
                 setError('Invalid access code. Please try again.');
@@ -99,5 +103,19 @@ export default function PortalLogin() {
                 </p>
             </div>
         </div>
+    );
+}
+
+export default function PortalLogin() {
+    return (
+        <Suspense fallback={
+            <div className={styles.container}>
+                <div className={styles.loginCard}>
+                    <div className={styles.loadingState}>Loading secure portal...</div>
+                </div>
+            </div>
+        }>
+            <PortalLoginContent />
+        </Suspense>
     );
 }
