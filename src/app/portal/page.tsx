@@ -18,27 +18,32 @@ function PortalLoginContent() {
         const rawCode = providedCode || code;
         if (!rawCode) return;
 
-        const codeToUse = rawCode.trim();
         setLoading(true);
         setError('');
 
         try {
+            const { isInvalid } = await import('@/lib/supabase');
+            console.log(`[Portal] Attempting login. Mode: ${isInvalid ? 'MOCK' : 'DB'}`);
+
             const clients = await dataStore.getClients();
-            const client = clients.find(c => c.accessCode?.trim() === codeToUse);
+            const client = clients.find(c => {
+                const dbCode = (c.accessCode || '').toString().trim().toLowerCase();
+                return dbCode === rawCode.trim().toLowerCase();
+            });
 
             if (client) {
+                console.log("[Portal] Login successful for:", client.companyName);
                 localStorage.setItem('portal_client_id', client.id);
-                // Clear any admin tokens to prevent RouteGuard conflicts when previewing
                 localStorage.removeItem('viral_access_token');
                 localStorage.removeItem('viral_access_type');
-
                 router.push('/portal/dashboard');
             } else {
+                console.warn("[Portal] Login failed. Codes in system:", clients.map(c => c.accessCode));
                 setError('Invalid access code. Please try again.');
                 setLoading(false);
             }
         } catch (err) {
-            console.error("Portal login error:", err);
+            console.error("[Portal] Login error:", err);
             setError('An error occurred. Please try again.');
             setLoading(false);
         }
