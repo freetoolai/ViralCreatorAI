@@ -35,13 +35,14 @@
 
 @media (max-width: 768px) {
     .main {
-        padding-top: 56px;
-        /* Space for merged mobile header only */
-        padding-bottom: 80px;
-        /* Space for BottomNav */
+        padding-top: 64px;
+        /* Match polished header */
+        padding-bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+        /* Safe area + BottomNav */
     }
 
     .content {
         padding: var(--space-md);
+        padding-bottom: 2rem;
     }
 }

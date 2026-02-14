@@ -320,9 +320,32 @@
 
     .title {
         font-size: 1.75rem;
+        letter-spacing: -0.04em;
+    }
+
+    .subtitle {
+        font-size: 0.875rem;
+    }
+
+    .statsGrid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .statBox {
+        padding: 1rem;
+    }
+
+    .statValue {
+        font-size: 1.25rem;
     }
 
     .card {
         padding: 1.25rem;
+        border-radius: 16px;
+    }
+
+    .cardTitle {
+        font-size: 1.125rem;
     }
 }

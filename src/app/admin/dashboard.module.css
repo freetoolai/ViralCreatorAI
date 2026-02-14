@@ -298,7 +298,12 @@
 
     .quickActionsGrid {
         grid-template-columns: 1fr;
-        gap: var(--space-sm);
+        gap: 12px;
+    }
+
+    .actionButton:active {
+        transform: scale(0.96);
+        background: var(--bg-top);
     }
 
     .actionCard {
@@ -316,19 +321,26 @@
 
 @media (max-width: 480px) {
     .statsGrid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .statCard {
+        min-height: 80px;
+        padding: 0.875rem;
     }
 
     .statSparkline {
-        width: 60px;
-        height: 32px;
+        display: none;
+        /* Hide sparklines on tiny screens to save space */
     }
 
     .title {
-        font-size: var(--font-h2);
+        font-size: 1.5rem;
+        letter-spacing: -0.04em;
     }
 
-    .sectionTitle {
-        font-size: 1.125rem;
+    .statValue {
+        font-size: 1.25rem;
     }
 }

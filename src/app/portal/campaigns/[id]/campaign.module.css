@@ -310,18 +310,37 @@
     }
 }
 
-/* Modal Styles */
-.modalOverlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.4);
-    -webkit-backdrop-filter: blur(8px);
-    backdrop-filter: blur(8px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    padding: var(--space-md);
+@media (max-width: 768px) {
+    .modalOverlay {
+        align-items: flex-end;
+        padding: 0;
+        background: rgba(0, 0, 0, 0.3);
+        -webkit-backdrop-filter: blur(4px);
+        backdrop-filter: blur(4px);
+    }
+
+    .modalContent {
+        max-width: 100%;
+        border-radius: 24px 24px 0 0;
+        margin-bottom: 0;
+        transform: translateY(0);
+        animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        padding: var(--space-xl) var(--space-md);
+        padding-bottom: calc(var(--space-xl) + var(--safe-area-bottom, 0px));
+    }
+
+    /* Add a visual drag handle */
+    .modalContent::before {
+        content: '';
+        position: absolute;
+        top: 12px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 36px;
+        height: 5px;
+        background: var(--surface-border);
+        border-radius: 999px;
+    }
 }
 
 .modalContent {

@@ -164,6 +164,10 @@
         color: var(--text-primary);
     }
 
+    .mobileIconBtn:active {
+        transform: scale(0.9);
+    }
+
     .mobileAvatar {
         width: 32px;
         height: 32px;

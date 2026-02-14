@@ -16,7 +16,7 @@
 @media (max-width: 768px) {
     .main {
         padding: 1rem;
-        padding-bottom: 80px;
-        /* Clear BottomNav */
+        padding-bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+        /* Safe area + BottomNav */
     }
 }
