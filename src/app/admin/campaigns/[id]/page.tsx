@@ -415,7 +415,6 @@ export default function CampaignAdminDetail({ params }: { params: Promise<{ id: 
 
                         <div className={styles.modalBody}>
                             <div className={styles.searchWrapper}>
-                                <Search size={16} className={styles.modalSearchIcon} />
                                 <input
                                     type="text"
                                     className={styles.modalSearchInput}
@@ -424,6 +423,7 @@ export default function CampaignAdminDetail({ params }: { params: Promise<{ id: 
                                     onChange={(e) => setModalSearch(e.target.value)}
                                     title="Search talent"
                                 />
+                                <Search size={16} className={styles.modalSearchIcon} />
                             </div>
 
                             <div className={styles.resultsList}>

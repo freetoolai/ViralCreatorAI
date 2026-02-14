@@ -212,7 +212,6 @@ export default function InfluencersPage() {
             <div className={styles.controlsRow}>
                 <div className={styles.filterGroup}>
                     <div className={styles.searchWrapper}>
-                        <Search size={16} className={styles.searchIcon} />
                         <input
                             type="text"
                             placeholder="Search creators..."
@@ -221,6 +220,7 @@ export default function InfluencersPage() {
                             onChange={(e) => setSearchQuery(e.target.value)}
                             title="Search creators by name or niche"
                         />
+                        <Search size={16} className={styles.searchIcon} />
                     </div>
                     <div className={styles.filterWrapper}>
                         <select

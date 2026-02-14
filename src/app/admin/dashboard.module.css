@@ -45,6 +45,14 @@
     border: 1px solid var(--surface-border);
     border-radius: var(--radius-card);
     min-height: 120px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.statCard:active {
+    transform: scale(0.96);
+    background: var(--bg-top);
 }
 
 .statHeader {
@@ -109,22 +117,6 @@
     gap: 0.625rem;
 }
 
-.influencerItem {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem;
-    background: var(--surface-white);
-    border-radius: var(--radius-card);
-    border: 1px solid var(--surface-border);
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.influencerItem:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
-}
-
 .avatar {
     width: 40px;
     height: 40px;
@@ -137,6 +129,25 @@
     font-weight: 500;
     font-size: 1rem;
     border: 1px solid var(--surface-border);
+    flex-shrink: 0;
+}
+
+.influencerItem {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--surface-white);
+    border-radius: var(--radius-card);
+    border: 1px solid var(--surface-border);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    text-decoration: none;
+    color: inherit;
+}
+
+.influencerItem:active {
+    transform: scale(0.98);
+    background: var(--bg-top);
 }
 
 .campaignItem {
@@ -147,12 +158,14 @@
     background: var(--surface-white);
     border-radius: var(--radius-card);
     border: 1px solid var(--surface-border);
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    text-decoration: none;
+    color: inherit;
 }
 
-.campaignItem:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+.campaignItem:active {
+    transform: scale(0.98);
+    background: var(--bg-top);
 }
 
 .boldText {

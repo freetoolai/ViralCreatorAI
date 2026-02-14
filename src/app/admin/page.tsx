@@ -74,10 +74,10 @@ export default function AdminDashboard() {
     const avgROI = totalInfluencerFees > 0 ? (totalClientFees / totalInfluencerFees).toFixed(1) : '0';
 
     const statsData = [
-        { label: 'Total Creators', value: influencers.length, color: '#2F5E4E', trend: [{ v: 0 }, { v: 2 }, { v: 5 }, { v: influencers.length }] },
-        { label: 'Campaigns', value: campaigns.length, color: '#2F5E4E', trend: [{ v: 0 }, { v: 1 }, { v: campaigns.length }] },
-        { label: 'Network Reach', value: formatReach(totalReach), color: '#2F5E4E', trend: [{ v: 0 }, { v: totalReach }] },
-        { label: 'Avg ROI', value: `${avgROI}x`, color: '#2F5E4E', trend: [{ v: 0 }, { v: Number(avgROI) }] },
+        { label: 'Total Creators', value: influencers.length, color: '#2F5E4E', href: '/admin/influencers', trend: [{ v: 0 }, { v: 2 }, { v: 5 }, { v: influencers.length }] },
+        { label: 'Campaigns', value: campaigns.length, color: '#2F5E4E', href: '/admin/campaigns', trend: [{ v: 0 }, { v: 1 }, { v: campaigns.length }] },
+        { label: 'Network Reach', value: formatReach(totalReach), color: '#2F5E4E', href: '/admin/influencers', trend: [{ v: 0 }, { v: totalReach }] },
+        { label: 'Avg ROI', value: `${avgROI}x`, color: '#2F5E4E', href: '/admin/campaigns', trend: [{ v: 0 }, { v: Number(avgROI) }] },
     ];
 
     const quickActions = [
@@ -117,7 +117,7 @@ export default function AdminDashboard() {
 
             <div className={styles.statsGrid}>
                 {statsData.map((stat) => (
-                    <div key={stat.label} className={styles.statCard}>
+                    <Link key={stat.label} href={stat.href} className={styles.statCard}>
                         <div className={styles.statHeader}>
                             <div>
                                 <div className={styles.statLabel}>{stat.label}</div>
@@ -125,7 +125,7 @@ export default function AdminDashboard() {
                             </div>
                             <Sparkline data={stat.trend} color={stat.color} />
                         </div>
-                    </div>
+                    </Link>
                 ))}
             </div>
 
@@ -155,7 +155,7 @@ export default function AdminDashboard() {
                     </div>
                     <div className={styles.list}>
                         {influencers.slice(0, 3).map(inf => (
-                            <div key={inf.id} className={styles.influencerItem}>
+                            <Link key={inf.id} href={`/admin/influencers/${inf.id}`} className={styles.influencerItem}>
                                 <div className={styles.avatar}>
                                     {inf.name[0]}
                                 </div>
@@ -163,7 +163,7 @@ export default function AdminDashboard() {
                                     <div className={styles.boldText}>{inf.name}</div>
                                     <div className={styles.mutedText}>{inf.tier} • {inf.primaryNiche}</div>
                                 </div>
-                            </div>
+                            </Link>
                         ))}
                     </div>
                 </section>
@@ -175,7 +175,7 @@ export default function AdminDashboard() {
                     </div>
                     <div className={styles.list}>
                         {campaigns.slice(0, 5).map(camp => (
-                            <div key={camp.id} className={styles.campaignItem}>
+                            <Link key={camp.id} href={`/admin/campaigns/${camp.id}`} className={styles.campaignItem}>
                                 <div>
                                     <div className={styles.boldText}>{camp.title}</div>
                                     <div className={styles.mutedText}>Budget: ${camp.totalBudget.toLocaleString()}</div>
@@ -183,7 +183,7 @@ export default function AdminDashboard() {
                                 <span className={styles.statusBadge}>
                                     {camp.status}
                                 </span>
-                            </div>
+                            </Link>
                         ))}
                     </div>
                 </section>

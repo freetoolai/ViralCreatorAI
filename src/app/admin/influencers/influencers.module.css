@@ -98,30 +98,51 @@
     color: var(--text-muted);
     pointer-events: none;
     z-index: 10;
+    transition: color 0.2s ease;
 }
 
 .searchInput {
-    padding-left: 2.75rem !important;
-    background: var(--surface-white) !important;
+    padding: 0.75rem 1rem 0.75rem 2.85rem !important;
+    background: var(--bg-base) !important;
     border: 1px solid var(--surface-border) !important;
-    height: 44px !important;
-    font-size: 0.875rem !important;
-    transition: all 0.2s ease !important;
+    border-radius: 14px !important;
+    height: 48px !important;
+    font-size: 0.9375rem !important;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
     width: 100% !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02) !important;
 }
 
 .searchInput:focus {
+    background: var(--surface-white) !important;
     border-color: var(--accent-green) !important;
-    box-shadow: 0 0 0 3px rgba(47, 94, 78, 0.05) !important;
+    box-shadow: 0 4px 12px rgba(47, 94, 78, 0.08) !important;
+    transform: translateY(-1px);
+}
+
+.searchInput:focus+.searchIcon {
+    color: var(--accent-green);
 }
 
 .filterSelect {
-    height: 42px !important;
-    background: var(--surface-white) !important;
-    border-color: var(--surface-border) !important;
-    padding: 0 1rem !important;
-    font-size: 0.875rem !important;
+    height: 48px !important;
+    background: var(--bg-base) !important;
+    border: 1px solid var(--surface-border) !important;
+    border-radius: 14px !important;
+    padding: 0 1.25rem !important;
+    font-size: 0.9375rem !important;
     cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.filterSelect:hover {
+    border-color: var(--text-muted) !important;
+    background: var(--surface-white) !important;
+}
+
+.filterSelect:focus {
+    border-color: var(--accent-green) !important;
+    outline: none;
 }
 
 /* Table Container */

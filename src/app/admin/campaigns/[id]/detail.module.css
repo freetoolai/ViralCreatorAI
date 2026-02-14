@@ -461,27 +461,33 @@
 
 .modalSearchIcon {
     position: absolute;
-    left: 0.875rem;
+    left: 1rem;
     top: 50%;
     transform: translateY(-50%);
     color: var(--text-muted);
-    opacity: 0.5;
+    transition: color 0.2s ease;
+    pointer-events: none;
 }
 
 .modalSearchInput {
-    padding: 0.75rem 1rem 0.75rem 2.5rem;
+    padding: 0.75rem 1rem 0.75rem 2.75rem;
     width: 100%;
     background: var(--bg-base);
     border: 1px solid var(--surface-border);
     border-radius: 12px;
-    font-size: 0.875rem;
-    transition: all 0.3s ease;
+    font-size: 0.9375rem;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .modalSearchInput:focus {
-    border-bottom-color: var(--surface-border);
+    background: var(--surface-white);
     outline: none;
-    border: 1px solid var(--accent-green);
+    border-color: var(--accent-green);
+    box-shadow: 0 4px 12px rgba(47, 94, 78, 0.05);
+}
+
+.modalSearchInput:focus+.modalSearchIcon {
+    color: var(--accent-green);
 }
 
 .closeButton {
