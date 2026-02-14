@@ -119,7 +119,7 @@ class Store {
     }
 
     async addInfluencer(inf: Influencer): Promise<Influencer> {
-        const dbEntry = this.mapInfluencerToDB(inf);
+        const dbEntry = this.mapInfluencerToDB(inf) as InfluencerRow;
 
         if (isInvalid) {
             // Check for duplicates
@@ -258,7 +258,7 @@ class Store {
 
     async addClient(client: Client) {
         if (isInvalid) {
-            const dbEntry = this.mapClientToDB(client);
+            const dbEntry = this.mapClientToDB(client) as ClientRow;
             const row: ClientRow = {
                 ...dbEntry,
                 id: dbEntry.id || `client-${Date.now()}`,
@@ -269,7 +269,7 @@ class Store {
             return;
         }
 
-        const dbEntry = this.mapClientToDB(client);
+        const dbEntry = this.mapClientToDB(client) as ClientRow;
 
         // Use upsert on email/id to prevent duplicates during sync
         const { error } = await supabase
@@ -368,7 +368,7 @@ class Store {
 
     async addCampaign(camp: Campaign) {
         if (isInvalid) {
-            const dbEntry = this.mapCampaignToDB(camp);
+            const dbEntry = this.mapCampaignToDB(camp) as CampaignRow;
             const row: CampaignRow = {
                 ...dbEntry,
                 id: dbEntry.id || `camp-${Date.now()}`,
@@ -379,7 +379,7 @@ class Store {
             return;
         }
 
-        const dbEntry = this.mapCampaignToDB(camp);
+        const dbEntry = this.mapCampaignToDB(camp) as CampaignRow;
         const { error } = await supabase
             .from('campaigns')
             .upsert(dbEntry); // Campaigns don't have unique emails, but 'id' is PK
@@ -623,22 +623,22 @@ class Store {
         };
     }
 
-    private mapInfluencerToDB(inf: Influencer): InfluencerRow {
-        return {
-            id: inf.id,
-            name: inf.name,
-            email: inf.email,
-            phone: inf.phone || null,
-            shipping_address: inf.shippingAddress || null,
-            primary_niche: inf.primaryNiche || null,
-            secondary_niches: inf.secondaryNiches || null,
-            tier: inf.tier,
-            internal_notes: inf.internalNotes || null,
-            platforms: inf.platforms || null,
-            typical_payout: inf.typicalPayout || null,
-            typical_charge: inf.typicalCharge || null,
-            media_kit_url: inf.mediaKitUrl || null
-        };
+    private mapInfluencerToDB(inf: Partial<Influencer>): Partial<InfluencerRow> {
+        const row: Partial<InfluencerRow> = {};
+        if (inf.id !== undefined) row.id = inf.id;
+        if (inf.name !== undefined) row.name = inf.name;
+        if (inf.email !== undefined) row.email = inf.email;
+        if (inf.phone !== undefined) row.phone = inf.phone;
+        if (inf.shippingAddress !== undefined) row.shipping_address = inf.shippingAddress;
+        if (inf.primaryNiche !== undefined) row.primary_niche = inf.primaryNiche;
+        if (inf.secondaryNiches !== undefined) row.secondary_niches = inf.secondaryNiches;
+        if (inf.tier !== undefined) row.tier = inf.tier;
+        if (inf.internalNotes !== undefined) row.internal_notes = inf.internalNotes;
+        if (inf.platforms !== undefined) row.platforms = inf.platforms;
+        if (inf.typicalPayout !== undefined) row.typical_payout = inf.typicalPayout;
+        if (inf.typicalCharge !== undefined) row.typical_charge = inf.typicalCharge;
+        if (inf.mediaKitUrl !== undefined) row.media_kit_url = inf.mediaKitUrl;
+        return row;
     }
 
     private mapClientFromDB(row: ClientRow): Client {
@@ -651,14 +651,14 @@ class Store {
         };
     }
 
-    private mapClientToDB(client: Client): ClientRow {
-        return {
-            id: client.id,
-            name: client.name,
-            email: client.email,
-            company_name: client.companyName || null,
-            access_code: client.accessCode || null
-        };
+    private mapClientToDB(client: Partial<Client>): Partial<ClientRow> {
+        const row: Partial<ClientRow> = {};
+        if (client.id !== undefined) row.id = client.id;
+        if (client.name !== undefined) row.name = client.name;
+        if (client.email !== undefined) row.email = client.email;
+        if (client.companyName !== undefined) row.company_name = client.companyName;
+        if (client.accessCode !== undefined) row.access_code = client.accessCode;
+        return row;
     }
 
     private mapCampaignFromDB(row: CampaignRow): Campaign {
@@ -676,18 +676,18 @@ class Store {
         };
     }
 
-    private mapCampaignToDB(camp: Campaign): CampaignRow {
-        return {
-            id: camp.id,
-            client_id: camp.clientId,
-            title: camp.title,
-            status: camp.status,
-            total_budget: camp.totalBudget || null,
-            platform_focus: camp.platformFocus || null,
-            required_niches: camp.requiredNiches || null,
-            influencers: camp.influencers || null,
-            description: camp.description || null
-        };
+    private mapCampaignToDB(camp: Partial<Campaign>): Partial<CampaignRow> {
+        const row: Partial<CampaignRow> = {};
+        if (camp.id !== undefined) row.id = camp.id;
+        if (camp.clientId !== undefined) row.client_id = camp.clientId;
+        if (camp.title !== undefined) row.title = camp.title;
+        if (camp.status !== undefined) row.status = camp.status;
+        if (camp.totalBudget !== undefined) row.total_budget = camp.totalBudget;
+        if (camp.platformFocus !== undefined) row.platform_focus = camp.platformFocus;
+        if (camp.requiredNiches !== undefined) row.required_niches = camp.requiredNiches;
+        if (camp.influencers !== undefined) row.influencers = camp.influencers;
+        if (camp.description !== undefined) row.description = camp.description;
+        return row;
     }
 
     private mapGroupFromDB(row: GroupRow): CampaignGroup {
@@ -701,14 +701,14 @@ class Store {
         };
     }
 
-    private mapGroupToDB(group: CampaignGroup): Partial<GroupRow> {
-        return {
-            id: group.id,
-            title: group.title,
-            description: group.description || null,
-            campaign_ids: group.campaignIds || null,
-            client_id: group.clientId
-        };
+    private mapGroupToDB(group: Partial<CampaignGroup>): Partial<GroupRow> {
+        const row: Partial<GroupRow> = {};
+        if (group.id !== undefined) row.id = group.id;
+        if (group.title !== undefined) row.title = group.title;
+        if (group.description !== undefined) row.description = group.description;
+        if (group.campaignIds !== undefined) row.campaign_ids = group.campaignIds;
+        if (group.clientId !== undefined) row.client_id = group.clientId;
+        return row;
     }
 
     // --- USER / TEAM ACTIONS ---

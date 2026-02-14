@@ -26,7 +26,11 @@ export default function AdminLayout({
         if (!authorized) {
             router.replace('/portal/dashboard');
         }
-        setIsAuthorized(authorized);
+
+        // Use a microtask to avoid cascading render error
+        Promise.resolve().then(() => {
+            setIsAuthorized(authorized);
+        });
     }, [router]);
 
     if (isAuthorized === null) return null;
