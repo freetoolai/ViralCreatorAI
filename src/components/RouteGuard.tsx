@@ -29,15 +29,36 @@ export function RouteGuard({ children }: { children: React.ReactNode }) {
         const accessType = localStorage.getItem('viral_access_type') || (localStorage.getItem('portal_client_id') ? 'client' : sessionUser?.role);
 
         const isAdminRoute = pathname?.startsWith('/admin');
-        const isPortalRoute = pathname?.startsWith('/portal');
         const isPortalLogin = pathname === '/portal';
         const isSharedGroupRoute = pathname?.startsWith('/portal/groups/');
+        const isSharedCampaignRoute = pathname?.startsWith('/portal/campaigns/');
         const isAccessRoute = pathname === '/access';
         const isHomePage = pathname === '/';
         const isLoginRoute = pathname === '/login';
 
-        // Allow homepage, login, and shared group routes without access checks
-        if (isHomePage || isLoginRoute || isPortalLogin || isSharedGroupRoute) return;
+        // 1. If identified as a client, strictly block admin, login and home
+        if (accessType === 'client') {
+            if (isAdminRoute || isLoginRoute || isHomePage || isAccessRoute) {
+                router.push('/portal/dashboard');
+                return;
+            }
+        }
+
+        // 2. Allow shared views and portal login without session check
+        if (isPortalLogin || isSharedGroupRoute || isSharedCampaignRoute) return;
+
+        // 3. Admin access check
+        if (isAdminRoute && accessType !== 'admin') {
+            if (hasAccess) {
+                router.push('/portal/dashboard');
+            } else {
+                router.push('/access');
+            }
+            return;
+        }
+
+        // Allow homepage and login for everyone else
+        if (isHomePage || isLoginRoute) return;
 
         // Redirect to access page if no access code and not logged in
         if (!hasAccess && !isAccessRoute) {
@@ -52,18 +73,6 @@ export function RouteGuard({ children }: { children: React.ReactNode }) {
             } else {
                 router.push('/portal/dashboard');
             }
-            return;
-        }
-
-        // Block admin routes for clients
-        if (isAdminRoute && accessType === 'client') {
-            router.push('/portal/dashboard');
-            return;
-        }
-
-        // Block portal routes for admins (except shared views)
-        if (isPortalRoute && accessType === 'admin' && !isSharedGroupRoute) {
-            router.push('/admin');
             return;
         }
     }, [pathname, router, status, session]);
