@@ -136,14 +136,24 @@ class Store {
             return this.mapInfluencerFromDB(row);
         }
 
-        // Remove ID if it's one of our temporary ones to let Supabase generate a UUID
-        if (dbEntry.id && dbEntry.id.startsWith('inf-')) {
-            delete (dbEntry as any).id;
+        // For sync/import, we want to allow the ID if it's already there (to avoid duplicates)
+        // But for new creations, we let Supabase handle it if it's a temp ID
+        const idToUse = dbEntry.id;
+        if (idToUse && idToUse.startsWith('inf-')) {
+            // Delete id from dbEntry to let Supabase generate one if it's a temp ID
+            const { id: _, ...rest } = dbEntry;
+            const { data, error } = await supabase
+                .from('influencers')
+                .insert(rest)
+                .select()
+                .single();
+            if (error) throw error;
+            return this.mapInfluencerFromDB(data);
         }
 
         const { data, error } = await supabase
             .from('influencers')
-            .insert(dbEntry)
+            .upsert(dbEntry, { onConflict: 'email' })
             .select()
             .single();
 
@@ -260,9 +270,11 @@ class Store {
         }
 
         const dbEntry = this.mapClientToDB(client);
+
+        // Use upsert on email/id to prevent duplicates during sync
         const { error } = await supabase
             .from('clients')
-            .insert(dbEntry);
+            .upsert(dbEntry, { onConflict: 'email' });
 
         if (error) throw error;
     }
@@ -370,7 +382,7 @@ class Store {
         const dbEntry = this.mapCampaignToDB(camp);
         const { error } = await supabase
             .from('campaigns')
-            .insert(dbEntry);
+            .upsert(dbEntry); // Campaigns don't have unique emails, but 'id' is PK
 
         if (error) throw error;
     }
@@ -491,7 +503,7 @@ class Store {
         const dbEntry = this.mapGroupToDB(group);
         const { error } = await supabase
             .from('campaign_groups')
-            .insert(dbEntry);
+            .upsert(dbEntry);
 
         if (error) throw error;
     }

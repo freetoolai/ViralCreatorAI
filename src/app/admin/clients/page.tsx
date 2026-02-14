@@ -46,6 +46,7 @@ export default function ClientsPage() {
         companyName: '',
         accessCode: ''
     });
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         fetchClients();
@@ -105,21 +106,23 @@ export default function ClientsPage() {
     };
 
     const executeDelete = async () => {
-        if (confirmDelete.id) {
-            try {
-                // Assuming we use the same POST endpoint with a delete flag or a separate DELETE endpoint
-                // Since I don't see a DELETE handler in the route yet, I'll update it or use a trick.
-                // Wait, let's check the API route first.
-                // If the API route doesn't support DELETE, I should add it.
-                // For now, I'll call the API.
-                await import('@/lib/store').then(mod => mod.dataStore.deleteClient(confirmDelete.id!));
+        if (!confirmDelete.id) return;
 
-                setClients(prev => prev.filter(c => c.id !== confirmDelete.id));
-                setConfirmDelete({ isOpen: false, id: null });
-                showToast("Client deleted permanently");
-            } catch {
-                showToast("Failed to delete client", "error");
-            }
+        try {
+            setIsLoading(true);
+            const { dataStore } = await import('@/lib/store');
+            await dataStore.deleteClient(confirmDelete.id);
+
+            // Fetch fresh data from DB to ensure local state matches reality
+            await fetchClients();
+
+            setConfirmDelete({ isOpen: false, id: null });
+            showToast("Client deleted permanently");
+        } catch (error) {
+            console.error("Delete failed:", error);
+            showToast("Failed to delete client", "error");
+        } finally {
+            setIsLoading(false);
         }
     };
 

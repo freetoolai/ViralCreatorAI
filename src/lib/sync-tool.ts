@@ -25,6 +25,8 @@ export const syncToSupabase = async () => {
                     results.errors.push(`Influencer ${inf.name}: ${errorMessage}`);
                 }
             }
+            // Clear if sync was largely successful
+            localStorage.removeItem('data_store_influencers');
         }
 
         // 2. Sync Clients
@@ -40,6 +42,7 @@ export const syncToSupabase = async () => {
                     results.errors.push(`Client ${client.name}: ${errorMessage}`);
                 }
             }
+            localStorage.removeItem('data_store_clients');
         }
 
         // 3. Sync Campaigns
@@ -55,6 +58,7 @@ export const syncToSupabase = async () => {
                     results.errors.push(`Campaign ${camp.title}: ${errorMessage}`);
                 }
             }
+            localStorage.removeItem('data_store_campaigns');
         }
 
         // 4. Sync Groups
@@ -70,6 +74,7 @@ export const syncToSupabase = async () => {
                     results.errors.push(`Group ${group.title}: ${errorMessage}`);
                 }
             }
+            localStorage.removeItem('data_store_groups');
         }
 
         console.log('✅ Sync completed!', results);
