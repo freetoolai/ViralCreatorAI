@@ -349,3 +349,12 @@
         font-size: 1.125rem;
     }
 }
+
+.loadingState {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 40vh;
+    color: var(--text-muted);
+    font-weight: 500;
+}

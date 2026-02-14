@@ -30,13 +30,14 @@ export function RouteGuard({ children }: { children: React.ReactNode }) {
 
         const isAdminRoute = pathname?.startsWith('/admin');
         const isPortalRoute = pathname?.startsWith('/portal');
+        const isPortalLogin = pathname === '/portal';
         const isSharedGroupRoute = pathname?.startsWith('/portal/groups/');
         const isAccessRoute = pathname === '/access';
         const isHomePage = pathname === '/';
         const isLoginRoute = pathname === '/login';
 
         // Allow homepage, login, and shared group routes without access checks
-        if (isHomePage || isLoginRoute || isSharedGroupRoute) return;
+        if (isHomePage || isLoginRoute || isPortalLogin || isSharedGroupRoute) return;
 
         // Redirect to access page if no access code and not logged in
         if (!hasAccess && !isAccessRoute) {
@@ -71,9 +72,11 @@ export function RouteGuard({ children }: { children: React.ReactNode }) {
     const isAccessRoute = pathname === '/access';
     const isHomePage = pathname === '/' || pathname === '';
     const isLoginRoute = pathname === '/login';
+    const isPortalLogin = pathname === '/portal';
     const isSharedGroupRoute = pathname?.startsWith('/portal/groups/');
+    const isSharedCampaignRoute = pathname?.startsWith('/portal/campaigns/');
 
-    if (isAccessRoute || isHomePage || isLoginRoute || isSharedGroupRoute) {
+    if (isAccessRoute || isHomePage || isLoginRoute || isPortalLogin || isSharedGroupRoute || isSharedCampaignRoute) {
         return <>{children}</>;
     }
 

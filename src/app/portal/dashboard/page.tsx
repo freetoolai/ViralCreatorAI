@@ -49,7 +49,21 @@ export default function ClientDashboard() {
         fetchData();
     }, [router]);
 
-    if (!hasMounted || !client) return null;
+    if (!hasMounted) {
+        return (
+            <div className={styles.container}>
+                <div className={styles.loadingState}>Loading your dashboard...</div>
+            </div>
+        );
+    }
+
+    if (!client) {
+        return (
+            <div className={styles.container}>
+                <div className={styles.loadingState}>Redirecting to login...</div>
+            </div>
+        );
+    }
 
     return (
         <div className={styles.container}>
