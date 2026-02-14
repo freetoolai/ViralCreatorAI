@@ -37,6 +37,8 @@
     .main {
         padding-top: 56px;
         /* Space for merged mobile header only */
+        padding-bottom: 80px;
+        /* Space for BottomNav */
     }
 
     .content {

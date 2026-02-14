@@ -481,3 +481,10 @@
 .modalFooterDetail button {
     width: 100%;
 }
+
+@media (max-width: 480px) {
+    .detailGrid {
+        grid-template-columns: 1fr;
+        gap: var(--space-md);
+    }
+}

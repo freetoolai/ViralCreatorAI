@@ -252,11 +252,24 @@
     .formFooter {
         flex-direction: column;
         gap: var(--space-md);
+        padding-bottom: 1rem;
     }
 
-    .formFooter button {
-        width: 100%;
-        justify-content: center;
+    .formFooter>* {
+        width: 100% !important;
+        justify-content: center !important;
+        margin: 0 !important;
+    }
+
+    .platformGrid {
+        grid-template-columns: 1fr;
+        gap: var(--space-md);
+        position: relative;
+        padding-bottom: var(--space-lg);
+    }
+
+    .platformLabel {
+        margin-bottom: 0.25rem;
     }
 
     .platformItem {

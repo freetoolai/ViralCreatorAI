@@ -16,5 +16,7 @@
 @media (max-width: 768px) {
     .main {
         padding: 1rem;
+        padding-bottom: 80px;
+        /* Clear BottomNav */
     }
 }

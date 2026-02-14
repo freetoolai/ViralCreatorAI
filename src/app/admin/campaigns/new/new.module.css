@@ -113,23 +113,37 @@
     font-weight: 500;
 }
 
-.actions {
-    margin-top: var(--space-3xl);
-    display: flex;
-    justify-content: flex-end;
-    gap: 1rem;
-    padding-top: var(--space-xl);
-    border-top: 1px solid var(--surface-border);
-}
+@media (max-width: 768px) {
+    .row {
+        flex-direction: column;
+        gap: var(--space-md);
+    }
 
-.saveIcon {
-    margin-right: 0.5rem;
-}
+    .header {
+        margin-bottom: var(--space-xl);
+    }
 
-.mt2 {
-    margin-top: var(--space-3xl);
-}
+    .title {
+        font-size: 1.5rem;
+    }
 
-.mb15 {
-    margin-bottom: var(--space-xl);
+    .checkboxGroup {
+        gap: 0.5rem;
+    }
+
+    .checkboxLabel {
+        padding: 0.375rem 0.875rem;
+        font-size: 0.8125rem;
+    }
+
+    .actions {
+        flex-direction: column-reverse;
+        gap: var(--space-md);
+        margin-top: var(--space-xl);
+    }
+
+    .actions>* {
+        width: 100% !important;
+        justify-content: center !important;
+    }
 }
